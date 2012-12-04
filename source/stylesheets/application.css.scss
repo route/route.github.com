@@ -1,0 +1,128 @@
+@charset "utf-8";
+
+@import "compass/reset";
+@import "blueprint/grid";
+@import "compass/css3/font-face";
+
+@import "highlight";
+
+@include font-face("Museo700", font-files("/stylesheets/fonts/museo700-regular-webfont.ttf", "/stylesheets/fonts/museo700-regular-webfont.woff", "/stylesheets/fonts/museo700-regular-webfont.eot"));
+@include font-face("Museo500", font-files("/stylesheets/fonts/museo500-regular-webfont.ttf", "/stylesheets/fonts/museo500-regular-webfont.woff", "/stylesheets/fonts/museo500-regular-webfont.eot"));
+@include font-face("Museo300", font-files("/stylesheets/fonts/museo300-regular-webfont.ttf", "/stylesheets/fonts/museo300-regular-webfont.woff", "/stylesheets/fonts/museo300-regular-webfont.eot"));
+
+@mixin title {
+  font-family: 'Georgia', sans-serif;
+  color: #74ab2e;
+  font-weight: bold;
+  font-size: 24px;
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+@mixin time {
+  display: block;
+  line-height: 32px;
+  font-size: 11px;
+  color: #aaa;
+}
+
+body {
+  background-color: #fff;
+  color: #3f3f3f;
+  font-family: "Museo300", "Helvetica Neue", sans-serif;
+  font-size: 17px;
+  line-height: 26px;
+}
+
+p::selection {
+  color: white;
+  background-color: #82B343;
+}
+
+a {
+  text-decoration: none;
+  font-family: "Museo500", "Helvetica Neue", sans-serif;
+  color: #59990d;
+
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #cfe2b9;
+
+  &:hover, &:focus {
+    border-bottom: 0px;
+  }
+}
+
+h3 {
+  @include title;
+  line-height: 28px;
+  margin-bottom: 1px;
+}
+
+.content {
+  @include container;
+  width: 790px;
+  > header {
+    height: 64px;
+    border-bottom: 1px solid silver;
+    margin-bottom: 30px;
+    a {
+      color: #000;
+      line-height: 64px;
+      border-bottom: 0px;
+    }
+  }
+
+  > header, footer {
+    font-family: "Museo500", sans-serif;
+    @include column(20);
+  }
+
+  // Main
+  > section {
+    @include column(20);
+    article {
+      padding-bottom: 60px;
+      header {
+        a {
+          @include title;
+        }
+        time {
+          @include time;
+        }
+      }
+      footer {
+        a {
+          font-size: 14px;
+        }
+        line-height: 32px;
+      }
+    }
+  }
+
+  // Post
+  > article {
+    @include column(20);
+    time {
+      @include time;
+    }
+    p {
+      padding-bottom: 10px;
+    }
+    .share {
+      text-align: center;
+    }
+  }
+
+  > footer {
+    color: #aaa;
+    font-size: 11px;
+    line-height: 64px;
+    text-align: center;
+    a {
+      color: #aaa;
+      border-bottom: 1px solid #aaa;
+      &:hover, &:focus {
+        border-bottom: 0px;
+      }
+    }
+  }
+}

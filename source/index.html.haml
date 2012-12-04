@@ -1,0 +1,8 @@
+- blog.articles[0..2].each do |article|
+  %article
+    %header
+      %a{href: article.url}= article.title
+      %time= article.date.strftime('%B %e, %Y')
+    %p= article.summary
+    %footer
+      %a{href: article.url} Read more

@@ -1,0 +1,7 @@
+source :rubygems
+
+gem 'middleman'
+gem 'middleman-blog'
+gem 'middleman-syntax'
+gem 'redcarpet'
+gem 'builder'

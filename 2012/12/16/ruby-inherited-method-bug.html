@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Ruby inherited method bug</title>
+    <meta charset='utf-8' />
+    <link href="/stylesheets/application.css" media="screen" rel="stylesheet" type="text/css" />
+    <script src="/javascripts/application.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <div class='content'>
+      <header>
+        <a href="/">Blog</a>
+      </header>
+      <article>
+  <h3>Ruby inherited method bug</h3>
+  <time>December 16, 2012</time>
+  <p>This post is about the bug I found when I was writing tests for <code>quiet_assets</code>.
+I won&#39;t show you all those tests, just a small piece:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="no">Class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">Rails</span><span class="o">::</span><span class="no">Application</span><span class="p">)</span> <span class="k">do</span>
+    <span class="n">routes</span><span class="o">.</span><span class="n">append</span> <span class="p">{</span> <span class="o">.</span><span class="n">.</span><span class="o">.</span> <span class="p">}</span>
+  <span class="k">end</span>
+</pre></div>
+</td></tr></table></div>
+<p>All of them was passed on my laptop, but Travis-CI showed me the odd message
+for Ruby 1.8:
+<code>undefined local variable or method &#39;routes&#39; for #&lt;Class:0xb6b9a92c&gt;</code>.
+It says that there&#39;s no such method <code>routes</code> inside dynamically generated class,
+but it works for Ruby 1.9. What&#39;s wrong with it? Let&#39;s take a dip into
+Rails core. In our example we define dynamic class whose parent is
+<code>Rails::Application</code> that inherited from class <code>Rails::Engine</code> that inherited
+from <code>Rails::Railtie</code>. You can find <code>routes</code> definition at line 488 of
+<code>Rails::Engine</code>. I consider only 3-2-stable branch in my post. It&#39;s defined as
+an instance method. How can it be possible to use it on the class level?
+If you take a look at the chain of <code>self.inherited</code> callbacks in all those
+classes you&#39;ll see that <code>Rails::Railtie</code> has module inclusion:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="k">def</span> <span class="nf">inherited</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+    <span class="n">base</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:include</span><span class="p">,</span> <span class="no">Railtie</span><span class="o">::</span><span class="no">Configurable</span><span class="p">)</span>
+  <span class="k">end</span>
+</pre></div>
+</td></tr></table></div>
+<p><code>Railtie::Configurable</code> has <code>method_missing</code> which does exactly our case -
+proxying our calls to instance. You see that all logic rely on <code>self.inhereted</code>
+callback. Let&#39;s check it:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="k">class</span> <span class="nc">Parent</span>
+    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">inherited</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+      <span class="nb">puts</span> <span class="s1">&#39;Inside inherited&#39;</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">class</span> <span class="nc">Child</span> <span class="o">&lt;</span> <span class="no">Parent</span>
+    <span class="nb">puts</span> <span class="s1">&#39;We are inside class defenition&#39;</span>
+  <span class="k">end</span>
+
+  <span class="n">app</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">Parent</span><span class="p">)</span> <span class="k">do</span>
+    <span class="nb">puts</span> <span class="s1">&#39;We are inside class defenition&#39;</span>
+  <span class="k">end</span>
+</pre></div>
+</td></tr></table></div>
+<p>If you run this code you&#39;ll see that for <code>Class.new</code> we&#39;ll get this:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="n">We</span> <span class="n">are</span> <span class="n">inside</span> <span class="n">class</span> <span class="n">defenition</span>
+  <span class="n">Inside</span> <span class="n">inherited</span>
+</pre></div>
+</td></tr></table></div>
+<p>Ruby 1.8 cannot find <code>routes</code>, even <code>method_missing</code> just because
+<code>self.inherited</code> chain couldn&#39;t been invoked inside our block, it would be
+invoked after class defenition. Be careful!</p>
+  <div class='share'>
+    <a class="twitter-share-button" data-via="rO_Oute" href="https://twitter.com/share">Tweet</a>
+    <script type='text/javascript'>
+      //<![CDATA[
+        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+      //]]>
+    </script>
+  </div>
+</article>
+      <footer>
+        Copyright © 2012
+        <a target="_blank" href="https://github.com/route">Dmitry Vorotilin</a>,
+        <a target="_blank" href="http://evrone.com">Evrone.com</a>
+      </footer>
+    </div>
+  </body>
+</html>
+

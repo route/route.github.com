@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>See the difference</title>
+    <meta charset='utf-8' />
+    <link href="/stylesheets/application.css" media="screen" rel="stylesheet" type="text/css" />
+    <script src="/javascripts/application.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <div class='content'>
+      <header>
+        <a href="/">Blog</a>
+      </header>
+      <article>
+  <h3>See the difference</h3>
+  <time>August 28, 2012</time>
+  <p>Yesterday I faced the strange behaviour of the array wrapping in context
+of Arel. I tried to wrap something like this <code>User.arel_table[:id]</code> but
+<code>Array(User.arel_table[:id])</code> and <code>Array.wrap(User.arel_table[:id])</code>
+gave me different results. Now I&#39;ll tell you why you have to know about
+some differences in array wrapping and why Rails contains their own wrap
+realization.</p>
+
+<p>You probably know about
+<a href="https://github.com/rails/rails/blob/master/activesupport/lib/active_support/core_ext/array/wrap.rb#L36">Array.wrap</a>
+in Rails but if you don&#39;t here you are:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">wrap</span><span class="p">(</span><span class="n">object</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">object</span><span class="o">.</span><span class="n">nil?</span>
+      <span class="o">[]</span>
+    <span class="k">elsif</span> <span class="n">object</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:to_ary</span><span class="p">)</span>
+      <span class="n">object</span><span class="o">.</span><span class="n">to_ary</span> <span class="o">||</span> <span class="o">[</span><span class="n">object</span><span class="o">]</span>
+    <span class="k">else</span>
+      <span class="o">[</span><span class="n">object</span><span class="o">]</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+</pre></div>
+</td></tr></table></div>
+<p>And you probably know about
+<a href="http://rxr.whitequark.org/mri/source/object.c#2624">Kernel#Array</a>:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="n">VALUE</span>
+  <span class="nf">rb_Array</span><span class="p">(</span><span class="n">VALUE</span> <span class="n">val</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">VALUE</span> <span class="n">tmp</span> <span class="o">=</span> <span class="n">rb_check_array_type</span><span class="p">(</span><span class="n">val</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">NIL_P</span><span class="p">(</span><span class="n">tmp</span><span class="p">))</span> <span class="p">{</span>
+      <span class="n">tmp</span> <span class="o">=</span> <span class="n">rb_check_convert_type</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">T_ARRAY</span><span class="p">,</span> <span class="s">&quot;Array&quot;</span><span class="p">,</span> <span class="s">&quot;to_a&quot;</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">NIL_P</span><span class="p">(</span><span class="n">tmp</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">rb_ary_new3</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">val</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">tmp</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">static</span> <span class="n">VALUE</span>
+  <span class="nf">rb_f_array</span><span class="p">(</span><span class="n">VALUE</span> <span class="n">obj</span><span class="p">,</span> <span class="n">VALUE</span> <span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">rb_Array</span><span class="p">(</span><span class="n">arg</span><span class="p">);</span>
+  <span class="p">}</span>
+</pre></div>
+</td></tr></table></div>
+<p>Let&#39;s talk about ruby realization first of all.
+When you invoke <code>Array(object)</code>, ruby will try to convert object into array
+by means of <code>rb_check_array_type(val)</code> call. At the first step this
+function will try to invoke <code>to_ary</code> and if it&#39;s defined and result differ
+from <code>nil</code> and the same class as and <code>Array</code> it&#39;ll be returned.
+The second step (Line 6) (if result of the first step was <code>nil</code>)
+is <code>to_a</code>, here is the same thing as described above. The third and final
+step (Line 8) (if steps above return <code>nil</code>) is new array will be created
+with object as its element.</p>
+
+<p>Now take a look at Rails realization. If object is <code>nil</code> it returns empty
+array. If object responds to <code>to_ary</code> method it returns the result
+or if the result is <code>nil</code> just <code>[object]</code>. And finally it returns 
+<code>[object]</code>.</p>
+
+<p>You see that Rails method doesn&#39;t call <code>to_a</code>.
+And one thing I haven&#39;t mentioned is raise. Yep. Ruby version will raise
+exception if object that you return in <code>to_ary</code> or <code>to_a</code> methods isn&#39;t
+<code>Array</code>.</p>
+
+<p>Now you and me know why <code>Array(object)</code> returns me not what I wanted
+because of overridden <code>to_a</code> method in Arel.
+And in my case I select Rails version of course.</p>
+
+<p>There are things I have never thought about and just used them.
+They seemed to me very simple but in reality they are tiniest bits of a big
+complicated mechanism. We use too many abstraction levels and work on the top
+of it and rely on it. You should be waiting for troubles from everywhere.</p>
+  <div class='share'>
+    <a class="twitter-share-button" data-via="rO_Oute" href="https://twitter.com/share">Tweet</a>
+    <script type='text/javascript'>
+      //<![CDATA[
+        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+      //]]>
+    </script>
+  </div>
+</article>
+      <footer>
+        Copyright © 2012
+        <a target="_blank" href="https://github.com/route">Dmitry Vorotilin</a>,
+        <a target="_blank" href="http://evrone.com">Evrone.com</a>
+      </footer>
+    </div>
+  </body>
+</html>
+

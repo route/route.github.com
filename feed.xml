@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Blog Name</title>
+  <subtitle>Blog subtitle</subtitle>
+  <id>http://blog.url.com/</id>
+  <link href="http://blog.url.com/"/>
+  <link href="http://blog.url.com/feed.xml" rel="self"/>
+  <updated>2012-12-15T20:00:00Z</updated>
+  <author>
+    <name>Blog Author</name>
+  </author>
+  <entry>
+    <title>Ruby inherited method bug</title>
+    <link rel="alternate" href="/2012/12/16/ruby-inherited-method-bug.html"/>
+    <id>/2012/12/16/ruby-inherited-method-bug.html</id>
+    <published>2012-12-15T20:00:00Z</published>
+    <updated>2012-12-15T20:00:00Z</updated>
+    <author>
+      <name>Article Author</name>
+    </author>
+    <summary type="html">&lt;p&gt;This post is about the bug I found when I was writing tests for &lt;code&gt;quiet_assets&lt;/code&gt;.
+I won&amp;#39;t show you all those tests, just a small piece:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="no"&gt;Class&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;Rails&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Application&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+    &lt;span class="n"&gt;routes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;.&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;All of them was passed on my laptop, but Travis-CI showed me the odd message&lt;/p&gt;
+</summary>
+    <content type="html">&lt;p&gt;This post is about the bug I found when I was writing tests for &lt;code&gt;quiet_assets&lt;/code&gt;.
+I won&amp;#39;t show you all those tests, just a small piece:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="no"&gt;Class&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;Rails&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Application&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+    &lt;span class="n"&gt;routes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;.&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;All of them was passed on my laptop, but Travis-CI showed me the odd message
+for Ruby 1.8:
+&lt;code&gt;undefined local variable or method &amp;#39;routes&amp;#39; for #&amp;lt;Class:0xb6b9a92c&amp;gt;&lt;/code&gt;.
+It says that there&amp;#39;s no such method &lt;code&gt;routes&lt;/code&gt; inside dynamically generated class,
+but it works for Ruby 1.9. What&amp;#39;s wrong with it? Let&amp;#39;s take a dip into
+Rails core. In our example we define dynamic class whose parent is
+&lt;code&gt;Rails::Application&lt;/code&gt; that inherited from class &lt;code&gt;Rails::Engine&lt;/code&gt; that inherited
+from &lt;code&gt;Rails::Railtie&lt;/code&gt;. You can find &lt;code&gt;routes&lt;/code&gt; definition at line 488 of
+&lt;code&gt;Rails::Engine&lt;/code&gt;. I consider only 3-2-stable branch in my post. It&amp;#39;s defined as
+an instance method. How can it be possible to use it on the class level?
+If you take a look at the chain of &lt;code&gt;self.inherited&lt;/code&gt; callbacks in all those
+classes you&amp;#39;ll see that &lt;code&gt;Rails::Railtie&lt;/code&gt; has module inclusion:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3
+4&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;inherited&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;base&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;.&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;
+    &lt;span class="n"&gt;base&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;:include&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="no"&gt;Railtie&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Configurable&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code&gt;Railtie::Configurable&lt;/code&gt; has &lt;code&gt;method_missing&lt;/code&gt; which does exactly our case -
+proxying our calls to instance. You see that all logic rely on &lt;code&gt;self.inhereted&lt;/code&gt;
+callback. Let&amp;#39;s check it:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Parent&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nc"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;inherited&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;base&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+      &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;Inside inherited&amp;#39;&lt;/span&gt;
+    &lt;span class="k"&gt;end&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+
+  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Child&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;Parent&lt;/span&gt;
+    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;We are inside class defenition&amp;#39;&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+
+  &lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Class&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;Parent&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;We are inside class defenition&amp;#39;&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;If you run this code you&amp;#39;ll see that for &lt;code&gt;Class.new&lt;/code&gt; we&amp;#39;ll get this:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="n"&gt;We&lt;/span&gt; &lt;span class="n"&gt;are&lt;/span&gt; &lt;span class="n"&gt;inside&lt;/span&gt; &lt;span class="n"&gt;class&lt;/span&gt; &lt;span class="n"&gt;defenition&lt;/span&gt;
+  &lt;span class="n"&gt;Inside&lt;/span&gt; &lt;span class="n"&gt;inherited&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;Ruby 1.8 cannot find &lt;code&gt;routes&lt;/code&gt;, even &lt;code&gt;method_missing&lt;/code&gt; just because
+&lt;code&gt;self.inherited&lt;/code&gt; chain couldn&amp;#39;t been invoked inside our block, it would be
+invoked after class defenition. Be careful!&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <title>See the difference</title>
+    <link rel="alternate" href="/2012/08/28/see-the-difference.html"/>
+    <id>/2012/08/28/see-the-difference.html</id>
+    <published>2012-08-27T20:00:00Z</published>
+    <updated>2012-08-27T20:00:00Z</updated>
+    <author>
+      <name>Article Author</name>
+    </author>
+    <summary type="html">&lt;p&gt;Yesterday I faced the strange behaviour of the array wrapping in context
+of Arel. I tried to wrap something like this &lt;code&gt;User.arel_table[:id]&lt;/code&gt; but
+&lt;code&gt;Array(User.arel_table[:id])&lt;/code&gt; and &lt;code&gt;Array.wrap(User.arel_table[:id])&lt;/code&gt;
+gave me different results. Now I&amp;#39;ll tell you why you have to know about&lt;/p&gt;
+</summary>
+    <content type="html">&lt;p&gt;Yesterday I faced the strange behaviour of the array wrapping in context
+of Arel. I tried to wrap something like this &lt;code&gt;User.arel_table[:id]&lt;/code&gt; but
+&lt;code&gt;Array(User.arel_table[:id])&lt;/code&gt; and &lt;code&gt;Array.wrap(User.arel_table[:id])&lt;/code&gt;
+gave me different results. Now I&amp;#39;ll tell you why you have to know about
+some differences in array wrapping and why Rails contains their own wrap
+realization.&lt;/p&gt;
+
+&lt;p&gt;You probably know about
+&lt;a href="https://github.com/rails/rails/blob/master/activesupport/lib/active_support/core_ext/array/wrap.rb#L36"&gt;Array.wrap&lt;/a&gt;
+in Rails but if you don&amp;#39;t here you are:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3
+4
+5
+6
+7
+8
+9&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nc"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;wrap&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;object&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;object&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;nil?&lt;/span&gt;
+      &lt;span class="o"&gt;[]&lt;/span&gt;
+    &lt;span class="k"&gt;elsif&lt;/span&gt; &lt;span class="n"&gt;object&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;respond_to?&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;:to_ary&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+      &lt;span class="n"&gt;object&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;to_ary&lt;/span&gt; &lt;span class="o"&gt;||&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;object&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
+    &lt;span class="k"&gt;else&lt;/span&gt;
+      &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;object&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
+    &lt;span class="k"&gt;end&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;And you probably know about
+&lt;a href="http://rxr.whitequark.org/mri/source/object.c#2624"&gt;Kernel#Array&lt;/a&gt;:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="n"&gt;VALUE&lt;/span&gt;
+  &lt;span class="nf"&gt;rb_Array&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;VALUE&lt;/span&gt; &lt;span class="n"&gt;val&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;VALUE&lt;/span&gt; &lt;span class="n"&gt;tmp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;rb_check_array_type&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;val&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;NIL_P&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tmp&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+      &lt;span class="n"&gt;tmp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;rb_check_convert_type&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;val&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;T_ARRAY&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Array&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;to_a&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+      &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;NIL_P&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tmp&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;rb_ary_new3&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;val&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+      &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;tmp&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+
+  &lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="n"&gt;VALUE&lt;/span&gt;
+  &lt;span class="nf"&gt;rb_f_array&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;VALUE&lt;/span&gt; &lt;span class="n"&gt;obj&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;VALUE&lt;/span&gt; &lt;span class="n"&gt;arg&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;rb_Array&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;arg&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;Let&amp;#39;s talk about ruby realization first of all.
+When you invoke &lt;code&gt;Array(object)&lt;/code&gt;, ruby will try to convert object into array
+by means of &lt;code&gt;rb_check_array_type(val)&lt;/code&gt; call. At the first step this
+function will try to invoke &lt;code&gt;to_ary&lt;/code&gt; and if it&amp;#39;s defined and result differ
+from &lt;code&gt;nil&lt;/code&gt; and the same class as and &lt;code&gt;Array&lt;/code&gt; it&amp;#39;ll be returned.
+The second step (Line 6) (if result of the first step was &lt;code&gt;nil&lt;/code&gt;)
+is &lt;code&gt;to_a&lt;/code&gt;, here is the same thing as described above. The third and final
+step (Line 8) (if steps above return &lt;code&gt;nil&lt;/code&gt;) is new array will be created
+with object as its element.&lt;/p&gt;
+
+&lt;p&gt;Now take a look at Rails realization. If object is &lt;code&gt;nil&lt;/code&gt; it returns empty
+array. If object responds to &lt;code&gt;to_ary&lt;/code&gt; method it returns the result
+or if the result is &lt;code&gt;nil&lt;/code&gt; just &lt;code&gt;[object]&lt;/code&gt;. And finally it returns 
+&lt;code&gt;[object]&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;You see that Rails method doesn&amp;#39;t call &lt;code&gt;to_a&lt;/code&gt;.
+And one thing I haven&amp;#39;t mentioned is raise. Yep. Ruby version will raise
+exception if object that you return in &lt;code&gt;to_ary&lt;/code&gt; or &lt;code&gt;to_a&lt;/code&gt; methods isn&amp;#39;t
+&lt;code&gt;Array&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Now you and me know why &lt;code&gt;Array(object)&lt;/code&gt; returns me not what I wanted
+because of overridden &lt;code&gt;to_a&lt;/code&gt; method in Arel.
+And in my case I select Rails version of course.&lt;/p&gt;
+
+&lt;p&gt;There are things I have never thought about and just used them.
+They seemed to me very simple but in reality they are tiniest bits of a big
+complicated mechanism. We use too many abstraction levels and work on the top
+of it and rely on it. You should be waiting for troubles from everywhere.&lt;/p&gt;
+</content>
+  </entry>
+</feed>

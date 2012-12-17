@@ -27,7 +27,7 @@ I won&amp;#39;t show you all those tests, just a small piece:&lt;/p&gt;
   &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
-&lt;p&gt;All of them was passed on my laptop, but Travis-CI showed me the odd message&lt;/p&gt;
+&lt;p&gt;All of them were passed on my laptop, but Travis-CI showed me the odd message&lt;/p&gt;
 </summary>
     <content type="html">&lt;p&gt;This post is about the bug I found when I was writing tests for &lt;code&gt;quiet_assets&lt;/code&gt;.
 I won&amp;#39;t show you all those tests, just a small piece:&lt;/p&gt;
@@ -38,11 +38,11 @@ I won&amp;#39;t show you all those tests, just a small piece:&lt;/p&gt;
   &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
-&lt;p&gt;All of them was passed on my laptop, but Travis-CI showed me the odd message
+&lt;p&gt;All of them were passed on my laptop, but Travis-CI showed me the odd message
 for Ruby 1.8:
 &lt;code&gt;undefined local variable or method &amp;#39;routes&amp;#39; for #&amp;lt;Class:0xb6b9a92c&amp;gt;&lt;/code&gt;.
 It says that there&amp;#39;s no such method &lt;code&gt;routes&lt;/code&gt; inside dynamically generated class,
-but it works for Ruby 1.9. What&amp;#39;s wrong with it? Let&amp;#39;s take a dip into
+but it works for Ruby 1.9. What&amp;#39;s wrong with it? Let&amp;#39;s take a look at
 Rails core. In our example we define dynamic class whose parent is
 &lt;code&gt;Rails::Application&lt;/code&gt; that inherited from class &lt;code&gt;Rails::Engine&lt;/code&gt; that inherited
 from &lt;code&gt;Rails::Railtie&lt;/code&gt;. You can find &lt;code&gt;routes&lt;/code&gt; definition at line 488 of
@@ -81,23 +81,23 @@ callback. Let&amp;#39;s check it:&lt;/p&gt;
   &lt;span class="k"&gt;end&lt;/span&gt;
 
   &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Child&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;Parent&lt;/span&gt;
-    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;We are inside class defenition&amp;#39;&lt;/span&gt;
+    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;We are inside class definition&amp;#39;&lt;/span&gt;
   &lt;span class="k"&gt;end&lt;/span&gt;
 
   &lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Class&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;Parent&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
-    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;We are inside class defenition&amp;#39;&lt;/span&gt;
+    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;We are inside class definition&amp;#39;&lt;/span&gt;
   &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
 &lt;p&gt;If you run this code you&amp;#39;ll see that for &lt;code&gt;Class.new&lt;/code&gt; we&amp;#39;ll get this:&lt;/p&gt;
 &lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
-2&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="n"&gt;We&lt;/span&gt; &lt;span class="n"&gt;are&lt;/span&gt; &lt;span class="n"&gt;inside&lt;/span&gt; &lt;span class="n"&gt;class&lt;/span&gt; &lt;span class="n"&gt;defenition&lt;/span&gt;
+2&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="n"&gt;We&lt;/span&gt; &lt;span class="n"&gt;are&lt;/span&gt; &lt;span class="n"&gt;inside&lt;/span&gt; &lt;span class="n"&gt;class&lt;/span&gt; &lt;span class="n"&gt;definition&lt;/span&gt;
   &lt;span class="n"&gt;Inside&lt;/span&gt; &lt;span class="n"&gt;inherited&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
 &lt;p&gt;Ruby 1.8 cannot find &lt;code&gt;routes&lt;/code&gt;, even &lt;code&gt;method_missing&lt;/code&gt; just because
-&lt;code&gt;self.inherited&lt;/code&gt; chain couldn&amp;#39;t been invoked inside our block, it would be
-invoked after class defenition. Be careful!&lt;/p&gt;
+&lt;code&gt;self.inherited&lt;/code&gt; chain couldn&amp;#39;t be invoked inside our block, it would be
+invoked after class definition. Be careful!&lt;/p&gt;
 </content>
   </entry>
   <entry>

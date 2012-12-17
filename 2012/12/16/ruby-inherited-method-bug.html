@@ -23,11 +23,11 @@ I won&#39;t show you all those tests, just a small piece:</p>
   <span class="k">end</span>
 </pre></div>
 </td></tr></table></div>
-<p>All of them was passed on my laptop, but Travis-CI showed me the odd message
+<p>All of them were passed on my laptop, but Travis-CI showed me the odd message
 for Ruby 1.8:
 <code>undefined local variable or method &#39;routes&#39; for #&lt;Class:0xb6b9a92c&gt;</code>.
 It says that there&#39;s no such method <code>routes</code> inside dynamically generated class,
-but it works for Ruby 1.9. What&#39;s wrong with it? Let&#39;s take a dip into
+but it works for Ruby 1.9. What&#39;s wrong with it? Let&#39;s take a look at
 Rails core. In our example we define dynamic class whose parent is
 <code>Rails::Application</code> that inherited from class <code>Rails::Engine</code> that inherited
 from <code>Rails::Railtie</code>. You can find <code>routes</code> definition at line 488 of
@@ -66,23 +66,23 @@ callback. Let&#39;s check it:</p>
   <span class="k">end</span>
 
   <span class="k">class</span> <span class="nc">Child</span> <span class="o">&lt;</span> <span class="no">Parent</span>
-    <span class="nb">puts</span> <span class="s1">&#39;We are inside class defenition&#39;</span>
+    <span class="nb">puts</span> <span class="s1">&#39;We are inside class definition&#39;</span>
   <span class="k">end</span>
 
   <span class="n">app</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">Parent</span><span class="p">)</span> <span class="k">do</span>
-    <span class="nb">puts</span> <span class="s1">&#39;We are inside class defenition&#39;</span>
+    <span class="nb">puts</span> <span class="s1">&#39;We are inside class definition&#39;</span>
   <span class="k">end</span>
 </pre></div>
 </td></tr></table></div>
 <p>If you run this code you&#39;ll see that for <code>Class.new</code> we&#39;ll get this:</p>
 <div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="n">We</span> <span class="n">are</span> <span class="n">inside</span> <span class="n">class</span> <span class="n">defenition</span>
+2</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="n">We</span> <span class="n">are</span> <span class="n">inside</span> <span class="n">class</span> <span class="n">definition</span>
   <span class="n">Inside</span> <span class="n">inherited</span>
 </pre></div>
 </td></tr></table></div>
 <p>Ruby 1.8 cannot find <code>routes</code>, even <code>method_missing</code> just because
-<code>self.inherited</code> chain couldn&#39;t been invoked inside our block, it would be
-invoked after class defenition. Be careful!</p>
+<code>self.inherited</code> chain couldn&#39;t be invoked inside our block, it would be
+invoked after class definition. Be careful!</p>
   <div class='share'>
     <a class="twitter-share-button" data-via="rO_Oute" href="https://twitter.com/share">Tweet</a>
     <script type='text/javascript'>

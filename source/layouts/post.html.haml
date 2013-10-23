@@ -1,6 +1,6 @@
 - wrap_layout :application do
   %article
-    %h3= current_page.title
+    %h1= current_page.title
     %time= current_page.date.strftime('%B %e, %Y')
     = yield
     .share

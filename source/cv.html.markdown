@@ -37,3 +37,8 @@ Master's degree, Electronic engineering — 4.0 GPA
 DevConf 2012, Moscow. "Sprockets under the hood"
 [Slides](https://docs.google.com/presentation/d/1Paqm3uDVYFNGvfg5GXcwHD4hMQr8az0Jdr4-EUIVFn4/edit),
 [Video](http://www.youtube.com/watch?v=2t4SfcL8KMc)
+
+RailsClub 2013, Moscow. "Capybara drivers zoo or make friends with Poltergeist"
+[Slides](https://github.com/route/railsclub_2013),
+[Video](http://digitaloctober.ru/en/events/railsclub_moscow_obi_fernandes_erni_miller_dzheremi_evans_i_linda_liukas_v_do),
+[Photos](http://digitaloctober.ru/en/events/railsclub_moscow_obi_fernandes_erni_miller_dzheremi_evans_i_linda_liukas_v_do/photos)

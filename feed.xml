@@ -5,10 +5,313 @@
   <id>http://blog.url.com/</id>
   <link href="http://blog.url.com/"/>
   <link href="http://blog.url.com/feed.xml" rel="self"/>
-  <updated>2012-12-15T20:00:00Z</updated>
+  <updated>2013-11-04T20:00:00Z</updated>
   <author>
     <name>Blog Author</name>
   </author>
+  <entry>
+    <title>Ruby loading and requiring modules</title>
+    <link rel="alternate" href="/2013/11/05/ruby-loading-and-requiring-modules.html"/>
+    <id>/2013/11/05/ruby-loading-and-requiring-modules.html</id>
+    <published>2013-11-04T20:00:00Z</published>
+    <updated>2013-11-04T20:00:00Z</updated>
+    <author>
+      <name>Article Author</name>
+    </author>
+    <summary type="html">&lt;p&gt;This article has started as my own research on a slightly different theme -
+&lt;a href="http://route.github.io/2013/11/06/rails-autoloading.html"&gt;Rails autoloading&lt;/a&gt;
+but I couldn&amp;#39;t describe it without saying a single word about Ruby
+itself. If this topic is clear for you, start right off the next part.&lt;/p&gt;
+</summary>
+    <content type="html">&lt;p&gt;This article has started as my own research on a slightly different theme -
+&lt;a href="http://route.github.io/2013/11/06/rails-autoloading.html"&gt;Rails autoloading&lt;/a&gt;
+but I couldn&amp;#39;t describe it without saying a single word about Ruby
+itself. If this topic is clear for you, start right off the next part.&lt;/p&gt;
+
+&lt;p&gt;I won&amp;#39;t describe everything in this post just a couple of important moments.
+When we separate the code by files we start using three different methods in
+order to &amp;#39;concatenate&amp;#39; it. Here they are: &lt;code&gt;require&lt;/code&gt;, &lt;code&gt;load&lt;/code&gt;, &lt;code&gt;autoload&lt;/code&gt;. You can
+find a lot info about them in ruby-doc, so I&amp;#39;ll just sum it up. &lt;code&gt;Kernel#require&lt;/code&gt;
+will load file only once making any constants or globals within the loaded
+source file available in the calling program&amp;#39;s global namespace. If it succeded
+then file&amp;#39;s absolute path would be added to &lt;code&gt;$LOADED_FEATURES&lt;/code&gt; preventing us
+from loading it twice. &lt;code&gt;Kernel#load&lt;/code&gt; won&amp;#39;t add path of loaded file to
+&lt;code&gt;$LOADED_FEATURES&lt;/code&gt;. All the rest differences about them is on your own please :)&lt;/p&gt;
+
+&lt;p&gt;Example with &lt;code&gt;require&lt;/code&gt;:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# In ./first/a.rb&lt;/span&gt;
+  &lt;span class="c1"&gt;# module A&lt;/span&gt;
+  &lt;span class="c1"&gt;#   C = &amp;#39;constant&amp;#39;&lt;/span&gt;
+  &lt;span class="c1"&gt;# end&lt;/span&gt;
+
+  &lt;span class="n"&gt;before&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="vg"&gt;$LOADED_FEATURES&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dup&lt;/span&gt;
+  &lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;./first/a&amp;#39;&lt;/span&gt;
+  &lt;span class="vg"&gt;$LOADED_FEATURES&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;before&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; [&amp;#39;/Users/route/Projects/dependencies/first/a.rb&amp;#39;]&lt;/span&gt;
+
+  &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; &amp;#39;constant&amp;#39;&lt;/span&gt;
+  &lt;span class="nb"&gt;sleep&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;
+  &lt;span class="c1"&gt;# Meanwhile changing constant value to &amp;#39;changed&amp;#39;&lt;/span&gt;
+
+  &lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;./first/a&amp;#39;&lt;/span&gt;
+
+  &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; &amp;#39;constant&amp;#39;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;Example with &lt;code&gt;load&lt;/code&gt;:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# In ./first/a.rb&lt;/span&gt;
+  &lt;span class="c1"&gt;# module A&lt;/span&gt;
+  &lt;span class="c1"&gt;#   C = &amp;#39;constant&amp;#39;&lt;/span&gt;
+  &lt;span class="c1"&gt;# end&lt;/span&gt;
+
+  &lt;span class="n"&gt;before&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="vg"&gt;$LOADED_FEATURES&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dup&lt;/span&gt;
+  &lt;span class="nb"&gt;load&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;./first/a.rb&amp;#39;&lt;/span&gt;
+  &lt;span class="vg"&gt;$LOADED_FEATURES&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;before&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; []&lt;/span&gt;
+
+  &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; &amp;#39;constant&amp;#39;&lt;/span&gt;
+  &lt;span class="nb"&gt;sleep&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;
+  &lt;span class="c1"&gt;# Meanwhile changing constant value to &amp;#39;changed&amp;#39;&lt;/span&gt;
+
+  &lt;span class="nb"&gt;load&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;./first/a.rb&amp;#39;&lt;/span&gt;
+
+  &lt;span class="c1"&gt;# ./first/a.rb:2: warning: already initialized constant A::C&lt;/span&gt;
+  &lt;span class="c1"&gt;# ./first/a.rb:2: warning: previous definition of C was here&lt;/span&gt;
+  &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; &amp;#39;changed&amp;#39;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;With warnings but the code was reloaded. Moving forward to &lt;code&gt;Kernel#autoload&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Example 1 with &lt;code&gt;autoload&lt;/code&gt;:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3
+4
+5
+6&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# In ./first/a.rb&lt;/span&gt;
+  &lt;span class="c1"&gt;# module A&lt;/span&gt;
+  &lt;span class="c1"&gt;#   p &amp;#39;loading&amp;#39;&lt;/span&gt;
+  &lt;span class="c1"&gt;# end&lt;/span&gt;
+
+  &lt;span class="nb"&gt;autoload&lt;/span&gt; &lt;span class="ss"&gt;:A&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;./first/a&amp;#39;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;Running this won&amp;#39;t produce anything useful, because we&amp;#39;ve just declared that
+constant &lt;code&gt;A&lt;/code&gt; could be found in a file but we&amp;#39;ve never used it.&lt;/p&gt;
+
+&lt;p&gt;Example 2 with &lt;code&gt;autoload&lt;/code&gt;:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3
+4
+5
+6
+7&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# In ./first/a.rb&lt;/span&gt;
+  &lt;span class="c1"&gt;# module A&lt;/span&gt;
+  &lt;span class="c1"&gt;#   p &amp;#39;loading&amp;#39;&lt;/span&gt;
+  &lt;span class="c1"&gt;# end&lt;/span&gt;
+
+  &lt;span class="nb"&gt;autoload&lt;/span&gt; &lt;span class="ss"&gt;:A&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;./first/a&amp;#39;&lt;/span&gt;
+  &lt;span class="n"&gt;A&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; Gives output &amp;#39;loading&amp;#39;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;In other words &lt;code&gt;autoload&lt;/code&gt; makes us to load code lazily on demand decreasing time
+of loading on the beginning. There were some problems with thread safety and
+&lt;code&gt;autoload&lt;/code&gt;, also there was a rumor that it would be deprecated, but I hadn&amp;#39;t
+found anything what ruby core team came up with. I just can say it works
+properly even with threads for now.&lt;/p&gt;
+
+&lt;p&gt;Next topic is constant name resolution, and I&amp;#39;ll give just a few words(see my
+colleague&amp;#39;s &lt;a href="http://valve.github.io/blog/2013/10/26/constant-resolution-in-ruby/"&gt;post&lt;/a&gt;).
+As for me, I find this example comprehensive:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;Kernel&lt;/span&gt;
+    &lt;span class="c1"&gt;# Constants defined in Kernel&lt;/span&gt;
+    &lt;span class="n"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;E&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;F&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;defined in kernel&amp;quot;&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+
+  &lt;span class="c1"&gt;# Top-level or &amp;quot;global&amp;quot; constants defined in Object&lt;/span&gt;
+  &lt;span class="n"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;E&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;defined at toplevel&amp;quot;&lt;/span&gt;
+
+  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Super&lt;/span&gt;
+    &lt;span class="c1"&gt;# Constants defined in a superclass&lt;/span&gt;
+    &lt;span class="n"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;defined in superclass&amp;quot;&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;Included&lt;/span&gt;
+    &lt;span class="c1"&gt;# Constants defined in an included module&lt;/span&gt;
+    &lt;span class="n"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;defined in included module&amp;quot;&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;Enclosing&lt;/span&gt;
+    &lt;span class="c1"&gt;# Constants defined in an enclosing module&lt;/span&gt;
+    &lt;span class="n"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;defined in enclosing module&amp;quot;&lt;/span&gt;
+
+    &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Local&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;Super&lt;/span&gt;
+      &lt;span class="kp"&gt;include&lt;/span&gt; &lt;span class="no"&gt;Included&lt;/span&gt;
+
+      &lt;span class="c1"&gt;# Locally defined constant&lt;/span&gt;
+      &lt;span class="n"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;defined locally&amp;quot;&lt;/span&gt;
+
+      &lt;span class="c1"&gt;# The list of modules searched, in the order searched&lt;/span&gt;
+      &lt;span class="c1"&gt;# [Enclosing::Local, Enclosing, Included, Super, Object, Kernel, BasicObject]&lt;/span&gt;
+      &lt;span class="c1"&gt;# (Module.nesting + self.ancestors + Object.ancestors).uniq&lt;/span&gt;
+      &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="n"&gt;A&lt;/span&gt;  &lt;span class="c1"&gt;# Prints &amp;quot;defined locally&amp;quot;&lt;/span&gt;
+      &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="n"&gt;B&lt;/span&gt;  &lt;span class="c1"&gt;# Prints &amp;quot;defined in enclosing module&amp;quot;&lt;/span&gt;
+      &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="n"&gt;C&lt;/span&gt;  &lt;span class="c1"&gt;# Prints &amp;quot;defined in included module&amp;quot;&lt;/span&gt;
+      &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="n"&gt;D&lt;/span&gt;  &lt;span class="c1"&gt;# Prints &amp;quot;defined in superclass&amp;quot;&lt;/span&gt;
+      &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="n"&gt;E&lt;/span&gt;  &lt;span class="c1"&gt;# Prints &amp;quot;defined at toplevel&amp;quot;&lt;/span&gt;
+      &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="n"&gt;F&lt;/span&gt;  &lt;span class="c1"&gt;# Prints &amp;quot;defined in kernel&amp;quot;&lt;/span&gt;
+    &lt;span class="k"&gt;end&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;A few cases should also be mentioned here:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
+    &lt;span class="n"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;c&amp;#39;&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
+    &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;
+      &lt;span class="n"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; &amp;#39;c&amp;#39;&lt;/span&gt;
+      &lt;span class="no"&gt;Module&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;nesting&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; [A::B, A]&lt;/span&gt;
+    &lt;span class="k"&gt;end&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A::B&lt;/span&gt;
+    &lt;span class="n"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; NameError: uninitialized constant A::B::C&lt;/span&gt;
+    &lt;span class="no"&gt;Module&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;nesting&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; [A::B]&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;As you can see the nesting for these two forms is different and enclosing module
+&lt;code&gt;A&lt;/code&gt; doesn&amp;#39;t exist and won&amp;#39;t be used in constant name resolution for the last
+example.&lt;/p&gt;
+
+&lt;p&gt;Another case:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Parent&lt;/span&gt;
+    &lt;span class="no"&gt;CONST&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;parent&amp;#39;&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;get&lt;/span&gt;
+      &lt;span class="no"&gt;CONST&lt;/span&gt;
+    &lt;span class="k"&gt;end&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+
+  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Child&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;Parent&lt;/span&gt;
+    &lt;span class="no"&gt;CONST&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;child&amp;#39;&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+
+  &lt;span class="no"&gt;Child&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;new&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; parent&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;Remember that constants use the same lexical scope. In this example method is
+invoked on parent class so it&amp;#39;s scope is used. To change things you could use
+&lt;code&gt;self.class::CONST&lt;/code&gt; this way you expicitly saying find my constant in my own
+class.&lt;/p&gt;
+
+&lt;p&gt;Lastly, imagine we access a constant that isn&amp;#39;t defined in all places listed
+above then &lt;code&gt;self.const_missing&lt;/code&gt; is invoked on the class that needs constant or
+if it wasn&amp;#39;t defined on that class it&amp;#39;s invoked on &lt;code&gt;Module&lt;/code&gt;. It accepts just one
+single argument &lt;code&gt;const_name&lt;/code&gt; which is the constant we&amp;#39;re looking for. By default
+this method simply throws an error &lt;code&gt;NameError: uninitialized constant #{const_name}&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;That&amp;#39;s all for ruby, moving to
+&lt;a href="http://route.github.io/2013/11/05/rails-autoloading.html"&gt;Rails autoloading&lt;/a&gt;&lt;/p&gt;
+</content>
+  </entry>
   <entry>
     <title>Ruby inherited method bug</title>
     <link rel="alternate" href="/2012/12/16/ruby-inherited-method-bug.html"/>

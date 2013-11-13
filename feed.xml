@@ -67,7 +67,7 @@ where &lt;code&gt;AS::D&lt;/code&gt; starts doing its job. Consider this example
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
 &lt;p&gt;I&amp;#39;ve just introduced the method Rails reloads your code with — &lt;code&gt;clear&lt;/code&gt;. Let&amp;#39;s
 dig dipper and see how &lt;code&gt;AS::D&lt;/code&gt; actually works. There are two different constant
-autoloading schemes: &lt;code&gt;:require&lt;/code&gt; and &lt;code&gt;:load&lt;/code&gt;(default). The first one means that
+loading strategy: &lt;code&gt;:require&lt;/code&gt; and &lt;code&gt;:load&lt;/code&gt;(default). The first one means that
 all the constants won&amp;#39;t be reloaded(as &lt;code&gt;require&lt;/code&gt; does eventually, do you
 remember &lt;code&gt;$LOADED_FEATURES&lt;/code&gt;?) and the last one means that all the constants will
 be removed from memory and loaded again on demand. What does removing constant
@@ -123,7 +123,7 @@ Ruby classes via &lt;code&gt;AS::D.hook!&lt;/code&gt;.&lt;/p&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
 &lt;p&gt;Methods injected into &lt;code&gt;Object&lt;/code&gt; overwrite methods like &lt;code&gt;load&lt;/code&gt; and &lt;code&gt;require&lt;/code&gt; in
-order to monitor new constants(depends on schema). Another method you could
+order to monitor new constants(depends on loading strategy). Another method you could
 already know is &lt;code&gt;require_dependency&lt;/code&gt; also injected into &lt;code&gt;Object&lt;/code&gt;. Methods in
 &lt;code&gt;Module&lt;/code&gt; define an entry point &lt;code&gt;const_missing&lt;/code&gt; as I told you earlier. I&amp;#39;m going
 to show you how &lt;code&gt;AS::D&lt;/code&gt; works with this example:&lt;/p&gt;
@@ -149,31 +149,31 @@ to show you how &lt;code&gt;AS::D&lt;/code&gt; works with this example:&lt;/p&gt
 &lt;code&gt;AS::D&lt;/code&gt;) and &lt;code&gt;Dependencies.load_missing_constant(from_mod, const_name)&lt;/code&gt; is
 invoked. The first argument is &lt;code&gt;Object&lt;/code&gt; because &lt;code&gt;A == Object::A&lt;/code&gt; the second is
 &lt;code&gt;:A&lt;/code&gt;.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;load_missing_constant&lt;/code&gt; tries to find the path for this constant which is by
-convention lies somewhere in one of the &lt;code&gt;autoload_paths&lt;/code&gt; by mean
+&lt;li&gt;&lt;code&gt;load_missing_constant&lt;/code&gt; tries to find the path for this constant which by
+convention lies somewhere in one of the &lt;code&gt;autoload_paths&lt;/code&gt; by means of
 &lt;code&gt;search_for_file(&amp;#39;a&amp;#39;)&lt;/code&gt;. It just returns the first file it can find with
 &lt;code&gt;File.file?(File.join(autoload_path, &amp;#39;a.rb&amp;#39;))&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Then method &lt;code&gt;require_or_load&lt;/code&gt; is invoked and it&amp;#39;s behavior depends on schema.
-For &lt;code&gt;require&lt;/code&gt; it just requires given file and that&amp;#39;s all, for load
+&lt;li&gt;Then &lt;code&gt;require_or_load&lt;/code&gt; method is invoked, whose behavior depends on loading strategy.
+For &lt;code&gt;require&lt;/code&gt; it just requires the given file, for &lt;code&gt;load&lt;/code&gt;
 &lt;code&gt;load_file(&amp;#39;/autoloadable/a.rb&amp;#39;, &amp;#39;A&amp;#39;)&lt;/code&gt; is invoked.&lt;/li&gt;
 &lt;li&gt;Then it looks for new constants in given namespaces with:
 &lt;code&gt;new_constants_in(*parent_paths) { Kernel.load(path) }&lt;/code&gt;
-where &lt;code&gt;parent_paths&lt;/code&gt; is &lt;code&gt;[Object]&lt;/code&gt;(we try to resolve &lt;code&gt;Object::A&lt;/code&gt;) and path is
-clear I suppose. How does it monitor it? It&amp;#39;s just a difference between array of
+where &lt;code&gt;parent_paths&lt;/code&gt; is &lt;code&gt;[Object]&lt;/code&gt;(we try to resolve &lt;code&gt;Object::A&lt;/code&gt;) and &lt;code&gt;path&lt;/code&gt; is
+the path to file. How does it monitor it? It&amp;#39;s just the difference between the array of
 constants before and after. &lt;code&gt;Object.local_constants&lt;/code&gt; gives us all the constants
 inside &lt;code&gt;Object&lt;/code&gt;.&lt;/li&gt;
-&lt;li&gt;When it&amp;#39;s done all newly defined constants appends to &lt;code&gt;autoloaded_constants&lt;/code&gt;.
+&lt;li&gt;When it&amp;#39;s done, all newly defined constants append to &lt;code&gt;autoloaded_constants&lt;/code&gt;.
 That&amp;#39;s all, new constant was defined with &lt;code&gt;AS::D&lt;/code&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;&lt;code&gt;AS::D.clear&lt;/code&gt; removes constants from memory and clears all auto-loaded constants
-inside &lt;code&gt;AS::D&lt;/code&gt;. Pay attention to &lt;code&gt;require_dependency&lt;/code&gt; this method adds all newly
+&lt;p&gt;&lt;code&gt;AS::D.clear&lt;/code&gt; removes constants from memory and clears all the auto-loaded constants
+inside &lt;code&gt;AS::D&lt;/code&gt;. Pay your attention to &lt;code&gt;require_dependency&lt;/code&gt;. This method adds all newly
 defined constants to &lt;code&gt;autoloaded_constants&lt;/code&gt; so that they will be reloaded unlike
-&lt;code&gt;require&lt;/code&gt;.&lt;/p&gt;
+the &lt;code&gt;require&lt;/code&gt; loading strategy.&lt;/p&gt;
 
 &lt;p&gt;Another convention &lt;code&gt;AS::D&lt;/code&gt; uses is a path convention. This example
-&lt;code&gt;&amp;#39;A::B&amp;#39;.underscore # =&amp;gt; &amp;#39;a/b&amp;#39;&lt;/code&gt; simply illustrates that &lt;code&gt;::&lt;/code&gt; treated as a &lt;code&gt;/&lt;/code&gt;,
-that gives us ability to use folders like a module namespaces:&lt;/p&gt;
+&lt;code&gt;&amp;#39;A::B&amp;#39;.underscore # =&amp;gt; &amp;#39;a/b&amp;#39;&lt;/code&gt; simply illustrates that &lt;code&gt;::&lt;/code&gt; is treated as a &lt;code&gt;/&lt;/code&gt;,
+which gives us ability to use folders like module namespaces:&lt;/p&gt;
 &lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
  2
  3
@@ -214,12 +214,12 @@ that gives us ability to use folders like a module namespaces:&lt;/p&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
 &lt;p&gt;Although we haven&amp;#39;t defined module &lt;code&gt;A&lt;/code&gt;, it has been created for us automatically
-because of existed directory &lt;code&gt;a&lt;/code&gt;. It&amp;#39;s really conviniently because you don&amp;#39;t
-have to create an empty module just for namespace purpose.&lt;/p&gt;
+because of existing directory &lt;code&gt;a&lt;/code&gt;. It&amp;#39;s really convinient, because you are not
+forced to create an empty module just for namespacing purpose.&lt;/p&gt;
 
 &lt;h3&gt;Misconception&lt;/h3&gt;
 
-&lt;p&gt;Since ruby passes just one argument to &lt;code&gt;const_missing(const_name)&lt;/code&gt; we don&amp;#39;t have
+&lt;p&gt;Since Ruby passes only one argument to &lt;code&gt;const_missing(const_name)&lt;/code&gt; we don&amp;#39;t have
 an idea about the nesting, this example works as expected:&lt;/p&gt;
 &lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
 2
@@ -258,10 +258,10 @@ an idea about the nesting, this example works as expected:&lt;/p&gt;
   &lt;span class="nb"&gt;p&lt;/span&gt; &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;B&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; B&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
-&lt;p&gt;Is that right? I don&amp;#39;t think so. If we had been used pure ruby it would have
-thrown &lt;code&gt;NameError: uninitialized constant A::B&lt;/code&gt;, because we precisely saying we
-need &lt;code&gt;B&lt;/code&gt; inside &lt;code&gt;A&lt;/code&gt; but not top level &lt;code&gt;B&lt;/code&gt;. But it&amp;#39;s a ruby blame it passes such
-a scant info to &lt;code&gt;const_missing&lt;/code&gt; and &lt;code&gt;AS::D&lt;/code&gt; can do nothing with it.&lt;/p&gt;
+&lt;p&gt;Is that right? I don&amp;#39;t think so. If we had used pure Ruby it would have
+thrown &lt;code&gt;NameError: uninitialized constant A::B&lt;/code&gt;, because we explicitly said we
+need &lt;code&gt;B&lt;/code&gt; inside &lt;code&gt;A&lt;/code&gt; but not top level &lt;code&gt;B&lt;/code&gt;. But this is Ruby&amp;#39;s fault it passes so
+little info to &lt;code&gt;const_missing&lt;/code&gt; and &lt;code&gt;AS::D&lt;/code&gt; can do nothing with it.&lt;/p&gt;
 
 &lt;p&gt;Another cool case:&lt;/p&gt;
 &lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
@@ -284,13 +284,13 @@ a scant info to &lt;code&gt;const_missing&lt;/code&gt; and &lt;code&gt;AS::D&lt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
 &lt;p&gt;What would you expect from this example? I think in Ruby it&amp;#39;s obviously
-top-level &lt;code&gt;A&lt;/code&gt;, but since &lt;code&gt;AS::D&lt;/code&gt; doesn&amp;#39;t know nesting info would you expect it
-to be either &lt;code&gt;Namespace::A&lt;/code&gt; or &lt;code&gt;A&lt;/code&gt;? Nither, it&amp;#39;s &lt;code&gt;NameError&lt;/code&gt; which is much more
+top-level &lt;code&gt;A&lt;/code&gt;, but since &lt;code&gt;AS::D&lt;/code&gt; doesn&amp;#39;t know about nesting, would you expect it
+to be either &lt;code&gt;Namespace::A&lt;/code&gt; or &lt;code&gt;A&lt;/code&gt;? Neither, because it&amp;#39;s &lt;code&gt;NameError&lt;/code&gt;, which is much more
 confusing. It&amp;#39;s the last attempt of &lt;code&gt;AS::D&lt;/code&gt; to make an assumption that since
 one of our parents has this constant (&lt;code&gt;Namespace.const_defined?(:A, false)&lt;/code&gt;)
 then we&amp;#39;re definitely looking for this constant in a short form
-&lt;code&gt;from_mod::const_name&lt;/code&gt; otherwise Ruby would return it without calling
-&lt;code&gt;const_missing&lt;/code&gt; and we don&amp;#39;t have to search it upwards in &lt;code&gt;from_mod&lt;/code&gt;, but why
+&lt;code&gt;from_mod::const_name&lt;/code&gt;, otherwise Ruby would return it without calling
+&lt;code&gt;const_missing&lt;/code&gt; and we don&amp;#39;t have to search it upwards in &lt;code&gt;from_mod&lt;/code&gt;. Why
 don&amp;#39;t we have to search it right at the top level? May be because of this:&lt;/p&gt;
 &lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
  2
@@ -326,10 +326,10 @@ don&amp;#39;t we have to search it right at the top level? May be because of thi
 &lt;p&gt;Calling it twice gives us an error, because of the same case we&amp;#39;ve considered
 above. The first time &lt;code&gt;AS::D&lt;/code&gt; resolves &lt;code&gt;C&lt;/code&gt; through as usual, but the second time
 it starts checking enclosing modules and since &lt;code&gt;A&lt;/code&gt; contains &lt;code&gt;C&lt;/code&gt; then Ruby must
-have been resolved it or otherwise it&amp;#39;s the short form and an error is thrown.
+have resolved it or otherwise it&amp;#39;s the short form and an error is thrown.
 Imagine we&amp;#39;ve fixed it and instead of error we start loading top level constant.
-Is it any better? Because now we&amp;#39;ve got two different constants in a row, still
-sad. Seems like there&amp;#39;s no exit out there until nesting info will not be fixed.&lt;/p&gt;
+Is it any better? Because now we have two different constants in a row, which is
+still sad. Seems like there&amp;#39;s no exit out there until nesting info will not be fixed.&lt;/p&gt;
 
 &lt;h3&gt;Thread safety&lt;/h3&gt;
 
@@ -371,11 +371,10 @@ sad. Seems like there&amp;#39;s no exit out there until nesting info will not be
   &lt;span class="n"&gt;t1&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;t2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
-&lt;p&gt;There result is &lt;code&gt;undefined method &amp;#39;hello&amp;#39; for A:Module (NoMethodError)&lt;/code&gt; Why?
-Because second thread takes over when the first is awaiting on sleep. At that
-moment module &lt;code&gt;A&lt;/code&gt; already defined but method hello isn&amp;#39;t defined yet. It turns
-out that &lt;code&gt;AS::D&lt;/code&gt; will never be thread safe until &lt;code&gt;const_missing&lt;/code&gt; will be thread
-safe.&lt;/p&gt;
+&lt;p&gt;The result is &lt;code&gt;undefined method &amp;#39;hello&amp;#39; for A:Module (NoMethodError)&lt;/code&gt;. Why?
+Because second thread takes over when the first is awaiting sleeping. At that
+moment module &lt;code&gt;A&lt;/code&gt; is already defined but method &lt;code&gt;hello&lt;/code&gt; isn&amp;#39;t defined yet. It turns
+out that &lt;code&gt;AS::D&lt;/code&gt; will never be thread safe until &lt;code&gt;const_missing&lt;/code&gt; is not thread safe.&lt;/p&gt;
 
 &lt;h3&gt;Known errors&lt;/h3&gt;
 
@@ -395,7 +394,7 @@ reproduce even without &lt;code&gt;AS::D&lt;/code&gt;:&lt;/p&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
 &lt;p&gt;Since &lt;code&gt;A.ancestors&lt;/code&gt; is &lt;code&gt;[A, Object, Kernel, BasicObject]&lt;/code&gt; and contains class
-&lt;code&gt;Object&lt;/code&gt; and &lt;code&gt;B&lt;/code&gt; is already defined as a top level constant Ruby shows us
+&lt;code&gt;Object&lt;/code&gt; and &lt;code&gt;B&lt;/code&gt; are already defined as top level constants, Ruby shows us a
 warning that constant we&amp;#39;re trying to resolve inside &lt;code&gt;A&lt;/code&gt; references top level
 constant. Notice that for modules the situation is different:&lt;/p&gt;
 &lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
@@ -408,7 +407,7 @@ constant. Notice that for modules the situation is different:&lt;/p&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
 &lt;p&gt;It gives us just &amp;#39;uninitialized constant A::B (NameError)&amp;#39; because the ancestors
-chain doesn&amp;#39;t contain an &lt;code&gt;Object&lt;/code&gt;.&lt;/p&gt;
+chain doesn&amp;#39;t contain &lt;code&gt;Object&lt;/code&gt;.&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Circular dependency detected while autoloading constant&lt;/li&gt;
@@ -438,17 +437,17 @@ chain doesn&amp;#39;t contain an &lt;code&gt;Object&lt;/code&gt;.&lt;/p&gt;
   &lt;span class="n"&gt;A&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
-&lt;p&gt;If we try to access &lt;code&gt;A&lt;/code&gt; constant we&amp;#39;ll see this error. Rails makes an assumption
-that this constant is defined in file &lt;code&gt;a.rb&lt;/code&gt;. When it tries to load this file it
-faces another undefined constant &lt;code&gt;B&lt;/code&gt; and this time trying to load file &lt;code&gt;b.rb&lt;/code&gt;
-faces again still undefined &lt;code&gt;A&lt;/code&gt;. This generates endless recursion and to prevent
-it the error must be raised. This error(and a bunch of others) also appears in
-multi threaded environment. Constant autoloading is not thread safe operation,
+&lt;p&gt;If we try to access constant &lt;code&gt;A&lt;/code&gt; we&amp;#39;ll see this error. Rails makes an assumption
+that this constant is defined in file &lt;code&gt;a.rb&lt;/code&gt;. When it loads this file it finds
+another undefined constant &lt;code&gt;B&lt;/code&gt; and this time faces still undefined &lt;code&gt;A&lt;/code&gt; while
+loading file &lt;code&gt;b.rb&lt;/code&gt;. This generates infinite recursion and to prevent
+it an error must be raised. This error(and a many others) also appears in
+multi-threaded environment. Constant autoloading is not a thread-safe operation,
 that&amp;#39;s why your production environment loads all the constants on initialization
-step. In fact you can see different errors even on MRI because it switches
-threads on IO. For instance circular dependency arises when first thread waits
-for IO and another thread starts resolving for the same constant which is
-already in a list of loaded.&lt;/p&gt;
+step. In fact, you can see different errors even with MRI, because it switches
+threads on IO. For instance, circular dependency arises, when first thread waits
+for IO and another thread starts resolving the same constant, which is already
+in a list of loaded.&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;A copy of &lt;code&gt;A&lt;/code&gt; has been removed from the module tree but is still active!&lt;/li&gt;
@@ -487,16 +486,16 @@ already in a list of loaded.&lt;/p&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
 &lt;p&gt;It happens because class for Customer was autoloaded, but class for Money wasn&amp;#39;t
-because we haven&amp;#39;t invoked &lt;code&gt;Money.new&lt;/code&gt; until &lt;code&gt;AS::D.clear&lt;/code&gt;. Then &lt;code&gt;Customer&lt;/code&gt; was
-removed as a reference but instance of this class still in memory, and then
-we&amp;#39;re trying to resolve constant name Money, but for &lt;code&gt;customer.class::Money&lt;/code&gt;
-which is different from newly loaded &lt;code&gt;Customer&lt;/code&gt;. Please be afraid of saving the
-whole instance somewhere between sessions, otherwise chances you&amp;#39;ll see this are
-bigger.&lt;/p&gt;
+because we haven&amp;#39;t invoked &lt;code&gt;Money.new&lt;/code&gt; before &lt;code&gt;AS::D.clear&lt;/code&gt;. Then &lt;code&gt;Customer&lt;/code&gt; was
+removed as a reference, but instance of this class is still in memory, and then
+we&amp;#39;re trying to resolve constant name &lt;code&gt;Money&lt;/code&gt;, but for &lt;code&gt;customer.class::Money&lt;/code&gt;
+which is different from newly loaded &lt;code&gt;Customer&lt;/code&gt;. Please note that saving the
+whole instance somewhere between sessions increases chances you&amp;#39;ll see this
+error.&lt;/p&gt;
 
 &lt;h3&gt;Conclusion&lt;/h3&gt;
 
-&lt;p&gt;You don&amp;#39;t have to care about all these stuff if you have flat model, it means
+&lt;p&gt;You don&amp;#39;t have to care about all this stuff if you have flat hierarchy. It means
 when you don&amp;#39;t use namespaces and all the files have different names, but it&amp;#39;s
 hard if you have a lot of classes/modules. So you must have clear understanding
 of this if you don&amp;#39;t want to be in trouble.&lt;/p&gt;

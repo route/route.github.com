@@ -58,7 +58,7 @@ where <code>AS::D</code> starts doing its job. Consider this example:</p>
 </td></tr></table></div>
 <p>I&#39;ve just introduced the method Rails reloads your code with — <code>clear</code>. Let&#39;s
 dig dipper and see how <code>AS::D</code> actually works. There are two different constant
-autoloading schemes: <code>:require</code> and <code>:load</code>(default). The first one means that
+loading strategy: <code>:require</code> and <code>:load</code>(default). The first one means that
 all the constants won&#39;t be reloaded(as <code>require</code> does eventually, do you
 remember <code>$LOADED_FEATURES</code>?) and the last one means that all the constants will
 be removed from memory and loaded again on demand. What does removing constant
@@ -114,7 +114,7 @@ Ruby classes via <code>AS::D.hook!</code>.</p>
 </pre></div>
 </td></tr></table></div>
 <p>Methods injected into <code>Object</code> overwrite methods like <code>load</code> and <code>require</code> in
-order to monitor new constants(depends on schema). Another method you could
+order to monitor new constants(depends on loading strategy). Another method you could
 already know is <code>require_dependency</code> also injected into <code>Object</code>. Methods in
 <code>Module</code> define an entry point <code>const_missing</code> as I told you earlier. I&#39;m going
 to show you how <code>AS::D</code> works with this example:</p>
@@ -140,31 +140,31 @@ to show you how <code>AS::D</code> works with this example:</p>
 <code>AS::D</code>) and <code>Dependencies.load_missing_constant(from_mod, const_name)</code> is
 invoked. The first argument is <code>Object</code> because <code>A == Object::A</code> the second is
 <code>:A</code>.</li>
-<li><code>load_missing_constant</code> tries to find the path for this constant which is by
-convention lies somewhere in one of the <code>autoload_paths</code> by mean
+<li><code>load_missing_constant</code> tries to find the path for this constant which by
+convention lies somewhere in one of the <code>autoload_paths</code> by means of
 <code>search_for_file(&#39;a&#39;)</code>. It just returns the first file it can find with
 <code>File.file?(File.join(autoload_path, &#39;a.rb&#39;))</code></li>
-<li>Then method <code>require_or_load</code> is invoked and it&#39;s behavior depends on schema.
-For <code>require</code> it just requires given file and that&#39;s all, for load
+<li>Then <code>require_or_load</code> method is invoked, whose behavior depends on loading strategy.
+For <code>require</code> it just requires the given file, for <code>load</code>
 <code>load_file(&#39;/autoloadable/a.rb&#39;, &#39;A&#39;)</code> is invoked.</li>
 <li>Then it looks for new constants in given namespaces with:
 <code>new_constants_in(*parent_paths) { Kernel.load(path) }</code>
-where <code>parent_paths</code> is <code>[Object]</code>(we try to resolve <code>Object::A</code>) and path is
-clear I suppose. How does it monitor it? It&#39;s just a difference between array of
+where <code>parent_paths</code> is <code>[Object]</code>(we try to resolve <code>Object::A</code>) and <code>path</code> is
+the path to file. How does it monitor it? It&#39;s just the difference between the array of
 constants before and after. <code>Object.local_constants</code> gives us all the constants
 inside <code>Object</code>.</li>
-<li>When it&#39;s done all newly defined constants appends to <code>autoloaded_constants</code>.
+<li>When it&#39;s done, all newly defined constants append to <code>autoloaded_constants</code>.
 That&#39;s all, new constant was defined with <code>AS::D</code></li>
 </ol>
 
-<p><code>AS::D.clear</code> removes constants from memory and clears all auto-loaded constants
-inside <code>AS::D</code>. Pay attention to <code>require_dependency</code> this method adds all newly
+<p><code>AS::D.clear</code> removes constants from memory and clears all the auto-loaded constants
+inside <code>AS::D</code>. Pay your attention to <code>require_dependency</code>. This method adds all newly
 defined constants to <code>autoloaded_constants</code> so that they will be reloaded unlike
-<code>require</code>.</p>
+the <code>require</code> loading strategy.</p>
 
 <p>Another convention <code>AS::D</code> uses is a path convention. This example
-<code>&#39;A::B&#39;.underscore # =&gt; &#39;a/b&#39;</code> simply illustrates that <code>::</code> treated as a <code>/</code>,
-that gives us ability to use folders like a module namespaces:</p>
+<code>&#39;A::B&#39;.underscore # =&gt; &#39;a/b&#39;</code> simply illustrates that <code>::</code> is treated as a <code>/</code>,
+which gives us ability to use folders like module namespaces:</p>
 <div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -205,12 +205,12 @@ that gives us ability to use folders like a module namespaces:</p>
 </pre></div>
 </td></tr></table></div>
 <p>Although we haven&#39;t defined module <code>A</code>, it has been created for us automatically
-because of existed directory <code>a</code>. It&#39;s really conviniently because you don&#39;t
-have to create an empty module just for namespace purpose.</p>
+because of existing directory <code>a</code>. It&#39;s really convinient, because you are not
+forced to create an empty module just for namespacing purpose.</p>
 
 <h3>Misconception</h3>
 
-<p>Since ruby passes just one argument to <code>const_missing(const_name)</code> we don&#39;t have
+<p>Since Ruby passes only one argument to <code>const_missing(const_name)</code> we don&#39;t have
 an idea about the nesting, this example works as expected:</p>
 <div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
@@ -249,10 +249,10 @@ an idea about the nesting, this example works as expected:</p>
   <span class="nb">p</span> <span class="n">A</span><span class="o">::</span><span class="n">B</span> <span class="c1"># =&gt; B</span>
 </pre></div>
 </td></tr></table></div>
-<p>Is that right? I don&#39;t think so. If we had been used pure ruby it would have
-thrown <code>NameError: uninitialized constant A::B</code>, because we precisely saying we
-need <code>B</code> inside <code>A</code> but not top level <code>B</code>. But it&#39;s a ruby blame it passes such
-a scant info to <code>const_missing</code> and <code>AS::D</code> can do nothing with it.</p>
+<p>Is that right? I don&#39;t think so. If we had used pure Ruby it would have
+thrown <code>NameError: uninitialized constant A::B</code>, because we explicitly said we
+need <code>B</code> inside <code>A</code> but not top level <code>B</code>. But this is Ruby&#39;s fault it passes so
+little info to <code>const_missing</code> and <code>AS::D</code> can do nothing with it.</p>
 
 <p>Another cool case:</p>
 <div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -275,13 +275,13 @@ a scant info to <code>const_missing</code> and <code>AS::D</code> can do nothing
 </pre></div>
 </td></tr></table></div>
 <p>What would you expect from this example? I think in Ruby it&#39;s obviously
-top-level <code>A</code>, but since <code>AS::D</code> doesn&#39;t know nesting info would you expect it
-to be either <code>Namespace::A</code> or <code>A</code>? Nither, it&#39;s <code>NameError</code> which is much more
+top-level <code>A</code>, but since <code>AS::D</code> doesn&#39;t know about nesting, would you expect it
+to be either <code>Namespace::A</code> or <code>A</code>? Neither, because it&#39;s <code>NameError</code>, which is much more
 confusing. It&#39;s the last attempt of <code>AS::D</code> to make an assumption that since
 one of our parents has this constant (<code>Namespace.const_defined?(:A, false)</code>)
 then we&#39;re definitely looking for this constant in a short form
-<code>from_mod::const_name</code> otherwise Ruby would return it without calling
-<code>const_missing</code> and we don&#39;t have to search it upwards in <code>from_mod</code>, but why
+<code>from_mod::const_name</code>, otherwise Ruby would return it without calling
+<code>const_missing</code> and we don&#39;t have to search it upwards in <code>from_mod</code>. Why
 don&#39;t we have to search it right at the top level? May be because of this:</p>
 <div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -317,10 +317,10 @@ don&#39;t we have to search it right at the top level? May be because of this:</
 <p>Calling it twice gives us an error, because of the same case we&#39;ve considered
 above. The first time <code>AS::D</code> resolves <code>C</code> through as usual, but the second time
 it starts checking enclosing modules and since <code>A</code> contains <code>C</code> then Ruby must
-have been resolved it or otherwise it&#39;s the short form and an error is thrown.
+have resolved it or otherwise it&#39;s the short form and an error is thrown.
 Imagine we&#39;ve fixed it and instead of error we start loading top level constant.
-Is it any better? Because now we&#39;ve got two different constants in a row, still
-sad. Seems like there&#39;s no exit out there until nesting info will not be fixed.</p>
+Is it any better? Because now we have two different constants in a row, which is
+still sad. Seems like there&#39;s no exit out there until nesting info will not be fixed.</p>
 
 <h3>Thread safety</h3>
 
@@ -362,11 +362,10 @@ sad. Seems like there&#39;s no exit out there until nesting info will not be fix
   <span class="n">t1</span><span class="o">.</span><span class="n">join</span><span class="p">;</span> <span class="n">t2</span><span class="o">.</span><span class="n">join</span>
 </pre></div>
 </td></tr></table></div>
-<p>There result is <code>undefined method &#39;hello&#39; for A:Module (NoMethodError)</code> Why?
-Because second thread takes over when the first is awaiting on sleep. At that
-moment module <code>A</code> already defined but method hello isn&#39;t defined yet. It turns
-out that <code>AS::D</code> will never be thread safe until <code>const_missing</code> will be thread
-safe.</p>
+<p>The result is <code>undefined method &#39;hello&#39; for A:Module (NoMethodError)</code>. Why?
+Because second thread takes over when the first is awaiting sleeping. At that
+moment module <code>A</code> is already defined but method <code>hello</code> isn&#39;t defined yet. It turns
+out that <code>AS::D</code> will never be thread safe until <code>const_missing</code> is not thread safe.</p>
 
 <h3>Known errors</h3>
 
@@ -386,7 +385,7 @@ reproduce even without <code>AS::D</code>:</p>
 </pre></div>
 </td></tr></table></div>
 <p>Since <code>A.ancestors</code> is <code>[A, Object, Kernel, BasicObject]</code> and contains class
-<code>Object</code> and <code>B</code> is already defined as a top level constant Ruby shows us
+<code>Object</code> and <code>B</code> are already defined as top level constants, Ruby shows us a
 warning that constant we&#39;re trying to resolve inside <code>A</code> references top level
 constant. Notice that for modules the situation is different:</p>
 <div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -399,7 +398,7 @@ constant. Notice that for modules the situation is different:</p>
 </pre></div>
 </td></tr></table></div>
 <p>It gives us just &#39;uninitialized constant A::B (NameError)&#39; because the ancestors
-chain doesn&#39;t contain an <code>Object</code>.</p>
+chain doesn&#39;t contain <code>Object</code>.</p>
 
 <ul>
 <li>Circular dependency detected while autoloading constant</li>
@@ -429,17 +428,17 @@ chain doesn&#39;t contain an <code>Object</code>.</p>
   <span class="n">A</span>
 </pre></div>
 </td></tr></table></div>
-<p>If we try to access <code>A</code> constant we&#39;ll see this error. Rails makes an assumption
-that this constant is defined in file <code>a.rb</code>. When it tries to load this file it
-faces another undefined constant <code>B</code> and this time trying to load file <code>b.rb</code>
-faces again still undefined <code>A</code>. This generates endless recursion and to prevent
-it the error must be raised. This error(and a bunch of others) also appears in
-multi threaded environment. Constant autoloading is not thread safe operation,
+<p>If we try to access constant <code>A</code> we&#39;ll see this error. Rails makes an assumption
+that this constant is defined in file <code>a.rb</code>. When it loads this file it finds
+another undefined constant <code>B</code> and this time faces still undefined <code>A</code> while
+loading file <code>b.rb</code>. This generates infinite recursion and to prevent
+it an error must be raised. This error(and a many others) also appears in
+multi-threaded environment. Constant autoloading is not a thread-safe operation,
 that&#39;s why your production environment loads all the constants on initialization
-step. In fact you can see different errors even on MRI because it switches
-threads on IO. For instance circular dependency arises when first thread waits
-for IO and another thread starts resolving for the same constant which is
-already in a list of loaded.</p>
+step. In fact, you can see different errors even with MRI, because it switches
+threads on IO. For instance, circular dependency arises, when first thread waits
+for IO and another thread starts resolving the same constant, which is already
+in a list of loaded.</p>
 
 <ul>
 <li>A copy of <code>A</code> has been removed from the module tree but is still active!</li>
@@ -478,16 +477,16 @@ already in a list of loaded.</p>
 </pre></div>
 </td></tr></table></div>
 <p>It happens because class for Customer was autoloaded, but class for Money wasn&#39;t
-because we haven&#39;t invoked <code>Money.new</code> until <code>AS::D.clear</code>. Then <code>Customer</code> was
-removed as a reference but instance of this class still in memory, and then
-we&#39;re trying to resolve constant name Money, but for <code>customer.class::Money</code>
-which is different from newly loaded <code>Customer</code>. Please be afraid of saving the
-whole instance somewhere between sessions, otherwise chances you&#39;ll see this are
-bigger.</p>
+because we haven&#39;t invoked <code>Money.new</code> before <code>AS::D.clear</code>. Then <code>Customer</code> was
+removed as a reference, but instance of this class is still in memory, and then
+we&#39;re trying to resolve constant name <code>Money</code>, but for <code>customer.class::Money</code>
+which is different from newly loaded <code>Customer</code>. Please note that saving the
+whole instance somewhere between sessions increases chances you&#39;ll see this
+error.</p>
 
 <h3>Conclusion</h3>
 
-<p>You don&#39;t have to care about all these stuff if you have flat model, it means
+<p>You don&#39;t have to care about all this stuff if you have flat hierarchy. It means
 when you don&#39;t use namespaces and all the files have different names, but it&#39;s
 hard if you have a lot of classes/modules. So you must have clear understanding
 of this if you don&#39;t want to be in trouble.</p>

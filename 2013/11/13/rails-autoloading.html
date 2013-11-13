@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Rails autoloading</title>
+    <meta charset='utf-8' />
+    <link href="/stylesheets/application.css" media="screen" rel="stylesheet" type="text/css" />
+    <script src="/javascripts/application.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <div class='content'>
+      <header>
+        <a href="/">Blog</a>
+      </header>
+      <article>
+  <h1>Rails autoloading</h1>
+  <time>November 13, 2013</time>
+  <h3>How it works</h3>
+
+<p>There is much to be said about Rails autoloading and particularly about
+<code>ActiveSupport::Dependencies</code> (<code>AS::D</code> for short). What does it do? As the title
+says it loads constants automatically and reloads your code catching changes on
+every request. Ok, why do we need it? Because it&#39;s conveniently! We don&#39;t have
+to write in every single file <code>require</code>, watch what constants we need and when.
+Rails loads constants and watches what we need automatically. Also there&#39;s no
+need to reload your server each time you&#39;ve done a change. There are some
+pitfalls that you must know, but when you learn them everything will be ok.</p>
+
+<p>Previously discussed method <code>self.const_missing(const_name)</code> is an entry point
+where <code>AS::D</code> starts doing its job. Consider this example:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="c1"># /autoloadable/a.rb</span>
+  <span class="c1"># module A</span>
+  <span class="c1"># end</span>
+
+  <span class="nb">require</span> <span class="s1">&#39;active_support/dependencies&#39;</span>
+  <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Dependencies</span><span class="o">.</span><span class="n">autoload_paths</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;/autoloadable&#39;</span><span class="o">]</span>
+
+  <span class="n">A</span>
+</pre></div>
+</td></tr></table></div>
+<p>Doing this <code>AS::D</code> loads module <code>A</code> automatically without any <code>require</code>.</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="c1"># Meanwhile you can add sleep here and make changes in a.rb</span>
+
+  <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Dependencies</span><span class="o">.</span><span class="n">clear</span> <span class="c1"># Removes A from memory</span>
+
+  <span class="n">A</span> <span class="c1"># Will load A again</span>
+</pre></div>
+</td></tr></table></div>
+<p>I&#39;ve just introduced the method Rails reloads your code with — <code>clear</code>. Let&#39;s
+dig dipper and see how <code>AS::D</code> actually works. There are two different constant
+autoloading schemas by name: <code>:require</code> and <code>:load</code>(default). The first one
+means that all the constants won&#39;t be reloaded(as eventually <code>require</code> does, do
+you remember <code>$LOADED_FEATURES</code>?) and the last one means all the constants will
+be removed from memory and loaded again on demand. We are talking about such
+thing as &#39;removing constant from memory&#39;, it&#39;d be very useful to know how.
+There&#39;s a method called <code>Module#remove_const(sym)</code>:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="k">module</span> <span class="nn">A</span><span class="p">;</span> <span class="k">end</span>
+  <span class="no">Object</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:remove_const</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">)</span>
+  <span class="n">A</span> <span class="c1"># =&gt; uninitialized constant A (NameError)</span>
+</pre></div>
+</td></tr></table></div>
+<p>But what if we remove constant for existed instance of class:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="k">class</span> <span class="nc">A</span>
+    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">value</span>
+      <span class="s1">&#39;value&#39;</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="n">a</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">new</span>
+  <span class="no">Object</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:remove_const</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">)</span>
+  <span class="n">a</span><span class="o">.</span><span class="n">class</span> <span class="c1"># =&gt; A</span>
+  <span class="n">a</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">value</span> <span class="c1"># =&gt; &#39;value&#39;</span>
+  <span class="n">A</span> <span class="c1"># =&gt; uninitialized constant A (NameError)</span>
+</pre></div>
+</td></tr></table></div>
+<p>That&#39;s interesting because constant name was removed from memory but its
+instance still shows us its class and we can even call class methods on it. It
+turns out that this method only removes constant name from <code>Object</code> but the
+class as object(do you still remember that class is an object and a constant is
+a variable referencing that object?) still exists in the memory. Ok, move on.</p>
+
+<p>Calling <code>require &#39;active_support/dependencies&#39;</code> injects a few modules into basic
+Ruby classes by mean <code>AS::D.hook!</code>.</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="k">def</span> <span class="nf">hook!</span>
+    <span class="no">Object</span><span class="o">.</span><span class="n">class_eval</span> <span class="p">{</span> <span class="kp">include</span> <span class="no">Loadable</span> <span class="p">}</span>
+    <span class="no">Module</span><span class="o">.</span><span class="n">class_eval</span> <span class="p">{</span> <span class="kp">include</span> <span class="no">ModuleConstMissing</span> <span class="p">}</span>
+    <span class="no">Exception</span><span class="o">.</span><span class="n">class_eval</span> <span class="p">{</span> <span class="kp">include</span> <span class="no">Blamable</span> <span class="p">}</span>
+  <span class="k">end</span>
+</pre></div>
+</td></tr></table></div>
+<p>Methods injected into <code>Object</code> overwrite methods like <code>load</code> and <code>require</code> in
+order to monitor emerging constants(depends on schema). Another method you could
+already know is <code>require_dependency</code> also injected into <code>Object</code>. Methods in
+<code>Module</code> define an entry point <code>const_missing</code> as I told you earlier. I&#39;m gonna
+show you how <code>AS::D</code> works with this example:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="c1"># /autoloadable/a.rb</span>
+  <span class="c1"># module A</span>
+  <span class="c1"># end</span>
+
+  <span class="nb">require</span> <span class="s1">&#39;active_support/dependencies&#39;</span>
+  <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Dependencies</span><span class="o">.</span><span class="n">autoload_paths</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;/autoloadable&#39;</span><span class="o">]</span>
+
+  <span class="n">A</span>
+</pre></div>
+</td></tr></table></div>
+<ol>
+<li>Declaring constant <code>A</code> triggers <code>Module#const_missing</code>(was overwritten by
+<code>AS::D</code>) and <code>Dependencies.load_missing_constant(from_mod, const_name)</code> is
+invoked. The first argument is <code>Object</code> because <code>A == Object::A</code> the second is
+<code>:A</code>.</li>
+<li><code>load_missing_constant</code> tries to find the path for this constant which is by
+convention lies somewhere in one of the <code>autoload_paths</code> by mean
+<code>search_for_file(&#39;a&#39;)</code>. It just returns the first file it can find with
+<code>File.file?(File.join(autoload_path, &#39;a.rb&#39;))</code></li>
+<li>Then method <code>require_or_load</code> is invoked and it&#39;s behavior depends on schema.
+For <code>require</code> it just requires given file and that&#39;s all, for load
+<code>load_file(&#39;/autoloadable/a.rb&#39;, &#39;A&#39;)</code> is invoked.</li>
+<li>Then it looks for new constants in given namespaces with:
+<code>new_constants_in(*parent_paths) { Kernel.load(path) }</code>
+where <code>parent_paths</code> is <code>[Object]</code>(we try to resolve <code>Object::A</code>) and path is
+clear I suppose. How does it monitor it? It&#39;s just a difference between array of
+constants before and after. <code>Object.local_constants</code> gives us all the constants
+inside <code>Object</code>.</li>
+<li>When it&#39;s done all newly defined constants appends to <code>autoloaded_constants</code>.
+That&#39;s all, new constant was defined with <code>AS::D</code></li>
+</ol>
+
+<p><code>AS::D.clear</code> removes constants from memory and clears all auto-loaded constants
+inside <code>AS::D</code>. Pay attention to <code>require_dependency</code> this method adds all newly
+defined constants to <code>autoloaded_constants</code> so that they will be reloaded unlike
+<code>require</code>.</p>
+
+<p>Another convention <code>AS::D</code> uses is a path convention. This example
+<code>&#39;A::B&#39;.underscore # =&gt; &#39;a/b&#39;</code> simply illustrates that <code>::</code> treated as a <code>/</code>,
+that gives us ability to use folders like a module namespaces:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="c1"># /autoloadable/a.rb</span>
+  <span class="c1"># module A</span>
+  <span class="c1"># end</span>
+
+  <span class="c1"># /autoloadable/a/b.rb</span>
+  <span class="c1"># module A</span>
+  <span class="c1">#   module B</span>
+  <span class="c1">#     C = &#39;c&#39;</span>
+  <span class="c1">#   end</span>
+  <span class="c1"># end</span>
+
+  <span class="n">A</span><span class="o">::</span><span class="n">B</span><span class="o">::</span><span class="n">C</span> <span class="o">=&gt;</span> <span class="s1">&#39;c&#39;</span>
+</pre></div>
+</td></tr></table></div>
+<p>even this works:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="c1"># /autoloadable/a/b.rb</span>
+  <span class="c1"># module A::B</span>
+  <span class="c1">#   C = &#39;c&#39;</span>
+  <span class="c1"># end</span>
+
+  <span class="n">A</span><span class="o">::</span><span class="n">B</span><span class="o">::</span><span class="n">C</span> <span class="o">=&gt;</span> <span class="s1">&#39;c&#39;</span>
+</pre></div>
+</td></tr></table></div>
+<p>Although we haven&#39;t defined module <code>A</code>, it has been created for us automatically
+because of existed directory <code>a</code>. It&#39;s really conviniently because you don&#39;t
+have to create an empty module just for namespace purpose.</p>
+
+<h3>Misconception</h3>
+
+<p>Since ruby passes just one argument to <code>const_missing(const_name)</code> we don&#39;t have
+an idea about the nesting, this example works as expected:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="c1"># /autoloadable/b.rb</span>
+  <span class="k">module</span> <span class="nn">B</span>
+  <span class="k">end</span>
+
+  <span class="c1"># /autoloadable/a.rb</span>
+  <span class="k">module</span> <span class="nn">A</span>
+    <span class="n">B</span> <span class="c1"># =&gt; B</span>
+  <span class="k">end</span>
+</pre></div>
+</td></tr></table></div>
+<p>but:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="c1"># /autoloadable/a.rb</span>
+  <span class="k">module</span> <span class="nn">A</span>
+  <span class="k">end</span>
+
+  <span class="c1"># /autoloadable/b.rb</span>
+  <span class="k">module</span> <span class="nn">B</span>
+  <span class="k">end</span>
+
+  <span class="nb">p</span> <span class="n">A</span><span class="o">::</span><span class="n">B</span> <span class="c1"># =&gt; B</span>
+</pre></div>
+</td></tr></table></div>
+<p>Is that right? I don&#39;t think so. If we had been used pure ruby it would have
+thrown <code>NameError: uninitialized constant A::B</code>, because we precisely saying we
+need <code>B</code> inside <code>A</code> but not top level <code>B</code>. But it&#39;s a ruby blame it passes such
+a scant info to <code>const_missing</code> and <code>AS::D</code> can do nothing with it.</p>
+
+<p>Another cool case:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="c1"># /autoloadable/a.rb</span>
+  <span class="c1"># module A; end</span>
+
+  <span class="c1"># /autoloadable/namespace/a/b.rb</span>
+  <span class="c1"># module Namespace::A::B</span>
+  <span class="c1">#  A</span>
+  <span class="c1"># end</span>
+
+  <span class="no">Namespace</span><span class="o">::</span><span class="n">A</span><span class="o">::</span><span class="n">B</span> <span class="c1"># =&gt; What is A?</span>
+</pre></div>
+</td></tr></table></div>
+<p>What would you expect from this example? I think in Ruby it&#39;s obviously
+top-level <code>A</code>, but since <code>AS::D</code> doesn&#39;t know nesting info would you expect it
+to be either <code>Namespace::A</code> or <code>A</code>? Nither, it&#39;s <code>NameError</code> which is much more
+confusing. It&#39;s the last attempt of <code>AS::D</code> to make an assumption that since
+one of our parents has this constant (<code>Namespace.const_defined?(:A, false)</code>)
+then we&#39;re definitely looking for this constant in a short form
+<code>from_mod::const_name</code> otherwise Ruby would return it without calling
+<code>const_missing</code> and we don&#39;t have to search it upwards in <code>from_mod</code>, but why
+don&#39;t we have to search it right at the top level? May be because of this:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="c1"># c.rb</span>
+  <span class="c1"># C = &#39;c&#39;</span>
+
+  <span class="c1"># a/c.rb</span>
+  <span class="c1"># module A</span>
+  <span class="c1">#   C = &#39;ac&#39;</span>
+  <span class="c1"># end</span>
+
+  <span class="c1"># a/b.rb</span>
+  <span class="c1"># module A::B</span>
+  <span class="c1">#   C</span>
+  <span class="c1"># end</span>
+
+  <span class="n">A</span><span class="o">::</span><span class="n">B</span><span class="o">::</span><span class="n">C</span> <span class="c1"># =&gt; &#39;ac&#39;</span>
+  <span class="n">A</span><span class="o">::</span><span class="n">B</span><span class="o">::</span><span class="n">C</span> <span class="c1"># =&gt; uninitialized constant A::B::C</span>
+</pre></div>
+</td></tr></table></div>
+<p>Calling it twice gives us an error, because of the same case we&#39;ve considered
+above. The first time <code>AS::D</code> resolves <code>C</code> through as usual, but the second time
+it starts checking enclosing modules and since <code>A</code> contains <code>C</code> then Ruby must
+have been resolved it or otherwise it&#39;s the short form and an error is thrown.
+Imagine we&#39;ve fixed it and instead of error we start loading top level constant.
+Is it any better? Because now we&#39;ve got two different constants in a row, still
+sad. Seems like there&#39;s no exit out there until nesting info will not be fixed.</p>
+
+<h3>Thread safety</h3>
+
+<p>Let&#39;s write our own simplified autoloading:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="c1"># autoloadable/a.rb</span>
+  <span class="c1"># module A</span>
+  <span class="c1">#   sleep 5</span>
+  <span class="c1">#   def self.hello</span>
+  <span class="c1">#     &#39;hello&#39;</span>
+  <span class="c1">#   end</span>
+  <span class="c1"># end</span>
+
+  <span class="k">class</span> <span class="nc">Module</span>
+    <span class="k">def</span> <span class="nf">const_missing</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+      <span class="nb">require</span> <span class="s2">&quot;./autoloadable/</span><span class="si">#{</span><span class="nb">name</span><span class="o">.</span><span class="n">downcase</span><span class="si">}</span><span class="s2">.rb&quot;</span>
+      <span class="no">Object</span><span class="o">.</span><span class="n">const_get</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="n">t1</span> <span class="o">=</span> <span class="no">Thread</span><span class="o">.</span><span class="n">new</span> <span class="p">{</span> <span class="n">A</span><span class="o">.</span><span class="n">hello</span> <span class="p">}</span>
+  <span class="n">t2</span> <span class="o">=</span> <span class="no">Thread</span><span class="o">.</span><span class="n">new</span> <span class="p">{</span> <span class="n">A</span><span class="o">.</span><span class="n">hello</span> <span class="p">}</span>
+  <span class="n">t1</span><span class="o">.</span><span class="n">join</span><span class="p">;</span> <span class="n">t2</span><span class="o">.</span><span class="n">join</span>
+</pre></div>
+</td></tr></table></div>
+<p>There result is <code>undefined method &#39;hello&#39; for A:Module (NoMethodError)</code> Why?
+Because second thread takes over when the first is awaiting on sleep. At that
+moment module <code>A</code> already defined but method hello isn&#39;t defined yet. It turns
+out that <code>AS::D</code> will never be thread safe until <code>const_missing</code> will be thread
+safe.</p>
+
+<h3>Known errors</h3>
+
+<ul>
+<li>Toplevel constant B referenced by A::B</li>
+</ul>
+
+<p>Have you ever seen the &#39;Toplevel constant B referenced by A::B&#39;? It&#39;s easy to
+reproduce even without <code>AS::D</code>:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="k">class</span> <span class="nc">B</span><span class="p">;</span> <span class="k">end</span>
+  <span class="k">class</span> <span class="nc">A</span><span class="p">;</span> <span class="k">end</span>
+
+  <span class="n">A</span><span class="o">::</span><span class="n">B</span>
+</pre></div>
+</td></tr></table></div>
+<p>Since <code>A.ancestors</code> is <code>[A, Object, Kernel, BasicObject]</code> and contains class
+<code>Object</code> and <code>B</code> is already defined as a top level constant Ruby shows us
+warning that constant we&#39;re trying to resolve inside <code>A</code> references top level
+constant. Notice that for modules the situation is different:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
+  <span class="k">module</span> <span class="nn">A</span><span class="p">;</span> <span class="k">end</span>
+
+  <span class="n">A</span><span class="o">::</span><span class="n">B</span>
+</pre></div>
+</td></tr></table></div>
+<p>It gives us just &#39;uninitialized constant A::B (NameError)&#39; because the ancestors
+chain doesn&#39;t contain an <code>Object</code>.</p>
+
+<ul>
+<li>Circular dependency detected while autoloading constant</li>
+</ul>
+
+<p>This is yet another Rails error that you could see:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="c1"># /autoloadable/a.rb</span>
+  <span class="c1"># B</span>
+  <span class="c1"># module A</span>
+  <span class="c1"># end</span>
+
+  <span class="c1"># /autoloadable/b.rb</span>
+  <span class="c1"># A</span>
+  <span class="c1"># module B</span>
+  <span class="c1"># end</span>
+
+  <span class="n">A</span>
+</pre></div>
+</td></tr></table></div>
+<p>If we try to access <code>A</code> constant we&#39;ll see this error. Rails makes an assumption
+that this constant is defined in file <code>a.rb</code>. When it tries to load this file it
+faces another undefined constant <code>B</code> and this time trying to load file <code>b.rb</code>
+faces again still undefined <code>A</code>. This generates endless recursion and to prevent
+it the error must be raised. This error(and a bunch of others) also appears in
+multi threaded environment. Constant autoloading is not thread safe operation,
+that&#39;s why your production environment loads all the constants on initialization
+step. In fact you can see different errors even on MRI because it switches
+threads on IO. For instance circular dependency arises when first thread waits
+for IO and another thread starts resolving for the same constant which is
+already in a list of loaded.</p>
+
+<ul>
+<li>A copy of <code>A</code> has been removed from the module tree but is still active!</li>
+</ul>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="c1"># /autoloadable/money.rb</span>
+  <span class="c1"># class Money</span>
+  <span class="c1"># end</span>
+
+  <span class="c1"># /autoloadable/customer.rb</span>
+  <span class="c1"># class Customer</span>
+  <span class="c1">#   def money</span>
+  <span class="c1">#     Money.new</span>
+  <span class="c1">#   end</span>
+  <span class="c1"># end</span>
+
+  <span class="n">customer</span> <span class="o">=</span> <span class="no">Customer</span><span class="o">.</span><span class="n">new</span>
+
+  <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Dependencies</span><span class="o">.</span><span class="n">clear</span>
+
+  <span class="n">customer</span><span class="o">.</span><span class="n">money</span>
+</pre></div>
+</td></tr></table></div>
+<p>It happens because class for Customer was autoloaded, but class for Money wasn&#39;t
+because we haven&#39;t invoked <code>Money.new</code> until <code>AS::D.clear</code>. Then <code>Customer</code> was
+removed as a reference but instance of this class still in memory, and then
+we&#39;re trying to resolve constant name Money, but for <code>customer.class::Money</code>
+which is different from newly loaded <code>Customer</code>. Please be afraid of saving the
+whole instance somewhere between sessions, otherwise chances you&#39;ll see this are
+bigger.</p>
+
+<h3>Conclusion</h3>
+
+<p>You don&#39;t have to care about all these stuff if you have flat model, it means
+when you don&#39;t use namespaces and all the files have different names, but it&#39;s
+hard if you have a lot of classes/modules. So you must have clear understanding
+of this if you don&#39;t want to be in trouble.</p>
+
+<h3>Links and used sources:</h3>
+
+<ul>
+<li><a href="http://blog.plataformatec.com.br/tag/eager-load/">Eager loading</a></li>
+<li><a href="http://urbanautomaton.com/blog/2013/08/27/rails-autoloading-hell/">Rails autoloading</a></li>
+<li><a href="http://tenderlovemaking.com/2012/06/18/removing-config-threadsafe.html">Removing config.threadsafe!</a></li>
+</ul>
+  <div class='share'>
+    <a class="twitter-share-button" data-via="rO_Oute" href="https://twitter.com/share">Tweet</a>
+    <script type='text/javascript'>
+      //<![CDATA[
+        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+      //]]>
+    </script>
+  </div>
+</article>
+      <footer>
+        Copyright © 2012-2013
+        <a target="_blank" href="https://github.com/route">Dmitry Vorotilin</a>
+        |
+        <a target="_blank" href="cv.html">CV</a>
+        |
+        <a target="_blank" href="http://evrone.com">Evrone.com</a>
+      </footer>
+    </div>
+  </body>
+</html>
+

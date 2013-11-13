@@ -5,10 +5,513 @@
   <id>http://blog.url.com/</id>
   <link href="http://blog.url.com/"/>
   <link href="http://blog.url.com/feed.xml" rel="self"/>
-  <updated>2013-11-04T20:00:00Z</updated>
+  <updated>2013-11-12T20:00:00Z</updated>
   <author>
     <name>Blog Author</name>
   </author>
+  <entry>
+    <title>Rails autoloading</title>
+    <link rel="alternate" href="/2013/11/13/rails-autoloading.html"/>
+    <id>/2013/11/13/rails-autoloading.html</id>
+    <published>2013-11-12T20:00:00Z</published>
+    <updated>2013-11-12T20:00:00Z</updated>
+    <author>
+      <name>Article Author</name>
+    </author>
+    <summary type="html">&lt;h3&gt;How it works&lt;/h3&gt;
+
+&lt;p&gt;There is much to be said about Rails autoloading and particularly about
+&lt;code&gt;ActiveSupport::Dependencies&lt;/code&gt; (&lt;code&gt;AS::D&lt;/code&gt; for short). What does it do? As the title
+says it loads constants automatically and reloads your code catching changes on&lt;/p&gt;
+</summary>
+    <content type="html">&lt;h3&gt;How it works&lt;/h3&gt;
+
+&lt;p&gt;There is much to be said about Rails autoloading and particularly about
+&lt;code&gt;ActiveSupport::Dependencies&lt;/code&gt; (&lt;code&gt;AS::D&lt;/code&gt; for short). What does it do? As the title
+says it loads constants automatically and reloads your code catching changes on
+every request. Ok, why do we need it? Because it&amp;#39;s conveniently! We don&amp;#39;t have
+to write in every single file &lt;code&gt;require&lt;/code&gt;, watch what constants we need and when.
+Rails loads constants and watches what we need automatically. Also there&amp;#39;s no
+need to reload your server each time you&amp;#39;ve done a change. There are some
+pitfalls that you must know, but when you learn them everything will be ok.&lt;/p&gt;
+
+&lt;p&gt;Previously discussed method &lt;code&gt;self.const_missing(const_name)&lt;/code&gt; is an entry point
+where &lt;code&gt;AS::D&lt;/code&gt; starts doing its job. Consider this example:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3
+4
+5
+6
+7
+8&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
+  &lt;span class="c1"&gt;# module A&lt;/span&gt;
+  &lt;span class="c1"&gt;# end&lt;/span&gt;
+
+  &lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;active_support/dependencies&amp;#39;&lt;/span&gt;
+  &lt;span class="no"&gt;ActiveSupport&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Dependencies&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;autoload_paths&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/autoloadable&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
+
+  &lt;span class="n"&gt;A&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;Doing this &lt;code&gt;AS::D&lt;/code&gt; loads module &lt;code&gt;A&lt;/code&gt; automatically without any &lt;code&gt;require&lt;/code&gt;.&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3
+4
+5&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# Meanwhile you can add sleep here and make changes in a.rb&lt;/span&gt;
+
+  &lt;span class="no"&gt;ActiveSupport&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Dependencies&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;clear&lt;/span&gt; &lt;span class="c1"&gt;# Removes A from memory&lt;/span&gt;
+
+  &lt;span class="n"&gt;A&lt;/span&gt; &lt;span class="c1"&gt;# Will load A again&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;I&amp;#39;ve just introduced the method Rails reloads your code with — &lt;code&gt;clear&lt;/code&gt;. Let&amp;#39;s
+dig dipper and see how &lt;code&gt;AS::D&lt;/code&gt; actually works. There are two different constant
+autoloading schemas by name: &lt;code&gt;:require&lt;/code&gt; and &lt;code&gt;:load&lt;/code&gt;(default). The first one
+means that all the constants won&amp;#39;t be reloaded(as eventually &lt;code&gt;require&lt;/code&gt; does, do
+you remember &lt;code&gt;$LOADED_FEATURES&lt;/code&gt;?) and the last one means all the constants will
+be removed from memory and loaded again on demand. We are talking about such
+thing as &amp;#39;removing constant from memory&amp;#39;, it&amp;#39;d be very useful to know how.
+There&amp;#39;s a method called &lt;code&gt;Module#remove_const(sym)&lt;/code&gt;:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+  &lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;:remove_const&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;A&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="n"&gt;A&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A (NameError)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;But what if we remove constant for existed instance of class:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nc"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;value&lt;/span&gt;
+      &lt;span class="s1"&gt;&amp;#39;value&amp;#39;&lt;/span&gt;
+    &lt;span class="k"&gt;end&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+
+  &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;new&lt;/span&gt;
+  &lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;:remove_const&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;A&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;class&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; A&lt;/span&gt;
+  &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;class&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;value&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; &amp;#39;value&amp;#39;&lt;/span&gt;
+  &lt;span class="n"&gt;A&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A (NameError)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;That&amp;#39;s interesting because constant name was removed from memory but its
+instance still shows us its class and we can even call class methods on it. It
+turns out that this method only removes constant name from &lt;code&gt;Object&lt;/code&gt; but the
+class as object(do you still remember that class is an object and a constant is
+a variable referencing that object?) still exists in the memory. Ok, move on.&lt;/p&gt;
+
+&lt;p&gt;Calling &lt;code&gt;require &amp;#39;active_support/dependencies&amp;#39;&lt;/code&gt; injects a few modules into basic
+Ruby classes by mean &lt;code&gt;AS::D.hook!&lt;/code&gt;.&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3
+4
+5&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;hook!&lt;/span&gt;
+    &lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;class_eval&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="kp"&gt;include&lt;/span&gt; &lt;span class="no"&gt;Loadable&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="no"&gt;Module&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;class_eval&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="kp"&gt;include&lt;/span&gt; &lt;span class="no"&gt;ModuleConstMissing&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="no"&gt;Exception&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;class_eval&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="kp"&gt;include&lt;/span&gt; &lt;span class="no"&gt;Blamable&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;Methods injected into &lt;code&gt;Object&lt;/code&gt; overwrite methods like &lt;code&gt;load&lt;/code&gt; and &lt;code&gt;require&lt;/code&gt; in
+order to monitor emerging constants(depends on schema). Another method you could
+already know is &lt;code&gt;require_dependency&lt;/code&gt; also injected into &lt;code&gt;Object&lt;/code&gt;. Methods in
+&lt;code&gt;Module&lt;/code&gt; define an entry point &lt;code&gt;const_missing&lt;/code&gt; as I told you earlier. I&amp;#39;m gonna
+show you how &lt;code&gt;AS::D&lt;/code&gt; works with this example:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3
+4
+5
+6
+7
+8&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
+  &lt;span class="c1"&gt;# module A&lt;/span&gt;
+  &lt;span class="c1"&gt;# end&lt;/span&gt;
+
+  &lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;active_support/dependencies&amp;#39;&lt;/span&gt;
+  &lt;span class="no"&gt;ActiveSupport&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Dependencies&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;autoload_paths&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/autoloadable&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
+
+  &lt;span class="n"&gt;A&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;ol&gt;
+&lt;li&gt;Declaring constant &lt;code&gt;A&lt;/code&gt; triggers &lt;code&gt;Module#const_missing&lt;/code&gt;(was overwritten by
+&lt;code&gt;AS::D&lt;/code&gt;) and &lt;code&gt;Dependencies.load_missing_constant(from_mod, const_name)&lt;/code&gt; is
+invoked. The first argument is &lt;code&gt;Object&lt;/code&gt; because &lt;code&gt;A == Object::A&lt;/code&gt; the second is
+&lt;code&gt;:A&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;load_missing_constant&lt;/code&gt; tries to find the path for this constant which is by
+convention lies somewhere in one of the &lt;code&gt;autoload_paths&lt;/code&gt; by mean
+&lt;code&gt;search_for_file(&amp;#39;a&amp;#39;)&lt;/code&gt;. It just returns the first file it can find with
+&lt;code&gt;File.file?(File.join(autoload_path, &amp;#39;a.rb&amp;#39;))&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Then method &lt;code&gt;require_or_load&lt;/code&gt; is invoked and it&amp;#39;s behavior depends on schema.
+For &lt;code&gt;require&lt;/code&gt; it just requires given file and that&amp;#39;s all, for load
+&lt;code&gt;load_file(&amp;#39;/autoloadable/a.rb&amp;#39;, &amp;#39;A&amp;#39;)&lt;/code&gt; is invoked.&lt;/li&gt;
+&lt;li&gt;Then it looks for new constants in given namespaces with:
+&lt;code&gt;new_constants_in(*parent_paths) { Kernel.load(path) }&lt;/code&gt;
+where &lt;code&gt;parent_paths&lt;/code&gt; is &lt;code&gt;[Object]&lt;/code&gt;(we try to resolve &lt;code&gt;Object::A&lt;/code&gt;) and path is
+clear I suppose. How does it monitor it? It&amp;#39;s just a difference between array of
+constants before and after. &lt;code&gt;Object.local_constants&lt;/code&gt; gives us all the constants
+inside &lt;code&gt;Object&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;When it&amp;#39;s done all newly defined constants appends to &lt;code&gt;autoloaded_constants&lt;/code&gt;.
+That&amp;#39;s all, new constant was defined with &lt;code&gt;AS::D&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;code&gt;AS::D.clear&lt;/code&gt; removes constants from memory and clears all auto-loaded constants
+inside &lt;code&gt;AS::D&lt;/code&gt;. Pay attention to &lt;code&gt;require_dependency&lt;/code&gt; this method adds all newly
+defined constants to &lt;code&gt;autoloaded_constants&lt;/code&gt; so that they will be reloaded unlike
+&lt;code&gt;require&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Another convention &lt;code&gt;AS::D&lt;/code&gt; uses is a path convention. This example
+&lt;code&gt;&amp;#39;A::B&amp;#39;.underscore # =&amp;gt; &amp;#39;a/b&amp;#39;&lt;/code&gt; simply illustrates that &lt;code&gt;::&lt;/code&gt; treated as a &lt;code&gt;/&lt;/code&gt;,
+that gives us ability to use folders like a module namespaces:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
+  &lt;span class="c1"&gt;# module A&lt;/span&gt;
+  &lt;span class="c1"&gt;# end&lt;/span&gt;
+
+  &lt;span class="c1"&gt;# /autoloadable/a/b.rb&lt;/span&gt;
+  &lt;span class="c1"&gt;# module A&lt;/span&gt;
+  &lt;span class="c1"&gt;#   module B&lt;/span&gt;
+  &lt;span class="c1"&gt;#     C = &amp;#39;c&amp;#39;&lt;/span&gt;
+  &lt;span class="c1"&gt;#   end&lt;/span&gt;
+  &lt;span class="c1"&gt;# end&lt;/span&gt;
+
+  &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;B&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;c&amp;#39;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;even this works:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3
+4
+5
+6&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# /autoloadable/a/b.rb&lt;/span&gt;
+  &lt;span class="c1"&gt;# module A::B&lt;/span&gt;
+  &lt;span class="c1"&gt;#   C = &amp;#39;c&amp;#39;&lt;/span&gt;
+  &lt;span class="c1"&gt;# end&lt;/span&gt;
+
+  &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;B&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;c&amp;#39;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;Although we haven&amp;#39;t defined module &lt;code&gt;A&lt;/code&gt;, it has been created for us automatically
+because of existed directory &lt;code&gt;a&lt;/code&gt;. It&amp;#39;s really conviniently because you don&amp;#39;t
+have to create an empty module just for namespace purpose.&lt;/p&gt;
+
+&lt;h3&gt;Misconception&lt;/h3&gt;
+
+&lt;p&gt;Since ruby passes just one argument to &lt;code&gt;const_missing(const_name)&lt;/code&gt; we don&amp;#39;t have
+an idea about the nesting, this example works as expected:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3
+4
+5
+6
+7
+8&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# /autoloadable/b.rb&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+
+  &lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
+    &lt;span class="n"&gt;B&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; B&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;but:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3
+4
+5
+6
+7
+8
+9&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+
+  &lt;span class="c1"&gt;# /autoloadable/b.rb&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+
+  &lt;span class="nb"&gt;p&lt;/span&gt; &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;B&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; B&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;Is that right? I don&amp;#39;t think so. If we had been used pure ruby it would have
+thrown &lt;code&gt;NameError: uninitialized constant A::B&lt;/code&gt;, because we precisely saying we
+need &lt;code&gt;B&lt;/code&gt; inside &lt;code&gt;A&lt;/code&gt; but not top level &lt;code&gt;B&lt;/code&gt;. But it&amp;#39;s a ruby blame it passes such
+a scant info to &lt;code&gt;const_missing&lt;/code&gt; and &lt;code&gt;AS::D&lt;/code&gt; can do nothing with it.&lt;/p&gt;
+
+&lt;p&gt;Another cool case:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3
+4
+5
+6
+7
+8
+9&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
+  &lt;span class="c1"&gt;# module A; end&lt;/span&gt;
+
+  &lt;span class="c1"&gt;# /autoloadable/namespace/a/b.rb&lt;/span&gt;
+  &lt;span class="c1"&gt;# module Namespace::A::B&lt;/span&gt;
+  &lt;span class="c1"&gt;#  A&lt;/span&gt;
+  &lt;span class="c1"&gt;# end&lt;/span&gt;
+
+  &lt;span class="no"&gt;Namespace&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;B&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; What is A?&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;What would you expect from this example? I think in Ruby it&amp;#39;s obviously
+top-level &lt;code&gt;A&lt;/code&gt;, but since &lt;code&gt;AS::D&lt;/code&gt; doesn&amp;#39;t know nesting info would you expect it
+to be either &lt;code&gt;Namespace::A&lt;/code&gt; or &lt;code&gt;A&lt;/code&gt;? Nither, it&amp;#39;s &lt;code&gt;NameError&lt;/code&gt; which is much more
+confusing. It&amp;#39;s the last attempt of &lt;code&gt;AS::D&lt;/code&gt; to make an assumption that since
+one of our parents has this constant (&lt;code&gt;Namespace.const_defined?(:A, false)&lt;/code&gt;)
+then we&amp;#39;re definitely looking for this constant in a short form
+&lt;code&gt;from_mod::const_name&lt;/code&gt; otherwise Ruby would return it without calling
+&lt;code&gt;const_missing&lt;/code&gt; and we don&amp;#39;t have to search it upwards in &lt;code&gt;from_mod&lt;/code&gt;, but why
+don&amp;#39;t we have to search it right at the top level? May be because of this:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# c.rb&lt;/span&gt;
+  &lt;span class="c1"&gt;# C = &amp;#39;c&amp;#39;&lt;/span&gt;
+
+  &lt;span class="c1"&gt;# a/c.rb&lt;/span&gt;
+  &lt;span class="c1"&gt;# module A&lt;/span&gt;
+  &lt;span class="c1"&gt;#   C = &amp;#39;ac&amp;#39;&lt;/span&gt;
+  &lt;span class="c1"&gt;# end&lt;/span&gt;
+
+  &lt;span class="c1"&gt;# a/b.rb&lt;/span&gt;
+  &lt;span class="c1"&gt;# module A::B&lt;/span&gt;
+  &lt;span class="c1"&gt;#   C&lt;/span&gt;
+  &lt;span class="c1"&gt;# end&lt;/span&gt;
+
+  &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;B&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; &amp;#39;ac&amp;#39;&lt;/span&gt;
+  &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;B&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A::B::C&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;Calling it twice gives us an error, because of the same case we&amp;#39;ve considered
+above. The first time &lt;code&gt;AS::D&lt;/code&gt; resolves &lt;code&gt;C&lt;/code&gt; through as usual, but the second time
+it starts checking enclosing modules and since &lt;code&gt;A&lt;/code&gt; contains &lt;code&gt;C&lt;/code&gt; then Ruby must
+have been resolved it or otherwise it&amp;#39;s the short form and an error is thrown.
+Imagine we&amp;#39;ve fixed it and instead of error we start loading top level constant.
+Is it any better? Because now we&amp;#39;ve got two different constants in a row, still
+sad. Seems like there&amp;#39;s no exit out there until nesting info will not be fixed.&lt;/p&gt;
+
+&lt;h3&gt;Thread safety&lt;/h3&gt;
+
+&lt;p&gt;Let&amp;#39;s write our own simplified autoloading:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# autoloadable/a.rb&lt;/span&gt;
+  &lt;span class="c1"&gt;# module A&lt;/span&gt;
+  &lt;span class="c1"&gt;#   sleep 5&lt;/span&gt;
+  &lt;span class="c1"&gt;#   def self.hello&lt;/span&gt;
+  &lt;span class="c1"&gt;#     &amp;#39;hello&amp;#39;&lt;/span&gt;
+  &lt;span class="c1"&gt;#   end&lt;/span&gt;
+  &lt;span class="c1"&gt;# end&lt;/span&gt;
+
+  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Module&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;const_missing&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;name&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+      &lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;./autoloadable/&lt;/span&gt;&lt;span class="si"&gt;#{&lt;/span&gt;&lt;span class="nb"&gt;name&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;downcase&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;.rb&amp;quot;&lt;/span&gt;
+      &lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;const_get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;name&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;end&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+
+  &lt;span class="n"&gt;t1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Thread&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;new&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hello&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="n"&gt;t2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Thread&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;new&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hello&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="n"&gt;t1&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;t2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;There result is &lt;code&gt;undefined method &amp;#39;hello&amp;#39; for A:Module (NoMethodError)&lt;/code&gt; Why?
+Because second thread takes over when the first is awaiting on sleep. At that
+moment module &lt;code&gt;A&lt;/code&gt; already defined but method hello isn&amp;#39;t defined yet. It turns
+out that &lt;code&gt;AS::D&lt;/code&gt; will never be thread safe until &lt;code&gt;const_missing&lt;/code&gt; will be thread
+safe.&lt;/p&gt;
+
+&lt;h3&gt;Known errors&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Toplevel constant B referenced by A::B&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Have you ever seen the &amp;#39;Toplevel constant B referenced by A::B&amp;#39;? It&amp;#39;s easy to
+reproduce even without &lt;code&gt;AS::D&lt;/code&gt;:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3
+4&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+
+  &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;B&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;Since &lt;code&gt;A.ancestors&lt;/code&gt; is &lt;code&gt;[A, Object, Kernel, BasicObject]&lt;/code&gt; and contains class
+&lt;code&gt;Object&lt;/code&gt; and &lt;code&gt;B&lt;/code&gt; is already defined as a top level constant Ruby shows us
+warning that constant we&amp;#39;re trying to resolve inside &lt;code&gt;A&lt;/code&gt; references top level
+constant. Notice that for modules the situation is different:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3
+4&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+
+  &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;B&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;It gives us just &amp;#39;uninitialized constant A::B (NameError)&amp;#39; because the ancestors
+chain doesn&amp;#39;t contain an &lt;code&gt;Object&lt;/code&gt;.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Circular dependency detected while autoloading constant&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This is yet another Rails error that you could see:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
+  &lt;span class="c1"&gt;# B&lt;/span&gt;
+  &lt;span class="c1"&gt;# module A&lt;/span&gt;
+  &lt;span class="c1"&gt;# end&lt;/span&gt;
+
+  &lt;span class="c1"&gt;# /autoloadable/b.rb&lt;/span&gt;
+  &lt;span class="c1"&gt;# A&lt;/span&gt;
+  &lt;span class="c1"&gt;# module B&lt;/span&gt;
+  &lt;span class="c1"&gt;# end&lt;/span&gt;
+
+  &lt;span class="n"&gt;A&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;If we try to access &lt;code&gt;A&lt;/code&gt; constant we&amp;#39;ll see this error. Rails makes an assumption
+that this constant is defined in file &lt;code&gt;a.rb&lt;/code&gt;. When it tries to load this file it
+faces another undefined constant &lt;code&gt;B&lt;/code&gt; and this time trying to load file &lt;code&gt;b.rb&lt;/code&gt;
+faces again still undefined &lt;code&gt;A&lt;/code&gt;. This generates endless recursion and to prevent
+it the error must be raised. This error(and a bunch of others) also appears in
+multi threaded environment. Constant autoloading is not thread safe operation,
+that&amp;#39;s why your production environment loads all the constants on initialization
+step. In fact you can see different errors even on MRI because it switches
+threads on IO. For instance circular dependency arises when first thread waits
+for IO and another thread starts resolving for the same constant which is
+already in a list of loaded.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;A copy of &lt;code&gt;A&lt;/code&gt; has been removed from the module tree but is still active!&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# /autoloadable/money.rb&lt;/span&gt;
+  &lt;span class="c1"&gt;# class Money&lt;/span&gt;
+  &lt;span class="c1"&gt;# end&lt;/span&gt;
+
+  &lt;span class="c1"&gt;# /autoloadable/customer.rb&lt;/span&gt;
+  &lt;span class="c1"&gt;# class Customer&lt;/span&gt;
+  &lt;span class="c1"&gt;#   def money&lt;/span&gt;
+  &lt;span class="c1"&gt;#     Money.new&lt;/span&gt;
+  &lt;span class="c1"&gt;#   end&lt;/span&gt;
+  &lt;span class="c1"&gt;# end&lt;/span&gt;
+
+  &lt;span class="n"&gt;customer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Customer&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;new&lt;/span&gt;
+
+  &lt;span class="no"&gt;ActiveSupport&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Dependencies&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;clear&lt;/span&gt;
+
+  &lt;span class="n"&gt;customer&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;money&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;It happens because class for Customer was autoloaded, but class for Money wasn&amp;#39;t
+because we haven&amp;#39;t invoked &lt;code&gt;Money.new&lt;/code&gt; until &lt;code&gt;AS::D.clear&lt;/code&gt;. Then &lt;code&gt;Customer&lt;/code&gt; was
+removed as a reference but instance of this class still in memory, and then
+we&amp;#39;re trying to resolve constant name Money, but for &lt;code&gt;customer.class::Money&lt;/code&gt;
+which is different from newly loaded &lt;code&gt;Customer&lt;/code&gt;. Please be afraid of saving the
+whole instance somewhere between sessions, otherwise chances you&amp;#39;ll see this are
+bigger.&lt;/p&gt;
+
+&lt;h3&gt;Conclusion&lt;/h3&gt;
+
+&lt;p&gt;You don&amp;#39;t have to care about all these stuff if you have flat model, it means
+when you don&amp;#39;t use namespaces and all the files have different names, but it&amp;#39;s
+hard if you have a lot of classes/modules. So you must have clear understanding
+of this if you don&amp;#39;t want to be in trouble.&lt;/p&gt;
+
+&lt;h3&gt;Links and used sources:&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://blog.plataformatec.com.br/tag/eager-load/"&gt;Eager loading&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://urbanautomaton.com/blog/2013/08/27/rails-autoloading-hell/"&gt;Rails autoloading&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://tenderlovemaking.com/2012/06/18/removing-config-threadsafe.html"&gt;Removing config.threadsafe!&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+  </entry>
   <entry>
     <title>Ruby loading and requiring files, constant name resolution</title>
     <link rel="alternate" href="/2013/11/05/ruby-loading-and-requiring-files-constant-name-resolution.html"/>

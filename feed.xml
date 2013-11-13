@@ -19,18 +19,19 @@
       <name>Article Author</name>
     </author>
     <summary type="html">&lt;p&gt;This article has started as my own research on a slightly different theme —
-&lt;a href="#"&gt;Rails autoloading (awaited in a few days)&lt;/a&gt;, but I
-couldn&amp;#39;t describe it without saying a single word about Ruby itself. In this
-topic we&amp;#39;ll talk about how Ruby loades and requires modules, constant name&lt;/p&gt;
+&lt;a href="/2013/11/13/rails-autoloading.html"&gt;Rails autoloading&lt;/a&gt;, but I couldn&amp;#39;t describe
+it without saying a single word about Ruby itself. In this topic we&amp;#39;ll talk
+about how Ruby loads and requires modules, constant name resolution and then&lt;/p&gt;
 </summary>
     <content type="html">&lt;p&gt;This article has started as my own research on a slightly different theme —
-&lt;a href="#"&gt;Rails autoloading (awaited in a few days)&lt;/a&gt;, but I
-couldn&amp;#39;t describe it without saying a single word about Ruby itself. In this
-topic we&amp;#39;ll talk about how Ruby loades and requires modules, constant name
-resolution and then we can switch to &lt;a href="#"&gt;Rails autoloading&lt;/a&gt;. There&amp;#39;s more or less
-info about all these topics on the internet, so that sometimes I&amp;#39;ll be
-overlapping with it but sometimes not, anyway I have to sum it up in just one
-big article. So let&amp;#39;s get started with Ruby.&lt;/p&gt;
+&lt;a href="/2013/11/13/rails-autoloading.html"&gt;Rails autoloading&lt;/a&gt;, but I couldn&amp;#39;t describe
+it without saying a single word about Ruby itself. In this topic we&amp;#39;ll talk
+about how Ruby loads and requires modules, constant name resolution and then
+we&amp;#39;ll switch to &lt;a href="/2013/11/13/rails-autoloading.html"&gt;Rails autoloading&lt;/a&gt;. There&amp;#39;s
+more or less info about all these topics on the internet, so that sometimes I&amp;#39;ll
+be overlapping with it but sometimes not, I don&amp;#39;t claim it&amp;#39;s unique info but
+anyway I have to sum it up in just one big article. So let&amp;#39;s get started with
+Ruby.&lt;/p&gt;
 
 &lt;h3&gt;Constant definition:&lt;/h3&gt;
 &lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
@@ -77,7 +78,7 @@ a constant:&lt;/p&gt;
   &lt;span class="c1"&gt;#./a.rb:1: warning: previous definition of A was here&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
-&lt;p&gt;Since the constant &lt;code&gt;A&lt;/code&gt; is just a reference for the class&amp;#39; object (remeber class
+&lt;p&gt;Since the constant &lt;code&gt;A&lt;/code&gt; is just a reference for the class&amp;#39; object (remember class
 is object in Ruby, right?) and we try to reassign it with new value then we see
 this warning. Ok, now we know what the constant is, moving to files requiring.&lt;/p&gt;
 
@@ -210,7 +211,7 @@ made. Let&amp;#39;s add optional parameter &lt;code&gt;wrap&lt;/code&gt;:&lt;/p&
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
 &lt;p&gt;You see that Ruby hasn&amp;#39;t polluted global namespace and wrapped all the constants
 from the file to an anonymous module, but global variables still could be
-retrived.&lt;/p&gt;
+retrieved.&lt;/p&gt;
 
 &lt;p&gt;&lt;code&gt;Kernel#autoload(module, filename)&lt;/code&gt; registers filename to be loaded (using
 &lt;code&gt;Kernel::require&lt;/code&gt;) the first time that module (&lt;code&gt;String&lt;/code&gt; or a &lt;code&gt;Symbol&lt;/code&gt;) is
@@ -253,7 +254,37 @@ can be found in a file but we&amp;#39;ve never used it.&lt;/p&gt;
 during the boot. There were some problems with thread safety and &lt;code&gt;autoload&lt;/code&gt;,
 also there was a rumor that it would be deprecated, but I hadn&amp;#39;t found any info
 what the Ruby core team came up with. But the bug was fixed and I just can say
-it works properly even with threads for now.&lt;/p&gt;
+it works properly even with threads for now:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# a.rb&lt;/span&gt;
+  &lt;span class="c1"&gt;# module A&lt;/span&gt;
+  &lt;span class="c1"&gt;#   sleep 5&lt;/span&gt;
+  &lt;span class="c1"&gt;#   def self.hello&lt;/span&gt;
+  &lt;span class="c1"&gt;#     &amp;#39;hello&amp;#39;&lt;/span&gt;
+  &lt;span class="c1"&gt;#   end&lt;/span&gt;
+  &lt;span class="c1"&gt;# end&lt;/span&gt;
+
+  &lt;span class="nb"&gt;autoload&lt;/span&gt; &lt;span class="ss"&gt;:A&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;./a&amp;#39;&lt;/span&gt;
+
+  &lt;span class="n"&gt;t1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Thread&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;new&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hello&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="n"&gt;t2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Thread&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;new&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hello&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="n"&gt;t1&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;t2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;I was expecting that second thread would throw an error that method &lt;code&gt;hello&lt;/code&gt; is
+undefined because module &lt;code&gt;A&lt;/code&gt; had been loaded by first thread but because of
+sleep threads were switched, but it worked.&lt;/p&gt;
 
 &lt;h3&gt;Constant resolution&lt;/h3&gt;
 
@@ -303,7 +334,7 @@ code tells about itself:&lt;/p&gt;
   &lt;span class="k"&gt;end&lt;/span&gt;
 
   &lt;span class="c1"&gt;# Top-level or &amp;#39;global&amp;#39; constants defined in Object&lt;/span&gt;
-  &lt;span class="n"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;E&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;defined at toplevel&amp;#39;&lt;/span&gt;
+  &lt;span class="n"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;E&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;defined at top-level&amp;#39;&lt;/span&gt;
 
   &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Super&lt;/span&gt;
     &lt;span class="c1"&gt;# Constants defined in a superclass&lt;/span&gt;
@@ -332,7 +363,7 @@ code tells about itself:&lt;/p&gt;
       &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="n"&gt;B&lt;/span&gt;  &lt;span class="c1"&gt;# Prints &amp;quot;defined in enclosing module&amp;quot;&lt;/span&gt;
       &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="n"&gt;C&lt;/span&gt;  &lt;span class="c1"&gt;# Prints &amp;quot;defined in included module&amp;quot;&lt;/span&gt;
       &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="n"&gt;D&lt;/span&gt;  &lt;span class="c1"&gt;# Prints &amp;quot;defined in superclass&amp;quot;&lt;/span&gt;
-      &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="n"&gt;E&lt;/span&gt;  &lt;span class="c1"&gt;# Prints &amp;quot;defined at toplevel&amp;quot;&lt;/span&gt;
+      &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="n"&gt;E&lt;/span&gt;  &lt;span class="c1"&gt;# Prints &amp;quot;defined at top-level&amp;quot;&lt;/span&gt;
       &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="n"&gt;F&lt;/span&gt;  &lt;span class="c1"&gt;# Prints &amp;quot;defined in kernel&amp;quot;&lt;/span&gt;
     &lt;span class="k"&gt;end&lt;/span&gt;
   &lt;span class="k"&gt;end&lt;/span&gt;
@@ -340,7 +371,7 @@ code tells about itself:&lt;/p&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
 &lt;p&gt;So the path Ruby follows in order to resolve constant name starts with
 &lt;code&gt;Module.nesting&lt;/code&gt; which of course starts with itself and then all enclosing
-constants respectively. If the constant cannot be found there then ancestors
+constants respectively. If the constant cannot be found there, then ancestors
 chain is applied.&lt;/p&gt;
 
 &lt;h3&gt;Known pitfalls:&lt;/h3&gt;
@@ -397,10 +428,7 @@ out that your constant name resolution will be different too:&lt;/p&gt;
 &lt;p&gt;2) Inheritance:&lt;/p&gt;
 
 &lt;p&gt;Remember that constants use the currently opened class or module, as determined
-by &lt;code&gt;class&lt;/code&gt; and &lt;code&gt;module&lt;/code&gt; statements. In this example method is invoked on parent
-class so its class is the innermost one. To change things you could use
-&lt;code&gt;self::CONST&lt;/code&gt; this way you&amp;#39;re expicitly saying find my constant in &lt;code&gt;self&lt;/code&gt; where
-&lt;code&gt;self&lt;/code&gt; is &lt;code&gt;Child&lt;/code&gt; if we&amp;#39;re calling &lt;code&gt;Child.const&lt;/code&gt;.&lt;/p&gt;
+by &lt;code&gt;class&lt;/code&gt; and &lt;code&gt;module&lt;/code&gt; statements.&lt;/p&gt;
 &lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
  2
  3
@@ -428,11 +456,15 @@ class so its class is the innermost one. To change things you could use
   &lt;span class="no"&gt;Child&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;const&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; parent&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;In this example method is invoked on parent class, so its class is the innermost
+one. To change things you could use &lt;code&gt;self::CONST&lt;/code&gt; this way you&amp;#39;re explicitly
+saying find my constant in &lt;code&gt;self&lt;/code&gt; where &lt;code&gt;self&lt;/code&gt; is &lt;code&gt;Child&lt;/code&gt; if we call
+&lt;code&gt;Child.const&lt;/code&gt;.&lt;/p&gt;
+
 &lt;p&gt;3) Object::&lt;/p&gt;
 
 &lt;p&gt;&lt;code&gt;Module.nesting == []&lt;/code&gt; at the top level, and so constant lookup starts at the
-currently opened class and its ancestors. At the top level of a ruby file the
-currently opened class is Object:&lt;/p&gt;
+currently opened class and its ancestors which is &lt;code&gt;Object&lt;/code&gt;:&lt;/p&gt;
 &lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
 2
 3
@@ -469,10 +501,10 @@ to use &lt;code&gt;::Kernel&lt;/code&gt; to access &lt;code&gt;Object::Kernel&lt
 
 &lt;p&gt;4) &lt;code&gt;class_eval&lt;/code&gt;, &lt;code&gt;module_eval&lt;/code&gt;, &lt;code&gt;instance_eval&lt;/code&gt;, &lt;code&gt;define_method&lt;/code&gt;:&lt;/p&gt;
 
-&lt;p&gt;As mentioned above, constant lookup uses the currently open class, as determined
-by class and module statements. Importantly, if you pass a block into
-&lt;code&gt;class_eval&lt;/code&gt; or &lt;code&gt;module_eval&lt;/code&gt; (or &lt;code&gt;instance_eval&lt;/code&gt; or &lt;code&gt;define_method&lt;/code&gt;), this
-won&amp;#39;t change constant lookup. It continues to use the constant lookup at the
+&lt;p&gt;As mentioned above, constant lookup uses the currently opened class, as
+determined by class and module statements. Importantly, if you pass a block into
+&lt;code&gt;class_eval&lt;/code&gt;, &lt;code&gt;module_eval&lt;/code&gt; or &lt;code&gt;instance_eval&lt;/code&gt;, &lt;code&gt;define_method&lt;/code&gt;, this won&amp;#39;t
+change constant lookup. It continues to use the constant lookup at the
 point the block was defined:&lt;/p&gt;
 &lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
 2
@@ -487,7 +519,7 @@ point the block was defined:&lt;/p&gt;
 
   &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;C&lt;/span&gt;
     &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-    &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;class_eval&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;B&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;C&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;B&lt;/span&gt;
+    &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;class_eval&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;B&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;C&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;B&lt;/span&gt;
   &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
@@ -568,7 +600,8 @@ defined on that class it&amp;#39;s invoked on its superclass — &lt;code&gt;Mod
 (&lt;code&gt;A.class.superclass # =&amp;gt; Module&lt;/code&gt;). It accepts just one single argument
 &lt;code&gt;const_name&lt;/code&gt; which is the constant name we&amp;#39;re looking for. By default this
 method simply throws an error &lt;code&gt;NameError: uninitialized constant #{const_name}&lt;/code&gt;.
-That&amp;#39;s all for Ruby moving to the more interesting part — &lt;a href="#"&gt;Rails autoloading&lt;/a&gt;.&lt;/p&gt;
+That&amp;#39;s all for Ruby moving to the more interesting part —
+&lt;a href="/2013/11/13/rails-autoloading.html"&gt;Rails autoloading&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h3&gt;Links and used sources:&lt;/h3&gt;
 

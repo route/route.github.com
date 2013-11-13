@@ -15,13 +15,14 @@
   <h1>Ruby loading and requiring files, constant name resolution</h1>
   <time>November  5, 2013</time>
   <p>This article has started as my own research on a slightly different theme —
-<a href="#">Rails autoloading (awaited in a few days)</a>, but I
-couldn&#39;t describe it without saying a single word about Ruby itself. In this
-topic we&#39;ll talk about how Ruby loades and requires modules, constant name
-resolution and then we can switch to <a href="#">Rails autoloading</a>. There&#39;s more or less
-info about all these topics on the internet, so that sometimes I&#39;ll be
-overlapping with it but sometimes not, anyway I have to sum it up in just one
-big article. So let&#39;s get started with Ruby.</p>
+<a href="/2013/11/13/rails-autoloading.html">Rails autoloading</a>, but I couldn&#39;t describe
+it without saying a single word about Ruby itself. In this topic we&#39;ll talk
+about how Ruby loads and requires modules, constant name resolution and then
+we&#39;ll switch to <a href="/2013/11/13/rails-autoloading.html">Rails autoloading</a>. There&#39;s
+more or less info about all these topics on the internet, so that sometimes I&#39;ll
+be overlapping with it but sometimes not, I don&#39;t claim it&#39;s unique info but
+anyway I have to sum it up in just one big article. So let&#39;s get started with
+Ruby.</p>
 
 <h3>Constant definition:</h3>
 <div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
@@ -68,7 +69,7 @@ a constant:</p>
   <span class="c1">#./a.rb:1: warning: previous definition of A was here</span>
 </pre></div>
 </td></tr></table></div>
-<p>Since the constant <code>A</code> is just a reference for the class&#39; object (remeber class
+<p>Since the constant <code>A</code> is just a reference for the class&#39; object (remember class
 is object in Ruby, right?) and we try to reassign it with new value then we see
 this warning. Ok, now we know what the constant is, moving to files requiring.</p>
 
@@ -201,7 +202,7 @@ made. Let&#39;s add optional parameter <code>wrap</code>:</p>
 </td></tr></table></div>
 <p>You see that Ruby hasn&#39;t polluted global namespace and wrapped all the constants
 from the file to an anonymous module, but global variables still could be
-retrived.</p>
+retrieved.</p>
 
 <p><code>Kernel#autoload(module, filename)</code> registers filename to be loaded (using
 <code>Kernel::require</code>) the first time that module (<code>String</code> or a <code>Symbol</code>) is
@@ -244,7 +245,37 @@ can be found in a file but we&#39;ve never used it.</p>
 during the boot. There were some problems with thread safety and <code>autoload</code>,
 also there was a rumor that it would be deprecated, but I hadn&#39;t found any info
 what the Ruby core team came up with. But the bug was fixed and I just can say
-it works properly even with threads for now.</p>
+it works properly even with threads for now:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="c1"># a.rb</span>
+  <span class="c1"># module A</span>
+  <span class="c1">#   sleep 5</span>
+  <span class="c1">#   def self.hello</span>
+  <span class="c1">#     &#39;hello&#39;</span>
+  <span class="c1">#   end</span>
+  <span class="c1"># end</span>
+
+  <span class="nb">autoload</span> <span class="ss">:A</span><span class="p">,</span> <span class="s1">&#39;./a&#39;</span>
+
+  <span class="n">t1</span> <span class="o">=</span> <span class="no">Thread</span><span class="o">.</span><span class="n">new</span> <span class="p">{</span> <span class="n">A</span><span class="o">.</span><span class="n">hello</span> <span class="p">}</span>
+  <span class="n">t2</span> <span class="o">=</span> <span class="no">Thread</span><span class="o">.</span><span class="n">new</span> <span class="p">{</span> <span class="n">A</span><span class="o">.</span><span class="n">hello</span> <span class="p">}</span>
+  <span class="n">t1</span><span class="o">.</span><span class="n">join</span><span class="p">;</span> <span class="n">t2</span><span class="o">.</span><span class="n">join</span>
+</pre></div>
+</td></tr></table></div>
+<p>I was expecting that second thread would throw an error that method <code>hello</code> is
+undefined because module <code>A</code> had been loaded by first thread but because of
+sleep threads were switched, but it worked.</p>
 
 <h3>Constant resolution</h3>
 
@@ -294,7 +325,7 @@ code tells about itself:</p>
   <span class="k">end</span>
 
   <span class="c1"># Top-level or &#39;global&#39; constants defined in Object</span>
-  <span class="n">A</span> <span class="o">=</span> <span class="n">B</span> <span class="o">=</span> <span class="n">C</span> <span class="o">=</span> <span class="n">D</span> <span class="o">=</span> <span class="n">E</span> <span class="o">=</span> <span class="s1">&#39;defined at toplevel&#39;</span>
+  <span class="n">A</span> <span class="o">=</span> <span class="n">B</span> <span class="o">=</span> <span class="n">C</span> <span class="o">=</span> <span class="n">D</span> <span class="o">=</span> <span class="n">E</span> <span class="o">=</span> <span class="s1">&#39;defined at top-level&#39;</span>
 
   <span class="k">class</span> <span class="nc">Super</span>
     <span class="c1"># Constants defined in a superclass</span>
@@ -323,7 +354,7 @@ code tells about itself:</p>
       <span class="nb">puts</span> <span class="n">B</span>  <span class="c1"># Prints &quot;defined in enclosing module&quot;</span>
       <span class="nb">puts</span> <span class="n">C</span>  <span class="c1"># Prints &quot;defined in included module&quot;</span>
       <span class="nb">puts</span> <span class="n">D</span>  <span class="c1"># Prints &quot;defined in superclass&quot;</span>
-      <span class="nb">puts</span> <span class="n">E</span>  <span class="c1"># Prints &quot;defined at toplevel&quot;</span>
+      <span class="nb">puts</span> <span class="n">E</span>  <span class="c1"># Prints &quot;defined at top-level&quot;</span>
       <span class="nb">puts</span> <span class="n">F</span>  <span class="c1"># Prints &quot;defined in kernel&quot;</span>
     <span class="k">end</span>
   <span class="k">end</span>
@@ -331,7 +362,7 @@ code tells about itself:</p>
 </td></tr></table></div>
 <p>So the path Ruby follows in order to resolve constant name starts with
 <code>Module.nesting</code> which of course starts with itself and then all enclosing
-constants respectively. If the constant cannot be found there then ancestors
+constants respectively. If the constant cannot be found there, then ancestors
 chain is applied.</p>
 
 <h3>Known pitfalls:</h3>
@@ -388,10 +419,7 @@ out that your constant name resolution will be different too:</p>
 <p>2) Inheritance:</p>
 
 <p>Remember that constants use the currently opened class or module, as determined
-by <code>class</code> and <code>module</code> statements. In this example method is invoked on parent
-class so its class is the innermost one. To change things you could use
-<code>self::CONST</code> this way you&#39;re expicitly saying find my constant in <code>self</code> where
-<code>self</code> is <code>Child</code> if we&#39;re calling <code>Child.const</code>.</p>
+by <code>class</code> and <code>module</code> statements.</p>
 <div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -419,11 +447,15 @@ class so its class is the innermost one. To change things you could use
   <span class="no">Child</span><span class="o">.</span><span class="n">const</span> <span class="c1"># =&gt; parent</span>
 </pre></div>
 </td></tr></table></div>
+<p>In this example method is invoked on parent class, so its class is the innermost
+one. To change things you could use <code>self::CONST</code> this way you&#39;re explicitly
+saying find my constant in <code>self</code> where <code>self</code> is <code>Child</code> if we call
+<code>Child.const</code>.</p>
+
 <p>3) Object::</p>
 
 <p><code>Module.nesting == []</code> at the top level, and so constant lookup starts at the
-currently opened class and its ancestors. At the top level of a ruby file the
-currently opened class is Object:</p>
+currently opened class and its ancestors which is <code>Object</code>:</p>
 <div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
@@ -460,10 +492,10 @@ to use <code>::Kernel</code> to access <code>Object::Kernel</code>.</p>
 
 <p>4) <code>class_eval</code>, <code>module_eval</code>, <code>instance_eval</code>, <code>define_method</code>:</p>
 
-<p>As mentioned above, constant lookup uses the currently open class, as determined
-by class and module statements. Importantly, if you pass a block into
-<code>class_eval</code> or <code>module_eval</code> (or <code>instance_eval</code> or <code>define_method</code>), this
-won&#39;t change constant lookup. It continues to use the constant lookup at the
+<p>As mentioned above, constant lookup uses the currently opened class, as
+determined by class and module statements. Importantly, if you pass a block into
+<code>class_eval</code>, <code>module_eval</code> or <code>instance_eval</code>, <code>define_method</code>, this won&#39;t
+change constant lookup. It continues to use the constant lookup at the
 point the block was defined:</p>
 <div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
@@ -478,7 +510,7 @@ point the block was defined:</p>
 
   <span class="k">class</span> <span class="nc">C</span>
     <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
-    <span class="n">A</span><span class="o">.</span><span class="n">class_eval</span><span class="p">{</span> <span class="n">B</span> <span class="p">}</span> <span class="o">==</span> <span class="n">C</span><span class="o">::</span><span class="n">B</span>
+    <span class="n">A</span><span class="o">.</span><span class="n">class_eval</span> <span class="p">{</span> <span class="n">B</span> <span class="p">}</span> <span class="o">==</span> <span class="n">C</span><span class="o">::</span><span class="n">B</span>
   <span class="k">end</span>
 </pre></div>
 </td></tr></table></div>
@@ -559,7 +591,8 @@ defined on that class it&#39;s invoked on its superclass — <code>Module</code>
 (<code>A.class.superclass # =&gt; Module</code>). It accepts just one single argument
 <code>const_name</code> which is the constant name we&#39;re looking for. By default this
 method simply throws an error <code>NameError: uninitialized constant #{const_name}</code>.
-That&#39;s all for Ruby moving to the more interesting part — <a href="#">Rails autoloading</a>.</p>
+That&#39;s all for Ruby moving to the more interesting part —
+<a href="/2013/11/13/rails-autoloading.html">Rails autoloading</a>.</p>
 
 <h3>Links and used sources:</h3>
 
@@ -581,7 +614,7 @@ That&#39;s all for Ruby moving to the more interesting part — <a href="#">Rail
         Copyright © 2012-2013
         <a target="_blank" href="https://github.com/route">Dmitry Vorotilin</a>
         |
-        <a target="_blank" href="http://route.github.io/cv.html">CV</a>
+        <a target="_blank" href="cv.html">CV</a>
         |
         <a target="_blank" href="http://evrone.com">Evrone.com</a>
       </footer>

@@ -55,7 +55,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   display: block; }
 
 /* line 1, highlight.css.scss */
-p code {
+p code, ul code, ol code {
   font-family: "Monaco", "Menlo", "Courier New", monospace;
   display: inline-block;
   white-space: no-wrap;
@@ -416,23 +416,35 @@ h3 {
   line-height: 50px; }
 
 /* line 64, application.css.scss */
+ol {
+  list-style-type: decimal; }
+
+/* line 67, application.css.scss */
+ul {
+  list-style-type: disc; }
+
+/* line 70, application.css.scss */
+ol li, ul li {
+  margin: 10px 10px 10px 30px; }
+
+/* line 74, application.css.scss */
 .content {
   width: 950px;
   margin: 0 auto;
   overflow: hidden;
   *zoom: 1;
   width: 790px; }
-  /* line 67, application.css.scss */
+  /* line 77, application.css.scss */
   .content > header {
     height: 64px;
     border-bottom: 1px solid silver;
     margin-bottom: 30px; }
-    /* line 71, application.css.scss */
+    /* line 81, application.css.scss */
     .content > header a {
       color: #000;
       line-height: 64px;
       border-bottom: 0px; }
-  /* line 78, application.css.scss */
+  /* line 88, application.css.scss */
   .content > header, .content footer {
     font-family: "Museo500", sans-serif;
     display: inline;
@@ -442,7 +454,7 @@ h3 {
     /* line 147, ../../../../.rbenv/versions/1.9.3-p392/lib/ruby/gems/1.9.1/gems/compass-0.12.2/frameworks/blueprint/stylesheets/blueprint/_grid.scss */
     * html .content > header, * html .content footer {
       overflow-x: hidden; }
-  /* line 84, application.css.scss */
+  /* line 94, application.css.scss */
   .content > section {
     display: inline;
     float: left;
@@ -451,29 +463,29 @@ h3 {
     /* line 147, ../../../../.rbenv/versions/1.9.3-p392/lib/ruby/gems/1.9.1/gems/compass-0.12.2/frameworks/blueprint/stylesheets/blueprint/_grid.scss */
     * html .content > section {
       overflow-x: hidden; }
-    /* line 86, application.css.scss */
+    /* line 96, application.css.scss */
     .content > section article {
       padding-bottom: 60px; }
-      /* line 89, application.css.scss */
+      /* line 99, application.css.scss */
       .content > section article header a {
         font-family: 'Georgia', sans-serif;
         color: #74ab2e;
         font-weight: bold;
         font-size: 24px;
         text-shadow: 1px 1px rgba(0, 0, 0, 0.1); }
-      /* line 92, application.css.scss */
+      /* line 102, application.css.scss */
       .content > section article header time {
         display: block;
         line-height: 32px;
         font-size: 11px;
         color: #aaa; }
-      /* line 96, application.css.scss */
+      /* line 106, application.css.scss */
       .content > section article footer {
         line-height: 32px; }
-        /* line 97, application.css.scss */
+        /* line 107, application.css.scss */
         .content > section article footer a {
           font-size: 14px; }
-  /* line 106, application.css.scss */
+  /* line 116, application.css.scss */
   .content > article {
     display: inline;
     float: left;
@@ -482,28 +494,29 @@ h3 {
     /* line 147, ../../../../.rbenv/versions/1.9.3-p392/lib/ruby/gems/1.9.1/gems/compass-0.12.2/frameworks/blueprint/stylesheets/blueprint/_grid.scss */
     * html .content > article {
       overflow-x: hidden; }
-    /* line 108, application.css.scss */
+    /* line 118, application.css.scss */
     .content > article time {
       display: block;
       line-height: 32px;
       font-size: 11px;
       color: #aaa; }
-    /* line 111, application.css.scss */
+    /* line 121, application.css.scss */
     .content > article p {
       padding-bottom: 10px; }
-    /* line 114, application.css.scss */
+    /* line 124, application.css.scss */
     .content > article .share {
+      padding-top: 50px;
       text-align: center; }
-  /* line 119, application.css.scss */
+  /* line 130, application.css.scss */
   .content > footer {
     color: #aaa;
     font-size: 11px;
     line-height: 64px;
     text-align: center; }
-    /* line 124, application.css.scss */
+    /* line 135, application.css.scss */
     .content > footer a {
       color: #aaa;
       border-bottom: 1px solid #aaa; }
-      /* line 127, application.css.scss */
+      /* line 138, application.css.scss */
       .content > footer a:hover, .content > footer a:focus {
         border-bottom: 0px; }

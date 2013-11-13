@@ -18,24 +18,23 @@
     <author>
       <name>Article Author</name>
     </author>
-    <summary type="html">&lt;h3&gt;How it works&lt;/h3&gt;
-
-&lt;p&gt;There is much to be said about Rails autoloading and particularly about
-&lt;code&gt;ActiveSupport::Dependencies&lt;/code&gt; (&lt;code&gt;AS::D&lt;/code&gt; for short). What does it do? As the title
-says it loads constants automatically and reloads your code catching changes on&lt;/p&gt;
-</summary>
-    <content type="html">&lt;h3&gt;How it works&lt;/h3&gt;
-
-&lt;p&gt;There is much to be said about Rails autoloading and particularly about
+    <summary type="html">&lt;p&gt;There is much to be said about Rails autoloading and particularly about
 &lt;code&gt;ActiveSupport::Dependencies&lt;/code&gt; (&lt;code&gt;AS::D&lt;/code&gt; for short). What does it do? As the title
 says it loads constants automatically and reloads your code catching changes on
-every request. Ok, why do we need it? Because it&amp;#39;s conveniently! We don&amp;#39;t have
-to write in every single file &lt;code&gt;require&lt;/code&gt;, watch what constants we need and when.
-Rails loads constants and watches what we need automatically. Also there&amp;#39;s no
-need to reload your server each time you&amp;#39;ve done a change. There are some
-pitfalls that you must know, but when you learn them everything will be ok.&lt;/p&gt;
+every request. Ok, why do we need it? Because it&amp;#39;s convenient! We don&amp;#39;t have&lt;/p&gt;
+</summary>
+    <content type="html">&lt;p&gt;There is much to be said about Rails autoloading and particularly about
+&lt;code&gt;ActiveSupport::Dependencies&lt;/code&gt; (&lt;code&gt;AS::D&lt;/code&gt; for short). What does it do? As the title
+says it loads constants automatically and reloads your code catching changes on
+every request. Ok, why do we need it? Because it&amp;#39;s convenient! We don&amp;#39;t have
+to write &lt;code&gt;require&lt;/code&gt; in every single file and watch which constants we need and
+when. Rails loads constants and tracks what we need automatically. Also there&amp;#39;s
+no need to reload your server every time you&amp;#39;ve made a change. There are some
+pitfalls that you must know, but once you learn them everything will be ok.&lt;/p&gt;
 
-&lt;p&gt;Previously discussed method &lt;code&gt;self.const_missing(const_name)&lt;/code&gt; is an entry point
+&lt;h3&gt;How it works&lt;/h3&gt;
+
+&lt;p&gt;Previously discussed method &lt;code&gt;self.const_missing(const_name)&lt;/code&gt; is the entry point
 where &lt;code&gt;AS::D&lt;/code&gt; starts doing its job. Consider this example:&lt;/p&gt;
 &lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
 2
@@ -54,7 +53,7 @@ where &lt;code&gt;AS::D&lt;/code&gt; starts doing its job. Consider this example
   &lt;span class="n"&gt;A&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
-&lt;p&gt;Doing this &lt;code&gt;AS::D&lt;/code&gt; loads module &lt;code&gt;A&lt;/code&gt; automatically without any &lt;code&gt;require&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;AS::D&lt;/code&gt; loads module &lt;code&gt;A&lt;/code&gt; automatically without any &lt;code&gt;require&lt;/code&gt;.&lt;/p&gt;
 &lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
 2
 3
@@ -68,12 +67,11 @@ where &lt;code&gt;AS::D&lt;/code&gt; starts doing its job. Consider this example
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
 &lt;p&gt;I&amp;#39;ve just introduced the method Rails reloads your code with — &lt;code&gt;clear&lt;/code&gt;. Let&amp;#39;s
 dig dipper and see how &lt;code&gt;AS::D&lt;/code&gt; actually works. There are two different constant
-autoloading schemas by name: &lt;code&gt;:require&lt;/code&gt; and &lt;code&gt;:load&lt;/code&gt;(default). The first one
-means that all the constants won&amp;#39;t be reloaded(as eventually &lt;code&gt;require&lt;/code&gt; does, do
-you remember &lt;code&gt;$LOADED_FEATURES&lt;/code&gt;?) and the last one means all the constants will
-be removed from memory and loaded again on demand. We are talking about such
-thing as &amp;#39;removing constant from memory&amp;#39;, it&amp;#39;d be very useful to know how.
-There&amp;#39;s a method called &lt;code&gt;Module#remove_const(sym)&lt;/code&gt;:&lt;/p&gt;
+autoloading schemes: &lt;code&gt;:require&lt;/code&gt; and &lt;code&gt;:load&lt;/code&gt;(default). The first one means that
+all the constants won&amp;#39;t be reloaded(as &lt;code&gt;require&lt;/code&gt; does eventually, do you
+remember &lt;code&gt;$LOADED_FEATURES&lt;/code&gt;?) and the last one means that all the constants will
+be removed from memory and loaded again on demand. What does removing constant
+from memory mean? There&amp;#39;s a method called &lt;code&gt;Module#remove_const(sym)&lt;/code&gt;:&lt;/p&gt;
 &lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
 2
 3&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
@@ -81,7 +79,7 @@ There&amp;#39;s a method called &lt;code&gt;Module#remove_const(sym)&lt;/code&gt
   &lt;span class="n"&gt;A&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A (NameError)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
-&lt;p&gt;But what if we remove constant for existed instance of class:&lt;/p&gt;
+&lt;p&gt;But what if we remove constant for existing instance of a class:&lt;/p&gt;
 &lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
  2
  3
@@ -112,7 +110,7 @@ class as object(do you still remember that class is an object and a constant is
 a variable referencing that object?) still exists in the memory. Ok, move on.&lt;/p&gt;
 
 &lt;p&gt;Calling &lt;code&gt;require &amp;#39;active_support/dependencies&amp;#39;&lt;/code&gt; injects a few modules into basic
-Ruby classes by mean &lt;code&gt;AS::D.hook!&lt;/code&gt;.&lt;/p&gt;
+Ruby classes via &lt;code&gt;AS::D.hook!&lt;/code&gt;.&lt;/p&gt;
 &lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
 2
 3
@@ -125,10 +123,10 @@ Ruby classes by mean &lt;code&gt;AS::D.hook!&lt;/code&gt;.&lt;/p&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
 &lt;p&gt;Methods injected into &lt;code&gt;Object&lt;/code&gt; overwrite methods like &lt;code&gt;load&lt;/code&gt; and &lt;code&gt;require&lt;/code&gt; in
-order to monitor emerging constants(depends on schema). Another method you could
+order to monitor new constants(depends on schema). Another method you could
 already know is &lt;code&gt;require_dependency&lt;/code&gt; also injected into &lt;code&gt;Object&lt;/code&gt;. Methods in
-&lt;code&gt;Module&lt;/code&gt; define an entry point &lt;code&gt;const_missing&lt;/code&gt; as I told you earlier. I&amp;#39;m gonna
-show you how &lt;code&gt;AS::D&lt;/code&gt; works with this example:&lt;/p&gt;
+&lt;code&gt;Module&lt;/code&gt; define an entry point &lt;code&gt;const_missing&lt;/code&gt; as I told you earlier. I&amp;#39;m going
+to show you how &lt;code&gt;AS::D&lt;/code&gt; works with this example:&lt;/p&gt;
 &lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
 2
 3

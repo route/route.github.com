@@ -14,18 +14,18 @@
       <article>
   <h1>Rails autoloading</h1>
   <time>November 13, 2013</time>
-  <h3>How it works</h3>
-
-<p>There is much to be said about Rails autoloading and particularly about
+  <p>There is much to be said about Rails autoloading and particularly about
 <code>ActiveSupport::Dependencies</code> (<code>AS::D</code> for short). What does it do? As the title
 says it loads constants automatically and reloads your code catching changes on
-every request. Ok, why do we need it? Because it&#39;s conveniently! We don&#39;t have
-to write in every single file <code>require</code>, watch what constants we need and when.
-Rails loads constants and watches what we need automatically. Also there&#39;s no
-need to reload your server each time you&#39;ve done a change. There are some
-pitfalls that you must know, but when you learn them everything will be ok.</p>
+every request. Ok, why do we need it? Because it&#39;s convenient! We don&#39;t have
+to write <code>require</code> in every single file and watch which constants we need and
+when. Rails loads constants and tracks what we need automatically. Also there&#39;s
+no need to reload your server every time you&#39;ve made a change. There are some
+pitfalls that you must know, but once you learn them everything will be ok.</p>
 
-<p>Previously discussed method <code>self.const_missing(const_name)</code> is an entry point
+<h3>How it works</h3>
+
+<p>Previously discussed method <code>self.const_missing(const_name)</code> is the entry point
 where <code>AS::D</code> starts doing its job. Consider this example:</p>
 <div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
@@ -44,7 +44,7 @@ where <code>AS::D</code> starts doing its job. Consider this example:</p>
   <span class="n">A</span>
 </pre></div>
 </td></tr></table></div>
-<p>Doing this <code>AS::D</code> loads module <code>A</code> automatically without any <code>require</code>.</p>
+<p><code>AS::D</code> loads module <code>A</code> automatically without any <code>require</code>.</p>
 <div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
@@ -58,12 +58,11 @@ where <code>AS::D</code> starts doing its job. Consider this example:</p>
 </td></tr></table></div>
 <p>I&#39;ve just introduced the method Rails reloads your code with — <code>clear</code>. Let&#39;s
 dig dipper and see how <code>AS::D</code> actually works. There are two different constant
-autoloading schemas by name: <code>:require</code> and <code>:load</code>(default). The first one
-means that all the constants won&#39;t be reloaded(as eventually <code>require</code> does, do
-you remember <code>$LOADED_FEATURES</code>?) and the last one means all the constants will
-be removed from memory and loaded again on demand. We are talking about such
-thing as &#39;removing constant from memory&#39;, it&#39;d be very useful to know how.
-There&#39;s a method called <code>Module#remove_const(sym)</code>:</p>
+autoloading schemes: <code>:require</code> and <code>:load</code>(default). The first one means that
+all the constants won&#39;t be reloaded(as <code>require</code> does eventually, do you
+remember <code>$LOADED_FEATURES</code>?) and the last one means that all the constants will
+be removed from memory and loaded again on demand. What does removing constant
+from memory mean? There&#39;s a method called <code>Module#remove_const(sym)</code>:</p>
 <div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3</pre></div></td><td class="code"><div class="highlight"><pre>  <span class="k">module</span> <span class="nn">A</span><span class="p">;</span> <span class="k">end</span>
@@ -71,7 +70,7 @@ There&#39;s a method called <code>Module#remove_const(sym)</code>:</p>
   <span class="n">A</span> <span class="c1"># =&gt; uninitialized constant A (NameError)</span>
 </pre></div>
 </td></tr></table></div>
-<p>But what if we remove constant for existed instance of class:</p>
+<p>But what if we remove constant for existing instance of a class:</p>
 <div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -102,7 +101,7 @@ class as object(do you still remember that class is an object and a constant is
 a variable referencing that object?) still exists in the memory. Ok, move on.</p>
 
 <p>Calling <code>require &#39;active_support/dependencies&#39;</code> injects a few modules into basic
-Ruby classes by mean <code>AS::D.hook!</code>.</p>
+Ruby classes via <code>AS::D.hook!</code>.</p>
 <div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
@@ -115,10 +114,10 @@ Ruby classes by mean <code>AS::D.hook!</code>.</p>
 </pre></div>
 </td></tr></table></div>
 <p>Methods injected into <code>Object</code> overwrite methods like <code>load</code> and <code>require</code> in
-order to monitor emerging constants(depends on schema). Another method you could
+order to monitor new constants(depends on schema). Another method you could
 already know is <code>require_dependency</code> also injected into <code>Object</code>. Methods in
-<code>Module</code> define an entry point <code>const_missing</code> as I told you earlier. I&#39;m gonna
-show you how <code>AS::D</code> works with this example:</p>
+<code>Module</code> define an entry point <code>const_missing</code> as I told you earlier. I&#39;m going
+to show you how <code>AS::D</code> works with this example:</p>
 <div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3

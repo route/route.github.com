@@ -11,7 +11,7 @@ and send a PR on github (if I have time indeed). You can see my commits in such
 projects like Rails, Poltergeist, Capybara, MiniTest and so on. Besides job I
 like having fun with friends, cycling around the city, skating, playing football
 or doing sport. Meeting new people is another thing I like to do, get in touch:
-<d.vorotilin@gmail.com>, [Github](http://github.com/route), [Twitter](https://twitter.com/rO_Oute), [VK](http://vk.com/vorotilin)
+<d.vorotilin@gmail.com>, [Github](http://github.com/route), [Twitter](https://twitter.com/rO_Oute), [VK](http://vk.com/vorotilin), [Skype](skype:sp3ctr785?call)
 
 ### Technical:
 * PHP/Ruby/JS/CoffeeScript/Erlang/Elixir/Scala

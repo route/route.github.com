@@ -5,10 +5,50 @@
   <id>http://blog.url.com/</id>
   <link href="http://blog.url.com/"/>
   <link href="http://blog.url.com/feed.xml" rel="self"/>
-  <updated>2013-11-12T20:00:00Z</updated>
+  <updated>2014-08-09T20:00:00Z</updated>
   <author>
     <name>Blog Author</name>
   </author>
+  <entry>
+    <title>Query Trail</title>
+    <link rel="alternate" href="/2014/08/10/query-trail.html"/>
+    <id>/2014/08/10/query-trail.html</id>
+    <published>2014-08-09T20:00:00Z</published>
+    <updated>2014-08-09T20:00:00Z</updated>
+    <author>
+      <name>Article Author</name>
+    </author>
+    <summary type="html">&lt;p&gt;Recently I switched on a project with lots of legacy code. It was on Rails 2,
+Rails 3 and now I&amp;#39;ve updated it to Rails 4.1. You can&amp;#39;t even imagine how much
+rubbish I got rid of. But the thing I&amp;#39;d like to share with you today is
+&lt;a href="https://github.com/route/query_trail"&gt;QueryTrail&lt;/a&gt;. This simple but useful gem&lt;/p&gt;
+</summary>
+    <content type="html">&lt;p&gt;Recently I switched on a project with lots of legacy code. It was on Rails 2,
+Rails 3 and now I&amp;#39;ve updated it to Rails 4.1. You can&amp;#39;t even imagine how much
+rubbish I got rid of. But the thing I&amp;#39;d like to share with you today is
+&lt;a href="https://github.com/route/query_trail"&gt;QueryTrail&lt;/a&gt;. This simple but useful gem
+shows you the backtrace of fired queries. You have to agree that when just one
+action of your controller sends hundreds sql requests from helpers, templates
+and so forth, it&amp;#39;s definitely hard to locate the place for specific query. But
+not for now:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3
+4
+5
+6
+7
+8&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;User&lt;/span&gt; &lt;span class="n"&gt;Load&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;0&lt;span class="p"&gt;.&lt;/span&gt;4&lt;span class="n"&gt;ms&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="n"&gt;SELECT&lt;/span&gt;  `&lt;span class="n"&gt;users&lt;/span&gt;`&lt;span class="o"&gt;.*&lt;/span&gt; &lt;span class="n"&gt;FROM&lt;/span&gt; `&lt;span class="n"&gt;users&lt;/span&gt;`  &lt;span class="n"&gt;WHERE&lt;/span&gt; `&lt;span class="n"&gt;users&lt;/span&gt;`&lt;span class="p"&gt;.&lt;/span&gt;`&lt;span class="n"&gt;id&lt;/span&gt;` &lt;span class="p"&gt;=&lt;/span&gt; 1 &lt;span class="n"&gt;LIMIT&lt;/span&gt; 1
+&lt;span class="n"&gt;Query&lt;/span&gt; &lt;span class="n"&gt;Trail&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;initializers&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;warden&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;rb&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;11&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;in&lt;/span&gt; `&lt;span class="n"&gt;block&lt;/span&gt; &lt;span class="n"&gt;in&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;top&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;required&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;&lt;/span&gt;
+&lt;span class="s"&gt;             config/initializers/warden.rb:15:in `block in &amp;lt;top (required)&amp;gt;&amp;#39;&lt;/span&gt;
+&lt;span class="n"&gt;Doc&lt;/span&gt; &lt;span class="n"&gt;Load&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;18&lt;span class="p"&gt;.&lt;/span&gt;2&lt;span class="n"&gt;ms&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="n"&gt;SELECT&lt;/span&gt; `&lt;span class="n"&gt;docs&lt;/span&gt;`&lt;span class="o"&gt;.*&lt;/span&gt; &lt;span class="n"&gt;FROM&lt;/span&gt; `&lt;span class="n"&gt;docs&lt;/span&gt;`  &lt;span class="n"&gt;WHERE&lt;/span&gt; `&lt;span class="n"&gt;docs&lt;/span&gt;`&lt;span class="p"&gt;.&lt;/span&gt;`&lt;span class="n"&gt;approved&lt;/span&gt;` &lt;span class="p"&gt;=&lt;/span&gt; 1
+&lt;span class="n"&gt;Query&lt;/span&gt; &lt;span class="n"&gt;Trail&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;views&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;_docs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;html&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;erb&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;2
+             &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;helpers&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;docs_helper&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;rb&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;3&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;in&lt;/span&gt; `&lt;span class="n"&gt;render_main_block&lt;/span&gt;&lt;span class="o"&gt;&amp;#39;&lt;/span&gt;
+             &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;views&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;index&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;html&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;erb&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;13
+             &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;views&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;index&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;html&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;erb&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;9
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</content>
+  </entry>
   <entry>
     <title>Rails autoloading</title>
     <link rel="alternate" href="/2013/11/13/rails-autoloading.html"/>

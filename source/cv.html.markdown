@@ -8,13 +8,17 @@ languages and design patterns, open source contributor, strong team player.
 Most of all I love my job, by the way it gives me an ability to live happily.
 I'm very curious about bugs and if I find something I'll give a shot to fix it
 and send a PR on github (if I have time indeed). You can see my commits in such
-projects like Rails, Poltergeist, Capybara, MiniTest and so on. Besides job I
-like having fun with friends, cycling around the city, skating, playing football
-or doing sport. Meeting new people is another thing I like to do, get in touch:
-<d.vorotilin@gmail.com>, [Github](http://github.com/route), [Twitter](https://twitter.com/rO_Oute), [VK](http://vk.com/vorotilin), [Skype](skype:sp3ctr785?call)
+projects like [Rails](http://contributors.rubyonrails.org/contributors/dmitry-vorotilin/commits),
+[Poltergeist](https://github.com/teampoltergeist/poltergeist/commits/master?author=route),
+[Quiet Assets](https://github.com/evrone/quiet_assets/commits/master?author=route),
+[Pjax Rails](https://github.com/rails/pjax_rails/commits/master?author=route),
+MiniTest and so on. Besides job I like having fun with friends, cycling around
+the city, skating, playing football, doing sport or meeting new people. Go get
+in touch with me:
+<d.vorotilin@gmail.com>, [Github](http://github.com/route), [Skype](skype:sp3ctr785?call)
 
 ### Technical:
-* PHP/Ruby/JS/CoffeeScript/Erlang/Elixir/Scala
+* PHP/Ruby/JavaScript/CoffeeScript/Erlang/Elixir/Scala
 * Yii/Rack/Sinatra/Rails
 * jQuery/Underscore.js/Backbone.js
 * HTML/HAML/CSS/SASS/SCSS
@@ -31,7 +35,7 @@ Supporting and developing startups on Ruby/Rails.
 Supporting and developing company's site using PHP, LDAP, MySQL, etc.
 
 * Computer Plus, System administrator, 2007-2008.
-Administrating heterogeneous networks with Windows Active Directory,
+Orchestrating heterogeneous network with Windows Active Directory,
 Terminal Services and Unix (Linux/BSD) with NATing/filtering, LDAP, SMB,
 Sendmail, BIND, Squid, Apache.
 

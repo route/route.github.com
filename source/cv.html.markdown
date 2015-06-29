@@ -18,12 +18,12 @@ in touch with me:
 <d.vorotilin@gmail.com>, [Github](http://github.com/route), [Skype](skype:sp3ctr785?call)
 
 ### Technical:
-* PHP/Ruby/JavaScript/CoffeeScript/Erlang/Elixir/Scala
-* Yii/Rack/Sinatra/Rails
-* jQuery/Underscore.js/Backbone.js
+* Ruby/JavaScript/CoffeeScript/Elixir/Erlang/Rust/Haskell/Scala
+* Rails/Rack/Sinatra/Phoenix
+* jQuery/Underscore.js/Backbone.js/React
 * HTML/HAML/CSS/SASS/SCSS
-* MySQL/PostgreSQL/Redis/Memcached/Sphinx/Solr
-* Unit Testing/MiniTest/RSpec/Capybara
+* MySQL/PostgreSQL/Redis/Memcached/Sphinx/Solr/Elasticsearch
+* UnitTesting/MiniTest/RSpec/Capybara
 * Linux/BSD/OSX
 * Git
 

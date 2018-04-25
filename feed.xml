@@ -458,8 +458,7 @@ found very interesting articles:&lt;/p&gt;
 &lt;p&gt;It&amp;#39;s like Telegram opened a curtain. Internet started like a small local network
 with purpose of exchanging data for research, helping humankind to solve issues
 or at least doing something meaningful and get better. Instead it&amp;#39;s a place for
-intertainment controlled by goverment. I&amp;#39;m very curious about who blocks what
-and where.&lt;/p&gt;
+intertainment controlled by goverment.&lt;/p&gt;
 
 &lt;p&gt;If you read until this point there&amp;#39;s a small bonus for you:
 It&amp;#39;s known fact that rutracker is blocked.&lt;/p&gt;
@@ -536,8 +535,49 @@ X-Frame-Options: SAMEORIGIN
 ...
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
-&lt;p&gt;They intercept traffic and replace with 302 redirect and below goes original page.
-Unfortunately the story for DO is completely different because the traffic is
+&lt;p&gt;They intercept traffic and put 302 redirect and below goes original page.
+Is that &lt;a href="https://habr.com/post/335436/"&gt;passive DPI&lt;/a&gt;? Remove carriage
+return headers now and watch plain 200:&lt;/p&gt;
+&lt;div class='codeblock'&gt;&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;printf&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;GET /forum/index.php HTTP/1.1\nHost: rutracker.org\n\n&amp;#39;&lt;/span&gt;; sleep 1&lt;span class="o"&gt;)&lt;/span&gt; | nc rutracker.org 80
+
+HTTP/1.1 200 OK
+Server: nginx
+Date: Wed, 25 Apr 2018 10:23:11 GMT
+Content-Type: text/html; &lt;span class="nv"&gt;charset&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Windows-1251
+Transfer-Encoding: chunked
+Connection: keep-alive
+Vary: Accept-Encoding
+X-BB-ID: rto
+X-Frame-Options: SAMEORIGIN
+
+1f90
+&amp;lt;!DOCTYPE html&amp;gt;
+&amp;lt;html &lt;span class="nv"&gt;lang&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;ru&amp;quot;&lt;/span&gt;&amp;gt;
+&amp;lt;head&amp;gt;
+
+&amp;lt;meta &lt;span class="nv"&gt;charset&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Windows-1251&amp;quot;&lt;/span&gt;&amp;gt;
+&amp;lt;meta &lt;span class="nv"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;description&amp;quot;&lt;/span&gt; &lt;span class="nv"&gt;content&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;���������� ������������� ���������� ������. ������� ��������� ������, ������, �����, ���������..&amp;quot;&lt;/span&gt;&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;p&gt;Unfortunately the story for DO is completely different because the traffic is
 blocked somwhere in between.&lt;/p&gt;
 
 &lt;p&gt;Here I should say that the reason remains unknown and I&amp;#39;ll keep you posted.&lt;/p&gt;

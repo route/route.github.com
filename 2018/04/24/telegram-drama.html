@@ -448,8 +448,7 @@ found very interesting articles:</p>
 <p>It&#39;s like Telegram opened a curtain. Internet started like a small local network
 with purpose of exchanging data for research, helping humankind to solve issues
 or at least doing something meaningful and get better. Instead it&#39;s a place for
-intertainment controlled by goverment. I&#39;m very curious about who blocks what
-and where.</p>
+intertainment controlled by goverment.</p>
 
 <p>If you read until this point there&#39;s a small bonus for you:
 It&#39;s known fact that rutracker is blocked.</p>
@@ -526,8 +525,49 @@ X-Frame-Options: SAMEORIGIN
 ...
 </pre></div>
 </td></tr></table></div>
-<p>They intercept traffic and replace with 302 redirect and below goes original page.
-Unfortunately the story for DO is completely different because the traffic is
+<p>They intercept traffic and put 302 redirect and below goes original page.
+Is that <a href="https://habr.com/post/335436/">passive DPI</a>? Remove carriage
+return headers now and watch plain 200:</p>
+<div class='codeblock'><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19</pre></div></td><td class="code"><div class="highlight"><pre><span class="o">(</span><span class="nb">printf</span> <span class="s1">&#39;GET /forum/index.php HTTP/1.1\nHost: rutracker.org\n\n&#39;</span>; sleep 1<span class="o">)</span> | nc rutracker.org 80
+
+HTTP/1.1 200 OK
+Server: nginx
+Date: Wed, 25 Apr 2018 10:23:11 GMT
+Content-Type: text/html; <span class="nv">charset</span><span class="o">=</span>Windows-1251
+Transfer-Encoding: chunked
+Connection: keep-alive
+Vary: Accept-Encoding
+X-BB-ID: rto
+X-Frame-Options: SAMEORIGIN
+
+1f90
+&lt;!DOCTYPE html&gt;
+&lt;html <span class="nv">lang</span><span class="o">=</span><span class="s2">&quot;ru&quot;</span>&gt;
+&lt;head&gt;
+
+&lt;meta <span class="nv">charset</span><span class="o">=</span><span class="s2">&quot;Windows-1251&quot;</span>&gt;
+&lt;meta <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;description&quot;</span> <span class="nv">content</span><span class="o">=</span><span class="s2">&quot;���������� ������������� ���������� ������. ������� ��������� ������, ������, �����, ���������..&quot;</span>&gt;
+</pre></div>
+</td></tr></table></div>
+<p>Unfortunately the story for DO is completely different because the traffic is
 blocked somwhere in between.</p>
 
 <p>Here I should say that the reason remains unknown and I&#39;ll keep you posted.</p>

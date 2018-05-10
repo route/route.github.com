@@ -15,38 +15,38 @@ You probably know about
 in Rails but if you don't here you are:
 
 ``` ruby
-  def self.wrap(object)
-    if object.nil?
-      []
-    elsif object.respond_to?(:to_ary)
-      object.to_ary || [object]
-    else
-      [object]
-    end
+def self.wrap(object)
+  if object.nil?
+    []
+  elsif object.respond_to?(:to_ary)
+    object.to_ary || [object]
+  else
+    [object]
   end
+end
 ```
 
 And you probably know about
 [Kernel#Array](http://rxr.whitequark.org/mri/source/object.c#2624):
 
 ``` c
-  VALUE
-  rb_Array(VALUE val) {
-    VALUE tmp = rb_check_array_type(val);
+VALUE
+rb_Array(VALUE val) {
+  VALUE tmp = rb_check_array_type(val);
 
+  if (NIL_P(tmp)) {
+    tmp = rb_check_convert_type(val, T_ARRAY, "Array", "to_a");
     if (NIL_P(tmp)) {
-      tmp = rb_check_convert_type(val, T_ARRAY, "Array", "to_a");
-      if (NIL_P(tmp)) {
-        return rb_ary_new3(1, val);
-      }
+      return rb_ary_new3(1, val);
     }
-    return tmp;
   }
+  return tmp;
+}
 
-  static VALUE
-  rb_f_array(VALUE obj, VALUE arg) {
-    return rb_Array(arg);
-  }
+static VALUE
+rb_f_array(VALUE obj, VALUE arg) {
+  return rb_Array(arg);
+}
 ```
 
 Let's talk about ruby realization first of all.
@@ -61,7 +61,7 @@ with object as its element.
 
 Now take a look at Rails realization. If object is `nil` it returns empty
 array. If object responds to `to_ary` method it returns the result
-or if the result is `nil` just `[object]`. And finally it returns 
+or if the result is `nil` just `[object]`. And finally it returns
 `[object]`.
 
 You see that Rails method doesn't call `to_a`.

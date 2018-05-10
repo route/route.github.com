@@ -22,12 +22,12 @@ Indeed they lie!
 Here's the block of code from `activerecord\lib\active_record\railtie.rb`:
 
 ``` ruby
-  initializer "active_record.initialize_timezone" do
-    ActiveSupport.on_load(:active_record) do
-      ...
-      self.default_timezone = :utc
-    end
+initializer "active_record.initialize_timezone" do
+  ActiveSupport.on_load(:active_record) do
+    ...
+    self.default_timezone = :utc
   end
+end
 ```
 
 It's `:utc` by default in Rails, and it's `:local` if you use ActiveRecord out
@@ -37,8 +37,8 @@ with `:utc`. So what does this option do?
 I have to say that my system time zone is Europe/Moscow (+4):
 
 ``` bash
-  $ sudo systemsetup -gettimezone
-  Time Zone: Europe/Moscow
+$ sudo systemsetup -gettimezone
+Time Zone: Europe/Moscow
 ```
 
 And I have to mention another setting named `config.time_zone` which is UTC
@@ -47,16 +47,16 @@ by default. All time aware fields will be converted to that timezone.
 Let's consider a few examples:
 
 ``` ruby
-  User.connection.select_all("SELECT updated_at FROM users WHERE users.id = 1")
-  # => [{"updated_at"=>"2012-11-19 15:29:45.314649"}]
-  [Rails.application.config.time_zone, ActiveRecord::Base.default_timezone] # => ["UTC", :utc]
-  User.find(1).updated_at # => Mon, 19 Nov 2012 15:29:45 UTC +00:00
-  [Rails.application.config.time_zone, ActiveRecord::Base.default_timezone] # => ["Moscow", :utc]
-  User.find(1).updated_at # => Mon, 19 Nov 2012 19:29:45 MSK +04:00
-  [Rails.application.config.time_zone, ActiveRecord::Base.default_timezone] # => ["UTC", :local]
-  User.find(1).updated_at # => Mon, 19 Nov 2012 11:29:45 UTC +00:00
-  [Rails.application.config.time_zone, ActiveRecord::Base.default_timezone] # => ["Moscow", :local]
-  User.find(1).updated_at # => Mon, 19 Nov 2012 15:29:45 MSK +04:00
+User.connection.select_all("SELECT updated_at FROM users WHERE users.id = 1")
+# => [{"updated_at"=>"2012-11-19 15:29:45.314649"}]
+[Rails.application.config.time_zone, ActiveRecord::Base.default_timezone] # => ["UTC", :utc]
+User.find(1).updated_at # => Mon, 19 Nov 2012 15:29:45 UTC +00:00
+[Rails.application.config.time_zone, ActiveRecord::Base.default_timezone] # => ["Moscow", :utc]
+User.find(1).updated_at # => Mon, 19 Nov 2012 19:29:45 MSK +04:00
+[Rails.application.config.time_zone, ActiveRecord::Base.default_timezone] # => ["UTC", :local]
+User.find(1).updated_at # => Mon, 19 Nov 2012 11:29:45 UTC +00:00
+[Rails.application.config.time_zone, ActiveRecord::Base.default_timezone] # => ["Moscow", :local]
+User.find(1).updated_at # => Mon, 19 Nov 2012 15:29:45 MSK +04:00
 ```
 
 The first query gives us the real value from the database without time zone
@@ -80,16 +80,16 @@ A little quiz for you, I suppose you're on my laptop and now you have these
 settings in your application.rb:
 
 ``` ruby
-  config.time_zone = 'Central America' # It's (-6)
-  config.active_record.default_timezone = :local
+config.time_zone = 'Central America' # It's (-6)
+config.active_record.default_timezone = :local
 ```
 
 Give me the answer what will return ActiveRecord for updated_at?
 
 ``` ruby
-  # => [{"updated_at"=>"2012-11-19 15:29:45.314649"}]
-  [Rails.application.config.time_zone, ActiveRecord::Base.default_timezone] # => ["Central America", :local]
-  User.find(1).updated_at # => ???
+# => [{"updated_at"=>"2012-11-19 15:29:45.314649"}]
+[Rails.application.config.time_zone, ActiveRecord::Base.default_timezone] # => ["Central America", :local]
+User.find(1).updated_at # => ???
 ```
 
 Ok if you said `Mon, 19 Nov 2012 05:29:45 CST -06:00` you were good boy.
@@ -106,7 +106,7 @@ conversion to the current Time.zone when reading certain attributes then you can
 do following:
 
 ``` ruby
-  class Topic < ActiveRecord::Base
-    self.skip_time_zone_conversion_for_attributes = [:written_on]
-  end
+class Topic < ActiveRecord::Base
+  self.skip_time_zone_conversion_for_attributes = [:written_on]
+end
 ```

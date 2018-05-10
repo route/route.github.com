@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= current_page.data.title || "Blog" %></title>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <%- if current_page.data.description -%>
+    <meta name="description" content="<%= current_page.data.description %>">
+    <%- end -%>
+    <%- if current_page.data.keywords -%>
+    <meta name="keywords" content="<%= current_page.data.keywords %>">
+    <%- end -%>
+    <meta name="author" content="Dmitry Vorotilin">
+
+    <%= stylesheet_link_tag "application" %>
+    <%= javascript_include_tag "application" %>
+  </head>
+  <body>
+    <div class="content">
+      <header>
+        <%= link_to "Blog", "/" %>
+      </header>
+      <%= yield -%>
+      <footer>
+        Copyright © 2012-2018
+        <%= link_to "Dmitry Vorotilin", "https://github.com/route", target: "_blank" %>
+        |
+        <%= link_to "CV", "/cv.html", target: "_blank" %>
+      </footer>
+      <%- if !development? -%>
+      <div class="yandex_metrika">
+        <%= partial "yandex_metrika" %>
+      </div>
+      <%- end -%>
+    </div>
+  </body>
+</html>

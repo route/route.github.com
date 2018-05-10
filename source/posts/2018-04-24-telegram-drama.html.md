@@ -3,14 +3,11 @@ title: Telegram drama
 tags: rkn, telegram, block, vpn
 ---
 
-I didn't write a word in the blog for almost 4 years because I didn't have time
-or most likely motivation to do it. But current circumstances forced me.
-
 In my childhood internet and network looked like a magick. In movies they showed
 something like ping output and I definitely thought that someone hacked someone
 else.
 
-![hacking](https://www.techworm.net/wp-content/uploads/2016/03/Movies-Based-On-Hacking-e1457858868314.png)
+![hacking](/images/hackers.png)
 
 I'm located in Russia and I work for Chicago based startup thanks 21st century
 for remote. We have our servers on AWS and DigitalOcean. Thereon this long
@@ -270,18 +267,10 @@ wonder if we can catch where exactly http traffic drops. With traceroute we can
 see where ICMP packets go but does that mean HTTP goes the same direction and
 where it drops? I don't know the answer.
 
-Overall I feel disappointed. I've been googling about backbone providers and
-found very interesting articles:
-
-* [about decentralization](http://www.lookatme.ru/mag/magazine/russian-internet/207489-decentralization)
-* [one more in english](https://www.newyorker.com/tech/elements/the-mission-to-decentralize-the-internet)
-* [about Syria internet blackout](https://dyn.com/blog/could-it-happen-in-your-countr/)
-
-It's like Telegram opened a curtain. Internet started like a small local network
-with purpose of exchanging data for research, helping humankind to solve issues
-or at least doing something meaningful and get better. Instead it's a place for
-intertainment controlled by goverment. I'm very curious about who blocks what
-and where.
+Overall I feel disappointed. It's like Telegram opened a curtain. Internet
+started like a small local network with purpose of exchanging data for research,
+helping humankind to solve issues or at least doing something meaningful and get
+better. Instead it's a place for intertainment controlled by goverment.
 
 If you read until this point there's a small bonus for you:
 It's known fact that rutracker is blocked.
@@ -330,9 +319,44 @@ X-Frame-Options: SAMEORIGIN
 ...
 ```
 
-They intercept traffic and replace with 302 redirect and below goes original page.
+They intercept traffic and put 302 redirect and below goes original page.
+Is that [passive DPI](https://habr.com/post/335436/)? Remove carriage
+return headers now and watch plain 200:
+
+```shell
+(printf 'GET /forum/index.php HTTP/1.1\nHost: rutracker.org\n\n'; sleep 1) | nc rutracker.org 80
+
+HTTP/1.1 200 OK
+Server: nginx
+Date: Wed, 25 Apr 2018 10:23:11 GMT
+Content-Type: text/html; charset=Windows-1251
+Transfer-Encoding: chunked
+Connection: keep-alive
+Vary: Accept-Encoding
+X-BB-ID: rto
+X-Frame-Options: SAMEORIGIN
+
+1f90
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+<meta charset="Windows-1251">
+<meta name="description" content="���������� ������������� ���������� ������. ������� ��������� ������, ������, �����, ���������..">
+
+```
+
 Unfortunately the story for DO is completely different because the traffic is
 blocked somwhere in between.
+
+Here I should say that the reason remains unknown and I'll keep you posted.
+
+* [Cyberspace independence](https://www.eff.org/cyberspace-independence)
+* [Decentralization](http://www.lookatme.ru/mag/magazine/russian-internet/207489-decentralization)
+* [The mission to decentralize the internet](https://www.newyorker.com/tech/elements/the-mission-to-decentralize-the-internet)
+* [Could it happen in your country](https://dyn.com/blog/could-it-happen-in-your-countr/)
+* [Vast world of fraudulent routing](https://dyn.com/blog/vast-world-of-fraudulent-routing/)
+* [Latest ISPs to hijack](https://dyn.com/blog/latest-isps-to-hijack/)
 
 Rostelekom convo:
 

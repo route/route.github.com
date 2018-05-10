@@ -1,7 +1,11 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
-gem 'middleman'
-gem 'middleman-blog'
-gem 'middleman-syntax'
-gem 'redcarpet'
-gem 'builder'
+gem "middleman"
+gem "middleman-syntax"
+gem "middleman-autoprefixer"
+gem "middleman-blog"
+gem "middleman-compass"
+gem "compass-blueprint"
+gem "redcarpet"
+gem "builder"
+gem "nokogiri"

@@ -1,0 +1,17 @@
+<%- wrap_layout :application do %>
+  <article>
+    <h1><%= current_page.title %></h1>
+    <time><%= current_page.date.strftime("%B %e, %Y") %></time>
+    <%= yield %>
+    <%- if !development? -%>
+    <div class="share">
+      <%= link_to "Tweet", "https://twitter.com/share", class: "twitter-share-button", data: { via: "rO_Oute" } %>
+      <script type="text/javascript">
+        //<![CDATA[
+          !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+        //]]>
+      </script>
+    </div>
+    <%- end -%>
+  </article>
+<% end %>

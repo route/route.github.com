@@ -12,8 +12,8 @@ I had to render html template with json pieces in my application.
 To implement this I've just used usual render partial in my html template:
 
 ``` ruby
-  :javascript
-    #{render partial: "json_partial", formats: :json}
+:javascript
+  #{render partial: "json_partial", formats: :json}
 ```
 
 But there is a trouble here, if your json template contains
@@ -25,12 +25,12 @@ browser sends `Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*
 to server. Rails parse headers and setup incoming formats:
 
 ``` ruby
-  # actionpack/action_controller/metal/rendering.rb
-  # Before processing, set the request formats in current controller formats.
-  def process_action(*) #:nodoc:
-    self.formats = request.formats.map { |x| x.ref }
-    super
-  end
+# actionpack/action_controller/metal/rendering.rb
+# Before processing, set the request formats in current controller formats.
+def process_action(*) #:nodoc:
+  self.formats = request.formats.map { |x| x.ref }
+  super
+end
 ```
 
 Then it processed action in your controller, find template for your action
@@ -41,5 +41,5 @@ you render only
 
 For our case formats are set to `[:html]`. When your action processed, rails
 start lookup template for your action recline against formats. They found our
-html template, then see render partial, but we set formats as :json for 
-case, and they found it too. Next 
+html template, then see render partial, but we set formats as :json for
+case, and they found it too. Next

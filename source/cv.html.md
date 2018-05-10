@@ -6,29 +6,34 @@ layout: resume
 I'm Dmitry Vorotilin – developer with knowledge of several programming
 languages and design patterns, open source contributor, strong team player.
 Most of all I love my job, by the way it gives me an ability to live happily.
-I'm very curious about bugs and if I find something I'll give a shot to fix it
-and send a PR on github (if I have time indeed). You can see my commits in such
-projects like [Rails](http://contributors.rubyonrails.org/contributors/dmitry-vorotilin/commits),
+I'm very curious about bugs and difficulties in programming and if I find
+something intersting I don't give up until I fix it. You can see my commits in
+such projects like [Rails](http://contributors.rubyonrails.org/contributors/dmitry-vorotilin/commits),
 [Poltergeist](https://github.com/teampoltergeist/poltergeist/commits/master?author=route),
 [Quiet Assets](https://github.com/evrone/quiet_assets/commits/master?author=route),
 [Pjax Rails](https://github.com/rails/pjax_rails/commits/master?author=route),
+[Mogrify](https://github.com/route/mogrify),
+[Ruby](https://github.com/ruby/ruby/pull/1475),
 MiniTest and so on. Besides job I like having fun with friends, cycling around
-the city, skating, playing football, doing sport or meeting new people. Go get
-in touch with me:
-<d.vorotilin@gmail.com>, [Github](http://github.com/route), [Skype](skype:sp3ctr785?call)
+the city, skating, playing football, doing sport and meeting new people. Go get
+in touch with me: <d.vorotilin@gmail.com>, [Github](http://github.com/route)
 
 ### Technical:
-* Ruby/JavaScript/CoffeeScript/Elixir/Erlang/Rust/Haskell/Scala
+* Ruby/Go/Elixir/Erlang
 * Rails/Rack/Sinatra/Phoenix
-* jQuery/Underscore.js/Backbone.js/React
-* HTML/HAML/CSS/SASS/SCSS
-* MySQL/PostgreSQL/Redis/Memcached/Sphinx/Solr/Elasticsearch
-* UnitTesting/MiniTest/RSpec/Capybara
-* Linux/BSD/OSX
-* Git
+* JavaScript/CoffeeScript/TypeScript
+* Underscore.js/Backbone.js/React/Vue.js
+* HTML/Haml/Slim/CSS/SASS/SCSS
+* MySQL/PostgreSQL
+* Sphinx/Solr/Elasticsearch
+* Redis/Memcached/RabbitMQ
+* AWS/DigitalOcean
 
 ### Experience:
-* [Evrone.com](http://evrone.com), Team lead, 2010-current time.
+
+* [Machinio.com](http://machinio.com), Team lead, 2015-current time.
+
+* [Evrone.com](http://evrone.com), Team lead, 2010-2015.
 Supporting and developing startups on Ruby/Rails.
 
 * Computer Plus, PHP Developer, 2008-2010.

@@ -19,24 +19,24 @@ Previously discussed method `self.const_missing(const_name)` is the entry point
 for `AS::D`. Consider this example:
 
 ``` ruby
-  # /autoloadable/a.rb
-  # module A
-  # end
+# /autoloadable/a.rb
+# module A
+# end
 
-  require 'active_support/dependencies'
-  ActiveSupport::Dependencies.autoload_paths = ['/autoloadable']
+require 'active_support/dependencies'
+ActiveSupport::Dependencies.autoload_paths = ['/autoloadable']
 
-  A
+A
 ```
 
 `AS::D` loads module `A` automatically without any `require`.
 
 ``` ruby
-  # Meanwhile you can add sleep here and make changes in a.rb
+# Meanwhile you can add sleep here and make changes in a.rb
 
-  ActiveSupport::Dependencies.clear # Removes A from memory
+ActiveSupport::Dependencies.clear # Removes A from memory
 
-  A # Will load A again
+A # Will load A again
 ```
 
 I've just introduced the method Rails reloads your code with — `clear`. Let's
@@ -48,25 +48,25 @@ demand. What does removing constant from memory mean? There's a method called
 `Module#remove_const(sym)`:
 
 ``` ruby
-  module A; end
-  Object.send(:remove_const, 'A')
-  A # => uninitialized constant A (NameError)
+module A; end
+Object.send(:remove_const, 'A')
+A # => uninitialized constant A (NameError)
 ```
 
 But what if we remove constant for existing instance of a class:
 
 ``` ruby
-  class A
-    def self.value
-      'value'
-    end
+class A
+  def self.value
+    'value'
   end
+end
 
-  a = A.new
-  Object.send(:remove_const, 'A')
-  a.class # => A
-  a.class.value # => 'value'
-  A # => uninitialized constant A (NameError)
+a = A.new
+Object.send(:remove_const, 'A')
+a.class # => A
+a.class.value # => 'value'
+A # => uninitialized constant A (NameError)
 ```
 
 That's interesting because constant name was removed from memory but its
@@ -79,11 +79,11 @@ Calling `require 'active_support/dependencies'` injects a few modules into basic
 Ruby classes via `AS::D.hook!`.
 
 ``` ruby
-  def hook!
-    Object.class_eval { include Loadable }
-    Module.class_eval { include ModuleConstMissing }
-    Exception.class_eval { include Blamable }
-  end
+def hook!
+  Object.class_eval { include Loadable }
+  Module.class_eval { include ModuleConstMissing }
+  Exception.class_eval { include Blamable }
+end
 ```
 
 Methods injected into `Object` overwrite methods like `load` and `require` in
@@ -93,14 +93,14 @@ Another method you could already know is `require_dependency` also injected into
 to show you how `AS::D` works with this example:
 
 ``` ruby
-  # /autoloadable/a.rb
-  # module A
-  # end
+# /autoloadable/a.rb
+# module A
+# end
 
-  require 'active_support/dependencies'
-  ActiveSupport::Dependencies.autoload_paths = ['/autoloadable']
+require 'active_support/dependencies'
+ActiveSupport::Dependencies.autoload_paths = ['/autoloadable']
 
-  A
+A
 ```
 
 1. Declaring constant `A` triggers `Module#const_missing`, that was overwritten
@@ -133,29 +133,29 @@ Another convention `AS::D` uses is a path convention. This example
 which gives us ability to use folders like module namespaces:
 
 ``` ruby
-  # /autoloadable/a.rb
-  # module A
-  # end
+# /autoloadable/a.rb
+# module A
+# end
 
-  # /autoloadable/a/b.rb
-  # module A
-  #   module B
-  #     C = 'c'
-  #   end
-  # end
+# /autoloadable/a/b.rb
+# module A
+#   module B
+#     C = 'c'
+#   end
+# end
 
-  A::B::C => 'c'
+A::B::C => 'c'
 ```
 
 or even so:
 
 ``` ruby
-  # /autoloadable/a/b.rb
-  # module A::B
-  #   C = 'c'
-  # end
+# /autoloadable/a/b.rb
+# module A::B
+#   C = 'c'
+# end
 
-  A::B::C => 'c'
+A::B::C => 'c'
 ```
 
 Although we haven't defined module `A`, it has been created for us automatically
@@ -169,28 +169,28 @@ Since Ruby passes only one argument to `const_missing(const_name)` we don't have
 an idea about the nesting, this example works as expected:
 
 ``` ruby
-  # /autoloadable/b.rb
-  module B
-  end
+# /autoloadable/b.rb
+module B
+end
 
-  # /autoloadable/a.rb
-  module A
-    B # => B
-  end
+# /autoloadable/a.rb
+module A
+  B # => B
+end
 ```
 
 but this shows wrong results:
 
 ``` ruby
-  # /autoloadable/a.rb
-  module A
-  end
+# /autoloadable/a.rb
+module A
+end
 
-  # /autoloadable/b.rb
-  module B
-  end
+# /autoloadable/b.rb
+module B
+end
 
-  p A::B # => B
+p A::B # => B
 ```
 
 Is that right? I don't think so. If we had used pure Ruby it would have thrown
@@ -201,15 +201,15 @@ little info to `const_missing` and `AS::D` can do nothing with it.
 Another cool case:
 
 ``` ruby
-  # /autoloadable/a.rb
-  # module A; end
-  
-  # /autoloadable/namespace/a/b.rb
-  # module Namespace::A::B
-  #  A
-  # end
+# /autoloadable/a.rb
+# module A; end
 
-  Namespace::A::B # => What is A inside this namespace?
+# /autoloadable/namespace/a/b.rb
+# module Namespace::A::B
+#  A
+# end
+
+Namespace::A::B # => What is A inside this namespace?
 ```
 
 What would you expect from this example? I think in Ruby it's obviously
@@ -224,21 +224,21 @@ in `from_mod`. Why don't we have to search it right at the top-level? May be
 because of this:
 
 ``` ruby
-  # c.rb
-  # C = 'c'
+# c.rb
+# C = 'c'
 
-  # a/c.rb
-  # module A
-  #   C = 'ac'
-  # end
+# a/c.rb
+# module A
+#   C = 'ac'
+# end
 
-  # a/b.rb
-  # module A::B
-  #   C
-  # end
+# a/b.rb
+# module A::B
+#   C
+# end
 
-  A::B::C # => 'ac'
-  A::B::C # => uninitialized constant A::B::C
+A::B::C # => 'ac'
+A::B::C # => uninitialized constant A::B::C
 ```
 
 Calling it twice gives us an error, because of the same case we've considered
@@ -255,24 +255,24 @@ which is still sad. That's why I'd prefer an error.
 Let's write our own simplified autoloading:
 
 ``` ruby
-  # autoloadable/a.rb
-  # module A
-  #   sleep 5
-  #   def self.hello
-  #     'hello'
-  #   end
-  # end
+# autoloadable/a.rb
+# module A
+#   sleep 5
+#   def self.hello
+#     'hello'
+#   end
+# end
 
-  class Module
-    def const_missing(name)
-      require "./autoloadable/#{name.downcase}.rb"
-      Object.const_get(name)
-    end
+class Module
+  def const_missing(name)
+    require "./autoloadable/#{name.downcase}.rb"
+    Object.const_get(name)
   end
+end
 
-  t1 = Thread.new { A.hello }
-  t2 = Thread.new { A.hello }
-  t1.join; t2.join
+t1 = Thread.new { A.hello }
+t2 = Thread.new { A.hello }
+t1.join; t2.join
 ```
 
 The result is `undefined method 'hello' for A:Module (NoMethodError)`. Why?
@@ -295,10 +295,10 @@ Have you ever seen the 'Toplevel constant B referenced by A::B'? It's easy to
 reproduce even without `AS::D`:
 
 ``` ruby
-  class B; end
-  class A; end
+class B; end
+class A; end
 
-  A::B
+A::B
 ```
 
 Since `A.ancestors` is `[A, Object, Kernel, BasicObject]` and contains class
@@ -307,10 +307,10 @@ warning that constant we're trying to resolve inside `A` references top level
 constant. Notice that for modules the situation is different:
 
 ``` ruby
-  module B; end
-  module A; end
+module B; end
+module A; end
 
-  A::B
+A::B
 ```
 
 It gives us just 'uninitialized constant A::B (NameError)' because the ancestors
@@ -321,17 +321,17 @@ chain doesn't contain `Object`.
 This is yet another `AS::D` error that you could see:
 
 ``` ruby
-  # /autoloadable/a.rb
-  # B
-  # module A
-  # end
-  
-  # /autoloadable/b.rb
-  # A
-  # module B
-  # end
+# /autoloadable/a.rb
+# B
+# module A
+# end
 
-  A
+# /autoloadable/b.rb
+# A
+# module B
+# end
+
+A
 ```
 
 If we try to access constant `A` we'll see this error. `AS::D` makes an
@@ -344,22 +344,22 @@ multi-threaded environment.
 * A copy of `A` has been removed from the module tree but is still active!
 
 ``` ruby
-  # /autoloadable/money.rb
-  # class Money
-  # end
+# /autoloadable/money.rb
+# class Money
+# end
 
-  # /autoloadable/customer.rb
-  # class Customer
-  #   def money
-  #     Money.new
-  #   end
-  # end
+# /autoloadable/customer.rb
+# class Customer
+#   def money
+#     Money.new
+#   end
+# end
 
-  customer = Customer.new
+customer = Customer.new
 
-  ActiveSupport::Dependencies.clear
+ActiveSupport::Dependencies.clear
 
-  customer.money
+customer.money
 ```
 
 It happens because class for `Customer` was autoloaded, but class for `Money`

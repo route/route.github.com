@@ -7,9 +7,9 @@ This post is about the bug I found when I was writing tests for `quiet_assets`.
 I won't show you all those tests, just a small piece:
 
 ``` ruby
-  Class.new(Rails::Application) do
-    routes.append { ... }
-  end
+Class.new(Rails::Application) do
+  routes.append { ... }
+end
 ```
 
 All of them were passed on my laptop, but Travis-CI showed me the odd message
@@ -26,10 +26,10 @@ If you take a look at the chain of `self.inherited` callbacks in all those
 classes you'll see that `Rails::Railtie` has module inclusion:
 
 ``` ruby
-  def inherited(base)
-    ...
-    base.send(:include, Railtie::Configurable)
-  end
+def inherited(base)
+  ...
+  base.send(:include, Railtie::Configurable)
+end
 ```
 
 `Railtie::Configurable` has `method_missing` which does exactly our case -
@@ -37,26 +37,26 @@ proxying our calls to instance. You see that all logic rely on `self.inhereted`
 callback. Let's check it:
 
 ``` ruby
-  class Parent
-    def self.inherited(base)
-      puts 'Inside inherited'
-    end
+class Parent
+  def self.inherited(base)
+    puts 'Inside inherited'
   end
+end
 
-  class Child < Parent
-    puts 'We are inside class definition'
-  end
+class Child < Parent
+  puts 'We are inside class definition'
+end
 
-  app = Class.new(Parent) do
-    puts 'We are inside class definition'
-  end
+app = Class.new(Parent) do
+  puts 'We are inside class definition'
+end
 ```
 
 If you run this code you'll see that for `Class.new` we'll get this:
 
 ```
-  We are inside class definition
-  Inside inherited
+We are inside class definition
+Inside inherited
 ```
 
 Ruby 1.8 cannot find `routes`, even `method_missing` just because

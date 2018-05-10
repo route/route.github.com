@@ -33,19 +33,19 @@ I think it's clear and turns out that we'll see a warning if we'll try to change
 a constant:
 
 ```ruby
-  A = 'a'
-  A = 'b'
-  #./a.rb:2: warning: already initialized constant A
-  #./a.rb:1: warning: previous definition of A was here
+A = 'a'
+A = 'b'
+#./a.rb:2: warning: already initialized constant A
+#./a.rb:1: warning: previous definition of A was here
 ```
 
 The same thing for classes:
 
 ```ruby
-  class A; end
-  A = 'b'
-  #./a.rb:2: warning: already initialized constant A
-  #./a.rb:1: warning: previous definition of A was here
+class A; end
+A = 'b'
+#./a.rb:2: warning: already initialized constant A
+#./a.rb:1: warning: previous definition of A was here
 ```
 
 Since the constant `A` is just a reference for the class' object (remember class
@@ -75,22 +75,22 @@ a file in the current directory or directories that is relative to current.
 Example with `require`:
 
 ``` ruby
-  # a.rb
-  # module A
-  #   C = 'constant'
-  # end
+# a.rb
+# module A
+#   C = 'constant'
+# end
 
-  before = $".dup
-  require 'a'
-  $" - before # => ['/Users/route/Projects/dependencies/a.rb']
+before = $".dup
+require 'a'
+$" - before # => ['/Users/route/Projects/dependencies/a.rb']
 
-  A::C # => 'constant'
-  sleep 5
-  # Meanwhile changing constant value to 'changed'
+A::C # => 'constant'
+sleep 5
+# Meanwhile changing constant value to 'changed'
 
-  require 'a'
+require 'a'
 
-  A::C # => 'constant'
+A::C # => 'constant'
 ```
 
 `Kernel#load(filename, wrap=false)` loads and executes the Ruby program in the
@@ -104,24 +104,24 @@ extension.
 Example with `load`:
 
 ``` ruby
-  # a.rb
-  # module A
-  #   C = 'constant'
-  # end
+# a.rb
+# module A
+#   C = 'constant'
+# end
 
-  before = $".dup
-  load './a.rb'
-  $" - before # => []
+before = $".dup
+load './a.rb'
+$" - before # => []
 
-  A::C # => 'constant'
-  sleep 5
-  # Meanwhile changing constant value to 'changed'
+A::C # => 'constant'
+sleep 5
+# Meanwhile changing constant value to 'changed'
 
-  load './a.rb'
+load './a.rb'
 
-  # ./a.rb:2: warning: already initialized constant A::C
-  # ./a.rb:2: warning: previous definition of C was here
-  A::C # => 'changed'
+# ./a.rb:2: warning: already initialized constant A::C
+# ./a.rb:2: warning: previous definition of C was here
+A::C # => 'changed'
 ```
 
 With warnings but the code was reloaded and we can even see the changes we've
@@ -130,17 +130,17 @@ made. Let's add optional parameter `wrap`:
 Example with `load` and wrap:
 
 ``` ruby
-  # a.rb
-  # module A
-  #   C = 'constant'
-  # end
-  #
-  # $A = A
+# a.rb
+# module A
+#   C = 'constant'
+# end
+#
+# $A = A
 
-  load './a.rb', true
+load './a.rb', true
 
-  A::C # => uninitialized constant A (NameError)
-  $A::C # => 'constant'
+A::C # => uninitialized constant A (NameError)
+$A::C # => 'constant'
 ```
 
 You see that Ruby hasn't polluted global namespace and wrapped all the constants
@@ -155,12 +155,12 @@ accessed.
 Example 1 with `autoload`:
 
 ``` ruby
-  # a.rb
-  # module A
-  #   p 'loading'
-  # end
+# a.rb
+# module A
+#   p 'loading'
+# end
 
-  autoload :A, 'a'
+autoload :A, 'a'
 ```
 
 It won't produce anything useful, because we've just declared that constant `A`
@@ -169,13 +169,13 @@ can be found in a file but we've never used it.
 Example 2 with `autoload`:
 
 ``` ruby
-  # a.rb
-  # module A
-  #   p 'loading'
-  # end
+# a.rb
+# module A
+#   p 'loading'
+# end
 
-  autoload :A, 'a'
-  A # => Gives output 'loading'
+autoload :A, 'a'
+A # => Gives output 'loading'
 ```
 
 In other words `autoload` makes us to load code lazily on demand decreasing time
@@ -185,19 +185,19 @@ what the Ruby core team came up with. But the bug was fixed and I just can say
 it works properly even with threads for now:
 
 ``` ruby
-  # a.rb
-  # module A
-  #   sleep 5
-  #   def self.hello
-  #     'hello'
-  #   end
-  # end
+# a.rb
+# module A
+#   sleep 5
+#   def self.hello
+#     'hello'
+#   end
+# end
 
-  autoload :A, './a'
+autoload :A, './a'
 
-  t1 = Thread.new { A.hello }
-  t2 = Thread.new { A.hello }
-  t1.join; t2.join
+t1 = Thread.new { A.hello }
+t2 = Thread.new { A.hello }
+t1.join; t2.join
 ```
 
 I was expecting that second thread would throw an error that method `hello` is
@@ -210,45 +210,45 @@ I find this example very comprehensive and I won't describe it much because the
 code tells about itself:
 
 ``` ruby
-  module Kernel
-    # Constants defined in Kernel
-    A = B = C = D = E = F = 'defined in kernel'
+module Kernel
+  # Constants defined in Kernel
+  A = B = C = D = E = F = 'defined in kernel'
+end
+
+# Top-level or 'global' constants defined in Object
+A = B = C = D = E = 'defined at top-level'
+
+class Super
+  # Constants defined in a superclass
+  A = B = C = D = 'defined in superclass'
+end
+
+module Included
+  # Constants defined in an included module
+  A = B = C = 'defined in included module'
+end
+
+module Enclosing
+  # Constants defined in an enclosing module
+  A = B = 'defined in enclosing module'
+
+  class Local < Super
+    include Included
+
+    # Locally defined constant
+    A = 'defined locally'
+
+    # The list of modules searched, in the order searched
+    # [Enclosing::Local, Enclosing, Included, Super, Object, Kernel, BasicObject]
+    # (Module.nesting + self.ancestors + Object.ancestors).uniq
+    puts A  # Prints "defined locally"
+    puts B  # Prints "defined in enclosing module"
+    puts C  # Prints "defined in included module"
+    puts D  # Prints "defined in superclass"
+    puts E  # Prints "defined at top-level"
+    puts F  # Prints "defined in kernel"
   end
-
-  # Top-level or 'global' constants defined in Object
-  A = B = C = D = E = 'defined at top-level'
-
-  class Super
-    # Constants defined in a superclass
-    A = B = C = D = 'defined in superclass'
-  end
-
-  module Included
-    # Constants defined in an included module
-    A = B = C = 'defined in included module'
-  end
-
-  module Enclosing
-    # Constants defined in an enclosing module
-    A = B = 'defined in enclosing module'
-
-    class Local < Super
-      include Included
-
-      # Locally defined constant
-      A = 'defined locally'
-
-      # The list of modules searched, in the order searched
-      # [Enclosing::Local, Enclosing, Included, Super, Object, Kernel, BasicObject]
-      # (Module.nesting + self.ancestors + Object.ancestors).uniq
-      puts A  # Prints "defined locally"
-      puts B  # Prints "defined in enclosing module"
-      puts C  # Prints "defined in included module"
-      puts D  # Prints "defined in superclass"
-      puts E  # Prints "defined at top-level"
-      puts F  # Prints "defined in kernel"
-    end
-  end
+end
 ```
 
 So the path Ruby follows in order to resolve constant name starts with
@@ -263,37 +263,37 @@ chain is applied.
 We can define new class/module using two different ways:
 
 ``` ruby
-  module A
-    module B; end
-  end
+module A
+  module B; end
+end
 ```
 
 or
 
 ``` ruby
-  module A; end
-  module A::B; end
+module A; end
+module A::B; end
 ```
 
 Pay attention that `Module.nesting` for these two forms is different and turns
 out that your constant name resolution will be different too:
 
 ``` ruby
-  module A
-    C = 'c'
-  end
+module A
+  C = 'c'
+end
 
-  module A
-    module B
-      C # => 'c'
-      Module.nesting # => [A::B, A]
-    end
+module A
+  module B
+    C # => 'c'
+    Module.nesting # => [A::B, A]
   end
+end
 
-  module A::B
-    C # => NameError: uninitialized constant A::B::C
-    Module.nesting # => [A::B]
-  end
+module A::B
+  C # => NameError: uninitialized constant A::B::C
+  Module.nesting # => [A::B]
+end
 ```
 
 2) Inheritance:
@@ -302,19 +302,19 @@ Remember that constants use the currently opened class or module, as determined
 by `class` and `module` statements.
 
 ``` ruby
-  class Parent
-    CONST = 'parent'
+class Parent
+  CONST = 'parent'
 
-    def self.const
-      CONST
-    end
+  def self.const
+    CONST
   end
+end
 
-  class Child < Parent
-    CONST = 'child'
-  end
+class Child < Parent
+  CONST = 'child'
+end
 
-  Child.const # => parent
+Child.const # => parent
 ```
 
 In this example method is invoked on parent class, so its class is the innermost
@@ -328,17 +328,17 @@ saying find my constant in `self` where `self` is `Child` if we call
 currently opened class and its ancestors which is `Object`:
 
 ``` ruby
-  class Object
-    module C; end
-  end
-  C == Object::C # => true
+class Object
+  module C; end
+end
+C == Object::C # => true
 ```
 
 or
 
 ``` ruby
-  module C; end
-  Object::C == C # => true
+module C; end
+Object::C == C # => true
 ```
 
 This in turn explains why top-level constants are available throughout your
@@ -350,10 +350,10 @@ why. Because `BasicObject` does not subclass `Object`, all of the constants are
 not in the lookup chain:
 
 ``` ruby
-  class Foo < BasicObject
-    Kernel
-  end
-  # NameError: uninitialized constant Foo::Kernel
+class Foo < BasicObject
+  Kernel
+end
+# NameError: uninitialized constant Foo::Kernel
 ```
 
 For cases like this, and anywhere else you want to be explicit, Ruby allows you
@@ -368,14 +368,14 @@ change constant lookup. It continues to use the constant lookup at the
 point the block was defined:
 
 ``` ruby
-  class A
-    module B; end
-  end
+class A
+  module B; end
+end
 
-  class C
-    module B; end
-    A.class_eval { B } == C::B
-  end
+class C
+  module B; end
+  A.class_eval { B } == C::B
+end
 ```
 
 Confusingly however, if you pass a `String` to these methods, then the `String`
@@ -384,26 +384,26 @@ is evaluated with `Module.nesting` containing just the class/module itself (for
 `instance_eval`).
 
 ``` ruby
-  module A
-    module B; end
-  end
+module A
+  module B; end
+end
 
-  module C
-    module B; end
-    A.module_eval("B") == A::B
-  end
+module C
+  module B; end
+  A.module_eval("B") == A::B
+end
 ```
 
 ``` ruby
-  module A
-    X = 1
-    module B; end
-  end
+module A
+  X = 1
+  module B; end
+end
 
-  module C
-    module B; end
-    A::B.module_eval("X") # => uninitialized constant A::B::X (NameError)
-  end
+module C
+  module B; end
+  A::B.module_eval("X") # => uninitialized constant A::B::X (NameError)
+end
 ```
 
 5) Singleton class:
@@ -412,24 +412,24 @@ If you're in a singleton class of a class, you don't get access to constants
 defined in the class itself:
 
 ``` ruby
-  class A
-    module B; end
-  end
-  class << A
-    B # => uninitialized constant Class::B
-  end
+class A
+  module B; end
+end
+class << A
+  B # => uninitialized constant Class::B
+end
 ```
 
 This is because the ancestors of the singleton class of a class do not include
 the class itself, they start at the `Class` class.
 
 ``` ruby
-  class A
-    module B; end
-  end
-  class << A
-    ancestors # => [Class, Module, Object, Kernel, BasicObject]
-  end
+class A
+  module B; end
+end
+class << A
+  ancestors # => [Class, Module, Object, Kernel, BasicObject]
+end
 ```
 
 Lastly, imagine we access a constant that isn't defined at all then

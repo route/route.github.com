@@ -4,14 +4,14 @@
 @import "blueprint/grid";
 @import "compass/css3/font-face";
 
-@import "highlight";
+@import "highlight.css.scss";
 
 @include font-face("Museo700", font-files("/stylesheets/fonts/museo700-regular-webfont.ttf", "/stylesheets/fonts/museo700-regular-webfont.woff", "/stylesheets/fonts/museo700-regular-webfont.eot"));
 @include font-face("Museo500", font-files("/stylesheets/fonts/museo500-regular-webfont.ttf", "/stylesheets/fonts/museo500-regular-webfont.woff", "/stylesheets/fonts/museo500-regular-webfont.eot"));
 @include font-face("Museo300", font-files("/stylesheets/fonts/museo300-regular-webfont.ttf", "/stylesheets/fonts/museo300-regular-webfont.woff", "/stylesheets/fonts/museo300-regular-webfont.eot"));
 
 @mixin title {
-  font-family: 'Georgia', sans-serif;
+  font-family: "Georgia", sans-serif;
   color: #74ab2e;
   font-weight: bold;
   font-size: 24px;
@@ -69,6 +69,14 @@ ul {
 }
 ol li, ul li {
   margin: 10px 10px 10px 30px;
+}
+img {
+  max-width: 600px;
+  display: block;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .content {

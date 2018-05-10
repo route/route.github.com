@@ -1,0 +1,13 @@
+<p>obj =~ other → nil click to toggle source
+Pattern Match—Overridden by descendants (notably Regexp and String) to provide meaningful pattern-match semantics.</p>
+<div class="highlight"><pre class="highlight plaintext"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>           static VALUE
+</pre></td></tr></tbody></table></code></pre></div>
+<p>rb<em>obj</em>match(VALUE obj1, VALUE obj2)
+{
+    return Qnil;
+}</p>
+
+<p>nil =~ // # =&gt; nil
+nil !~ // # =&gt; true
+//.match?</p>

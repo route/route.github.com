@@ -6,9 +6,7 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <meta name="description" content="Free Web tutorials">
-    <meta name="keywords" content="HTML,CSS,XML,JavaScript">
-    <meta name="author" content="John Doe">
+    <meta name="author" content="Dmitry Vorotilin">
 
     <link href="/stylesheets/application.css" rel="stylesheet" />
     <script src="/javascripts/application.js"></script>
@@ -61,20 +59,20 @@ a constant:</p>
 2
 3
 4
-</pre></td><td class="rouge-code"><pre>  <span class="no">A</span> <span class="o">=</span> <span class="s1">'a'</span>
-  <span class="no">A</span> <span class="o">=</span> <span class="s1">'b'</span>
-  <span class="c1">#./a.rb:2: warning: already initialized constant A</span>
-  <span class="c1">#./a.rb:1: warning: previous definition of A was here</span>
+</pre></td><td class="rouge-code"><pre><span class="no">A</span> <span class="o">=</span> <span class="s1">'a'</span>
+<span class="no">A</span> <span class="o">=</span> <span class="s1">'b'</span>
+<span class="c1">#./a.rb:2: warning: already initialized constant A</span>
+<span class="c1">#./a.rb:1: warning: previous definition of A was here</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>The same thing for classes:</p>
 <div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
 4
-</pre></td><td class="rouge-code"><pre>  <span class="k">class</span> <span class="nc">A</span><span class="p">;</span> <span class="k">end</span>
-  <span class="no">A</span> <span class="o">=</span> <span class="s1">'b'</span>
-  <span class="c1">#./a.rb:2: warning: already initialized constant A</span>
-  <span class="c1">#./a.rb:1: warning: previous definition of A was here</span>
+</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">A</span><span class="p">;</span> <span class="k">end</span>
+<span class="no">A</span> <span class="o">=</span> <span class="s1">'b'</span>
+<span class="c1">#./a.rb:2: warning: already initialized constant A</span>
+<span class="c1">#./a.rb:1: warning: previous definition of A was here</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>Since the constant <code>A</code> is just a reference for the class&rsquo; object (remember class
 is object in Ruby, right?) and we try to reassign it with new value then we see
@@ -117,22 +115,22 @@ a file in the current directory or directories that is relative to current.</p>
 14
 15
 16
-</pre></td><td class="rouge-code"><pre>  <span class="c1"># a.rb</span>
-  <span class="c1"># module A</span>
-  <span class="c1">#   C = 'constant'</span>
-  <span class="c1"># end</span>
+</pre></td><td class="rouge-code"><pre><span class="c1"># a.rb</span>
+<span class="c1"># module A</span>
+<span class="c1">#   C = 'constant'</span>
+<span class="c1"># end</span>
 
-  <span class="n">before</span> <span class="o">=</span> <span class="vg">$"</span><span class="p">.</span><span class="nf">dup</span>
-  <span class="nb">require</span> <span class="s1">'a'</span>
-  <span class="vg">$"</span> <span class="o">-</span> <span class="n">before</span> <span class="c1"># =&gt; ['/Users/route/Projects/dependencies/a.rb']</span>
+<span class="n">before</span> <span class="o">=</span> <span class="vg">$"</span><span class="p">.</span><span class="nf">dup</span>
+<span class="nb">require</span> <span class="s1">'a'</span>
+<span class="vg">$"</span> <span class="o">-</span> <span class="n">before</span> <span class="c1"># =&gt; ['/Users/route/Projects/dependencies/a.rb']</span>
 
-  <span class="no">A</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; 'constant'</span>
-  <span class="nb">sleep</span> <span class="mi">5</span>
-  <span class="c1"># Meanwhile changing constant value to 'changed'</span>
+<span class="no">A</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; 'constant'</span>
+<span class="nb">sleep</span> <span class="mi">5</span>
+<span class="c1"># Meanwhile changing constant value to 'changed'</span>
 
-  <span class="nb">require</span> <span class="s1">'a'</span>
+<span class="nb">require</span> <span class="s1">'a'</span>
 
-  <span class="no">A</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; 'constant'</span>
+<span class="no">A</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; 'constant'</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p><code>Kernel#load(filename, wrap=false)</code> loads and executes the Ruby program in the
 filename. If the filename does not resolve to an absolute path, the file is
@@ -161,24 +159,24 @@ extension.</p>
 16
 17
 18
-</pre></td><td class="rouge-code"><pre>  <span class="c1"># a.rb</span>
-  <span class="c1"># module A</span>
-  <span class="c1">#   C = 'constant'</span>
-  <span class="c1"># end</span>
+</pre></td><td class="rouge-code"><pre><span class="c1"># a.rb</span>
+<span class="c1"># module A</span>
+<span class="c1">#   C = 'constant'</span>
+<span class="c1"># end</span>
 
-  <span class="n">before</span> <span class="o">=</span> <span class="vg">$"</span><span class="p">.</span><span class="nf">dup</span>
-  <span class="nb">load</span> <span class="s1">'./a.rb'</span>
-  <span class="vg">$"</span> <span class="o">-</span> <span class="n">before</span> <span class="c1"># =&gt; []</span>
+<span class="n">before</span> <span class="o">=</span> <span class="vg">$"</span><span class="p">.</span><span class="nf">dup</span>
+<span class="nb">load</span> <span class="s1">'./a.rb'</span>
+<span class="vg">$"</span> <span class="o">-</span> <span class="n">before</span> <span class="c1"># =&gt; []</span>
 
-  <span class="no">A</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; 'constant'</span>
-  <span class="nb">sleep</span> <span class="mi">5</span>
-  <span class="c1"># Meanwhile changing constant value to 'changed'</span>
+<span class="no">A</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; 'constant'</span>
+<span class="nb">sleep</span> <span class="mi">5</span>
+<span class="c1"># Meanwhile changing constant value to 'changed'</span>
 
-  <span class="nb">load</span> <span class="s1">'./a.rb'</span>
+<span class="nb">load</span> <span class="s1">'./a.rb'</span>
 
-  <span class="c1"># ./a.rb:2: warning: already initialized constant A::C</span>
-  <span class="c1"># ./a.rb:2: warning: previous definition of C was here</span>
-  <span class="no">A</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; 'changed'</span>
+<span class="c1"># ./a.rb:2: warning: already initialized constant A::C</span>
+<span class="c1"># ./a.rb:2: warning: previous definition of C was here</span>
+<span class="no">A</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; 'changed'</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>With warnings but the code was reloaded and we can even see the changes we&rsquo;ve
 made. Let&rsquo;s add optional parameter <code>wrap</code>:</p>
@@ -195,17 +193,17 @@ made. Let&rsquo;s add optional parameter <code>wrap</code>:</p>
 9
 10
 11
-</pre></td><td class="rouge-code"><pre>  <span class="c1"># a.rb</span>
-  <span class="c1"># module A</span>
-  <span class="c1">#   C = 'constant'</span>
-  <span class="c1"># end</span>
-  <span class="c1">#</span>
-  <span class="c1"># $A = A</span>
+</pre></td><td class="rouge-code"><pre><span class="c1"># a.rb</span>
+<span class="c1"># module A</span>
+<span class="c1">#   C = 'constant'</span>
+<span class="c1"># end</span>
+<span class="c1">#</span>
+<span class="c1"># $A = A</span>
 
-  <span class="nb">load</span> <span class="s1">'./a.rb'</span><span class="p">,</span> <span class="kp">true</span>
+<span class="nb">load</span> <span class="s1">'./a.rb'</span><span class="p">,</span> <span class="kp">true</span>
 
-  <span class="no">A</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; uninitialized constant A (NameError)</span>
-  <span class="vg">$A</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; 'constant'</span>
+<span class="no">A</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; uninitialized constant A (NameError)</span>
+<span class="vg">$A</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; 'constant'</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>You see that Ruby hasn&rsquo;t polluted global namespace and wrapped all the constants
 from the file to an anonymous module, but global variables still could be
@@ -222,12 +220,12 @@ accessed.</p>
 4
 5
 6
-</pre></td><td class="rouge-code"><pre>  <span class="c1"># a.rb</span>
-  <span class="c1"># module A</span>
-  <span class="c1">#   p 'loading'</span>
-  <span class="c1"># end</span>
+</pre></td><td class="rouge-code"><pre><span class="c1"># a.rb</span>
+<span class="c1"># module A</span>
+<span class="c1">#   p 'loading'</span>
+<span class="c1"># end</span>
 
-  <span class="nb">autoload</span> <span class="ss">:A</span><span class="p">,</span> <span class="s1">'a'</span>
+<span class="nb">autoload</span> <span class="ss">:A</span><span class="p">,</span> <span class="s1">'a'</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>It won&rsquo;t produce anything useful, because we&rsquo;ve just declared that constant <code>A</code>
 can be found in a file but we&rsquo;ve never used it.</p>
@@ -240,13 +238,13 @@ can be found in a file but we&rsquo;ve never used it.</p>
 5
 6
 7
-</pre></td><td class="rouge-code"><pre>  <span class="c1"># a.rb</span>
-  <span class="c1"># module A</span>
-  <span class="c1">#   p 'loading'</span>
-  <span class="c1"># end</span>
+</pre></td><td class="rouge-code"><pre><span class="c1"># a.rb</span>
+<span class="c1"># module A</span>
+<span class="c1">#   p 'loading'</span>
+<span class="c1"># end</span>
 
-  <span class="nb">autoload</span> <span class="ss">:A</span><span class="p">,</span> <span class="s1">'a'</span>
-  <span class="no">A</span> <span class="c1"># =&gt; Gives output 'loading'</span>
+<span class="nb">autoload</span> <span class="ss">:A</span><span class="p">,</span> <span class="s1">'a'</span>
+<span class="no">A</span> <span class="c1"># =&gt; Gives output 'loading'</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>In other words <code>autoload</code> makes us to load code lazily on demand decreasing time
 during the boot. There were some problems with thread safety and <code>autoload</code>,
@@ -266,19 +264,19 @@ it works properly even with threads for now:</p>
 11
 12
 13
-</pre></td><td class="rouge-code"><pre>  <span class="c1"># a.rb</span>
-  <span class="c1"># module A</span>
-  <span class="c1">#   sleep 5</span>
-  <span class="c1">#   def self.hello</span>
-  <span class="c1">#     'hello'</span>
-  <span class="c1">#   end</span>
-  <span class="c1"># end</span>
+</pre></td><td class="rouge-code"><pre><span class="c1"># a.rb</span>
+<span class="c1"># module A</span>
+<span class="c1">#   sleep 5</span>
+<span class="c1">#   def self.hello</span>
+<span class="c1">#     'hello'</span>
+<span class="c1">#   end</span>
+<span class="c1"># end</span>
 
-  <span class="nb">autoload</span> <span class="ss">:A</span><span class="p">,</span> <span class="s1">'./a'</span>
+<span class="nb">autoload</span> <span class="ss">:A</span><span class="p">,</span> <span class="s1">'./a'</span>
 
-  <span class="n">t1</span> <span class="o">=</span> <span class="no">Thread</span><span class="p">.</span><span class="nf">new</span> <span class="p">{</span> <span class="no">A</span><span class="p">.</span><span class="nf">hello</span> <span class="p">}</span>
-  <span class="n">t2</span> <span class="o">=</span> <span class="no">Thread</span><span class="p">.</span><span class="nf">new</span> <span class="p">{</span> <span class="no">A</span><span class="p">.</span><span class="nf">hello</span> <span class="p">}</span>
-  <span class="n">t1</span><span class="p">.</span><span class="nf">join</span><span class="p">;</span> <span class="n">t2</span><span class="p">.</span><span class="nf">join</span>
+<span class="n">t1</span> <span class="o">=</span> <span class="no">Thread</span><span class="p">.</span><span class="nf">new</span> <span class="p">{</span> <span class="no">A</span><span class="p">.</span><span class="nf">hello</span> <span class="p">}</span>
+<span class="n">t2</span> <span class="o">=</span> <span class="no">Thread</span><span class="p">.</span><span class="nf">new</span> <span class="p">{</span> <span class="no">A</span><span class="p">.</span><span class="nf">hello</span> <span class="p">}</span>
+<span class="n">t1</span><span class="p">.</span><span class="nf">join</span><span class="p">;</span> <span class="n">t2</span><span class="p">.</span><span class="nf">join</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>I was expecting that second thread would throw an error that method <code>hello</code> is
 undefined because module <code>A</code> had been loaded by first thread but because of
@@ -327,45 +325,45 @@ code tells about itself:</p>
 37
 38
 39
-</pre></td><td class="rouge-code"><pre>  <span class="k">module</span> <span class="nn">Kernel</span>
-    <span class="c1"># Constants defined in Kernel</span>
-    <span class="no">A</span> <span class="o">=</span> <span class="no">B</span> <span class="o">=</span> <span class="no">C</span> <span class="o">=</span> <span class="no">D</span> <span class="o">=</span> <span class="no">E</span> <span class="o">=</span> <span class="no">F</span> <span class="o">=</span> <span class="s1">'defined in kernel'</span>
+</pre></td><td class="rouge-code"><pre><span class="k">module</span> <span class="nn">Kernel</span>
+  <span class="c1"># Constants defined in Kernel</span>
+  <span class="no">A</span> <span class="o">=</span> <span class="no">B</span> <span class="o">=</span> <span class="no">C</span> <span class="o">=</span> <span class="no">D</span> <span class="o">=</span> <span class="no">E</span> <span class="o">=</span> <span class="no">F</span> <span class="o">=</span> <span class="s1">'defined in kernel'</span>
+<span class="k">end</span>
+
+<span class="c1"># Top-level or 'global' constants defined in Object</span>
+<span class="no">A</span> <span class="o">=</span> <span class="no">B</span> <span class="o">=</span> <span class="no">C</span> <span class="o">=</span> <span class="no">D</span> <span class="o">=</span> <span class="no">E</span> <span class="o">=</span> <span class="s1">'defined at top-level'</span>
+
+<span class="k">class</span> <span class="nc">Super</span>
+  <span class="c1"># Constants defined in a superclass</span>
+  <span class="no">A</span> <span class="o">=</span> <span class="no">B</span> <span class="o">=</span> <span class="no">C</span> <span class="o">=</span> <span class="no">D</span> <span class="o">=</span> <span class="s1">'defined in superclass'</span>
+<span class="k">end</span>
+
+<span class="k">module</span> <span class="nn">Included</span>
+  <span class="c1"># Constants defined in an included module</span>
+  <span class="no">A</span> <span class="o">=</span> <span class="no">B</span> <span class="o">=</span> <span class="no">C</span> <span class="o">=</span> <span class="s1">'defined in included module'</span>
+<span class="k">end</span>
+
+<span class="k">module</span> <span class="nn">Enclosing</span>
+  <span class="c1"># Constants defined in an enclosing module</span>
+  <span class="no">A</span> <span class="o">=</span> <span class="no">B</span> <span class="o">=</span> <span class="s1">'defined in enclosing module'</span>
+
+  <span class="k">class</span> <span class="nc">Local</span> <span class="o">&lt;</span> <span class="no">Super</span>
+    <span class="kp">include</span> <span class="no">Included</span>
+
+    <span class="c1"># Locally defined constant</span>
+    <span class="no">A</span> <span class="o">=</span> <span class="s1">'defined locally'</span>
+
+    <span class="c1"># The list of modules searched, in the order searched</span>
+    <span class="c1"># [Enclosing::Local, Enclosing, Included, Super, Object, Kernel, BasicObject]</span>
+    <span class="c1"># (Module.nesting + self.ancestors + Object.ancestors).uniq</span>
+    <span class="nb">puts</span> <span class="no">A</span>  <span class="c1"># Prints "defined locally"</span>
+    <span class="nb">puts</span> <span class="no">B</span>  <span class="c1"># Prints "defined in enclosing module"</span>
+    <span class="nb">puts</span> <span class="no">C</span>  <span class="c1"># Prints "defined in included module"</span>
+    <span class="nb">puts</span> <span class="no">D</span>  <span class="c1"># Prints "defined in superclass"</span>
+    <span class="nb">puts</span> <span class="no">E</span>  <span class="c1"># Prints "defined at top-level"</span>
+    <span class="nb">puts</span> <span class="no">F</span>  <span class="c1"># Prints "defined in kernel"</span>
   <span class="k">end</span>
-
-  <span class="c1"># Top-level or 'global' constants defined in Object</span>
-  <span class="no">A</span> <span class="o">=</span> <span class="no">B</span> <span class="o">=</span> <span class="no">C</span> <span class="o">=</span> <span class="no">D</span> <span class="o">=</span> <span class="no">E</span> <span class="o">=</span> <span class="s1">'defined at top-level'</span>
-
-  <span class="k">class</span> <span class="nc">Super</span>
-    <span class="c1"># Constants defined in a superclass</span>
-    <span class="no">A</span> <span class="o">=</span> <span class="no">B</span> <span class="o">=</span> <span class="no">C</span> <span class="o">=</span> <span class="no">D</span> <span class="o">=</span> <span class="s1">'defined in superclass'</span>
-  <span class="k">end</span>
-
-  <span class="k">module</span> <span class="nn">Included</span>
-    <span class="c1"># Constants defined in an included module</span>
-    <span class="no">A</span> <span class="o">=</span> <span class="no">B</span> <span class="o">=</span> <span class="no">C</span> <span class="o">=</span> <span class="s1">'defined in included module'</span>
-  <span class="k">end</span>
-
-  <span class="k">module</span> <span class="nn">Enclosing</span>
-    <span class="c1"># Constants defined in an enclosing module</span>
-    <span class="no">A</span> <span class="o">=</span> <span class="no">B</span> <span class="o">=</span> <span class="s1">'defined in enclosing module'</span>
-
-    <span class="k">class</span> <span class="nc">Local</span> <span class="o">&lt;</span> <span class="no">Super</span>
-      <span class="kp">include</span> <span class="no">Included</span>
-
-      <span class="c1"># Locally defined constant</span>
-      <span class="no">A</span> <span class="o">=</span> <span class="s1">'defined locally'</span>
-
-      <span class="c1"># The list of modules searched, in the order searched</span>
-      <span class="c1"># [Enclosing::Local, Enclosing, Included, Super, Object, Kernel, BasicObject]</span>
-      <span class="c1"># (Module.nesting + self.ancestors + Object.ancestors).uniq</span>
-      <span class="nb">puts</span> <span class="no">A</span>  <span class="c1"># Prints "defined locally"</span>
-      <span class="nb">puts</span> <span class="no">B</span>  <span class="c1"># Prints "defined in enclosing module"</span>
-      <span class="nb">puts</span> <span class="no">C</span>  <span class="c1"># Prints "defined in included module"</span>
-      <span class="nb">puts</span> <span class="no">D</span>  <span class="c1"># Prints "defined in superclass"</span>
-      <span class="nb">puts</span> <span class="no">E</span>  <span class="c1"># Prints "defined at top-level"</span>
-      <span class="nb">puts</span> <span class="no">F</span>  <span class="c1"># Prints "defined in kernel"</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
+<span class="k">end</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>So the path Ruby follows in order to resolve constant name starts with
 <code>Module.nesting</code> which of course starts with itself and then all enclosing
@@ -380,15 +378,15 @@ chain is applied.</p>
 <div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
-</pre></td><td class="rouge-code"><pre>  <span class="k">module</span> <span class="nn">A</span>
-    <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
-  <span class="k">end</span>
+</pre></td><td class="rouge-code"><pre><span class="k">module</span> <span class="nn">A</span>
+  <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
+<span class="k">end</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>or</p>
 <div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
-</pre></td><td class="rouge-code"><pre>  <span class="k">module</span> <span class="nn">A</span><span class="p">;</span> <span class="k">end</span>
-  <span class="k">module</span> <span class="nn">A::B</span><span class="p">;</span> <span class="k">end</span>
+</pre></td><td class="rouge-code"><pre><span class="k">module</span> <span class="nn">A</span><span class="p">;</span> <span class="k">end</span>
+<span class="k">module</span> <span class="nn">A::B</span><span class="p">;</span> <span class="k">end</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>Pay attention that <code>Module.nesting</code> for these two forms is different and turns
 out that your constant name resolution will be different too:</p>
@@ -407,21 +405,21 @@ out that your constant name resolution will be different too:</p>
 13
 14
 15
-</pre></td><td class="rouge-code"><pre>  <span class="k">module</span> <span class="nn">A</span>
-    <span class="no">C</span> <span class="o">=</span> <span class="s1">'c'</span>
-  <span class="k">end</span>
+</pre></td><td class="rouge-code"><pre><span class="k">module</span> <span class="nn">A</span>
+  <span class="no">C</span> <span class="o">=</span> <span class="s1">'c'</span>
+<span class="k">end</span>
 
-  <span class="k">module</span> <span class="nn">A</span>
-    <span class="k">module</span> <span class="nn">B</span>
-      <span class="no">C</span> <span class="c1"># =&gt; 'c'</span>
-      <span class="no">Module</span><span class="p">.</span><span class="nf">nesting</span> <span class="c1"># =&gt; [A::B, A]</span>
-    <span class="k">end</span>
+<span class="k">module</span> <span class="nn">A</span>
+  <span class="k">module</span> <span class="nn">B</span>
+    <span class="no">C</span> <span class="c1"># =&gt; 'c'</span>
+    <span class="no">Module</span><span class="p">.</span><span class="nf">nesting</span> <span class="c1"># =&gt; [A::B, A]</span>
   <span class="k">end</span>
+<span class="k">end</span>
 
-  <span class="k">module</span> <span class="nn">A::B</span>
-    <span class="no">C</span> <span class="c1"># =&gt; NameError: uninitialized constant A::B::C</span>
-    <span class="no">Module</span><span class="p">.</span><span class="nf">nesting</span> <span class="c1"># =&gt; [A::B]</span>
-  <span class="k">end</span>
+<span class="k">module</span> <span class="nn">A::B</span>
+  <span class="no">C</span> <span class="c1"># =&gt; NameError: uninitialized constant A::B::C</span>
+  <span class="no">Module</span><span class="p">.</span><span class="nf">nesting</span> <span class="c1"># =&gt; [A::B]</span>
+<span class="k">end</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>2) Inheritance:</p>
 
@@ -440,19 +438,19 @@ by <code>class</code> and <code>module</code> statements.</p>
 11
 12
 13
-</pre></td><td class="rouge-code"><pre>  <span class="k">class</span> <span class="nc">Parent</span>
-    <span class="no">CONST</span> <span class="o">=</span> <span class="s1">'parent'</span>
+</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Parent</span>
+  <span class="no">CONST</span> <span class="o">=</span> <span class="s1">'parent'</span>
 
-    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">const</span>
-      <span class="no">CONST</span>
-    <span class="k">end</span>
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">const</span>
+    <span class="no">CONST</span>
   <span class="k">end</span>
+<span class="k">end</span>
 
-  <span class="k">class</span> <span class="nc">Child</span> <span class="o">&lt;</span> <span class="no">Parent</span>
-    <span class="no">CONST</span> <span class="o">=</span> <span class="s1">'child'</span>
-  <span class="k">end</span>
+<span class="k">class</span> <span class="nc">Child</span> <span class="o">&lt;</span> <span class="no">Parent</span>
+  <span class="no">CONST</span> <span class="o">=</span> <span class="s1">'child'</span>
+<span class="k">end</span>
 
-  <span class="no">Child</span><span class="p">.</span><span class="nf">const</span> <span class="c1"># =&gt; parent</span>
+<span class="no">Child</span><span class="p">.</span><span class="nf">const</span> <span class="c1"># =&gt; parent</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>In this example method is invoked on parent class, so its class is the innermost
 one. To change things you could use <code>self::CONST</code> this way you&rsquo;re explicitly
@@ -467,16 +465,16 @@ currently opened class and its ancestors which is <code>Object</code>:</p>
 2
 3
 4
-</pre></td><td class="rouge-code"><pre>  <span class="k">class</span> <span class="nc">Object</span>
-    <span class="k">module</span> <span class="nn">C</span><span class="p">;</span> <span class="k">end</span>
-  <span class="k">end</span>
-  <span class="no">C</span> <span class="o">==</span> <span class="no">Object</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; true</span>
+</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Object</span>
+  <span class="k">module</span> <span class="nn">C</span><span class="p">;</span> <span class="k">end</span>
+<span class="k">end</span>
+<span class="no">C</span> <span class="o">==</span> <span class="no">Object</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; true</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>or</p>
 <div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
-</pre></td><td class="rouge-code"><pre>  <span class="k">module</span> <span class="nn">C</span><span class="p">;</span> <span class="k">end</span>
-  <span class="no">Object</span><span class="o">::</span><span class="no">C</span> <span class="o">==</span> <span class="no">C</span> <span class="c1"># =&gt; true</span>
+</pre></td><td class="rouge-code"><pre><span class="k">module</span> <span class="nn">C</span><span class="p">;</span> <span class="k">end</span>
+<span class="no">Object</span><span class="o">::</span><span class="no">C</span> <span class="o">==</span> <span class="no">C</span> <span class="c1"># =&gt; true</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>This in turn explains why top-level constants are available throughout your
 program. Almost all classes in Ruby inherit from <code>Object</code>, so <code>Object</code> is almost
@@ -489,10 +487,10 @@ not in the lookup chain:</p>
 2
 3
 4
-</pre></td><td class="rouge-code"><pre>  <span class="k">class</span> <span class="nc">Foo</span> <span class="o">&lt;</span> <span class="no">BasicObject</span>
-    <span class="no">Kernel</span>
-  <span class="k">end</span>
-  <span class="c1"># NameError: uninitialized constant Foo::Kernel</span>
+</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Foo</span> <span class="o">&lt;</span> <span class="no">BasicObject</span>
+  <span class="no">Kernel</span>
+<span class="k">end</span>
+<span class="c1"># NameError: uninitialized constant Foo::Kernel</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>For cases like this, and anywhere else you want to be explicit, Ruby allows you
 to use <code>::Kernel</code> to access <code>Object::Kernel</code>.</p>
@@ -512,14 +510,14 @@ point the block was defined:</p>
 6
 7
 8
-</pre></td><td class="rouge-code"><pre>  <span class="k">class</span> <span class="nc">A</span>
-    <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
-  <span class="k">end</span>
+</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">A</span>
+  <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
+<span class="k">end</span>
 
-  <span class="k">class</span> <span class="nc">C</span>
-    <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
-    <span class="no">A</span><span class="p">.</span><span class="nf">class_eval</span> <span class="p">{</span> <span class="no">B</span> <span class="p">}</span> <span class="o">==</span> <span class="no">C</span><span class="o">::</span><span class="no">B</span>
-  <span class="k">end</span>
+<span class="k">class</span> <span class="nc">C</span>
+  <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
+  <span class="no">A</span><span class="p">.</span><span class="nf">class_eval</span> <span class="p">{</span> <span class="no">B</span> <span class="p">}</span> <span class="o">==</span> <span class="no">C</span><span class="o">::</span><span class="no">B</span>
+<span class="k">end</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>Confusingly however, if you pass a <code>String</code> to these methods, then the <code>String</code>
 is evaluated with <code>Module.nesting</code> containing just the class/module itself (for
@@ -533,14 +531,14 @@ is evaluated with <code>Module.nesting</code> containing just the class/module i
 6
 7
 8
-</pre></td><td class="rouge-code"><pre>  <span class="k">module</span> <span class="nn">A</span>
-    <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
-  <span class="k">end</span>
+</pre></td><td class="rouge-code"><pre><span class="k">module</span> <span class="nn">A</span>
+  <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
+<span class="k">end</span>
 
-  <span class="k">module</span> <span class="nn">C</span>
-    <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
-    <span class="no">A</span><span class="p">.</span><span class="nf">module_eval</span><span class="p">(</span><span class="s2">"B"</span><span class="p">)</span> <span class="o">==</span> <span class="no">A</span><span class="o">::</span><span class="no">B</span>
-  <span class="k">end</span>
+<span class="k">module</span> <span class="nn">C</span>
+  <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
+  <span class="no">A</span><span class="p">.</span><span class="nf">module_eval</span><span class="p">(</span><span class="s2">"B"</span><span class="p">)</span> <span class="o">==</span> <span class="no">A</span><span class="o">::</span><span class="no">B</span>
+<span class="k">end</span>
 </pre></td></tr></tbody></table></code></pre></div><div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
@@ -550,15 +548,15 @@ is evaluated with <code>Module.nesting</code> containing just the class/module i
 7
 8
 9
-</pre></td><td class="rouge-code"><pre>  <span class="k">module</span> <span class="nn">A</span>
-    <span class="no">X</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
-  <span class="k">end</span>
+</pre></td><td class="rouge-code"><pre><span class="k">module</span> <span class="nn">A</span>
+  <span class="no">X</span> <span class="o">=</span> <span class="mi">1</span>
+  <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
+<span class="k">end</span>
 
-  <span class="k">module</span> <span class="nn">C</span>
-    <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
-    <span class="no">A</span><span class="o">::</span><span class="no">B</span><span class="p">.</span><span class="nf">module_eval</span><span class="p">(</span><span class="s2">"X"</span><span class="p">)</span> <span class="c1"># =&gt; uninitialized constant A::B::X (NameError)</span>
-  <span class="k">end</span>
+<span class="k">module</span> <span class="nn">C</span>
+  <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
+  <span class="no">A</span><span class="o">::</span><span class="no">B</span><span class="p">.</span><span class="nf">module_eval</span><span class="p">(</span><span class="s2">"X"</span><span class="p">)</span> <span class="c1"># =&gt; uninitialized constant A::B::X (NameError)</span>
+<span class="k">end</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>5) Singleton class:</p>
 
@@ -570,12 +568,12 @@ defined in the class itself:</p>
 4
 5
 6
-</pre></td><td class="rouge-code"><pre>  <span class="k">class</span> <span class="nc">A</span>
-    <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
-  <span class="k">end</span>
-  <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="no">A</span>
-    <span class="no">B</span> <span class="c1"># =&gt; uninitialized constant Class::B</span>
-  <span class="k">end</span>
+</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">A</span>
+  <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
+<span class="k">end</span>
+<span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="no">A</span>
+  <span class="no">B</span> <span class="c1"># =&gt; uninitialized constant Class::B</span>
+<span class="k">end</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>This is because the ancestors of the singleton class of a class do not include
 the class itself, they start at the <code>Class</code> class.</p>
@@ -585,12 +583,12 @@ the class itself, they start at the <code>Class</code> class.</p>
 4
 5
 6
-</pre></td><td class="rouge-code"><pre>  <span class="k">class</span> <span class="nc">A</span>
-    <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
-  <span class="k">end</span>
-  <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="no">A</span>
-    <span class="nb">ancestors</span> <span class="c1"># =&gt; [Class, Module, Object, Kernel, BasicObject]</span>
-  <span class="k">end</span>
+</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">A</span>
+  <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
+<span class="k">end</span>
+<span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="no">A</span>
+  <span class="nb">ancestors</span> <span class="c1"># =&gt; [Class, Module, Object, Kernel, BasicObject]</span>
+<span class="k">end</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>Lastly, imagine we access a constant that isn&rsquo;t defined at all then
 <code>self.const_missing</code> is invoked on the class that needs constant or if it wasn&rsquo;t
@@ -622,7 +620,7 @@ That&rsquo;s all for Ruby moving to the more interesting part —
         Copyright © 2012-2018
         <a href="https://github.com/route" target="_blank">Dmitry Vorotilin</a>
         |
-        <a href="cv.html" target="_blank">CV</a>
+        <a href="/cv.html" target="_blank">CV</a>
       </footer>
       <div class="yandex_metrika">
         <!-- Yandex.Metrika informer -->

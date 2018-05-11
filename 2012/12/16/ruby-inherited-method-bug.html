@@ -6,9 +6,7 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <meta name="description" content="Free Web tutorials">
-    <meta name="keywords" content="HTML,CSS,XML,JavaScript">
-    <meta name="author" content="John Doe">
+    <meta name="author" content="Dmitry Vorotilin">
 
     <link href="/stylesheets/application.css" rel="stylesheet" />
     <script src="/javascripts/application.js"></script>
@@ -26,9 +24,9 @@ I won&rsquo;t show you all those tests, just a small piece:</p>
 <div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
-</pre></td><td class="rouge-code"><pre>  <span class="no">Class</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">Rails</span><span class="o">::</span><span class="no">Application</span><span class="p">)</span> <span class="k">do</span>
-    <span class="n">routes</span><span class="p">.</span><span class="nf">append</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
-  <span class="k">end</span>
+</pre></td><td class="rouge-code"><pre><span class="no">Class</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">Rails</span><span class="o">::</span><span class="no">Application</span><span class="p">)</span> <span class="k">do</span>
+  <span class="n">routes</span><span class="p">.</span><span class="nf">append</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+<span class="k">end</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>All of them were passed on my laptop, but Travis-CI showed me the odd message
 for Ruby 1.8:
@@ -46,10 +44,10 @@ classes you&rsquo;ll see that <code>Rails::Railtie</code> has module inclusion:<
 2
 3
 4
-</pre></td><td class="rouge-code"><pre>  <span class="k">def</span> <span class="nf">inherited</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
-    <span class="o">...</span>
-    <span class="n">base</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="ss">:include</span><span class="p">,</span> <span class="no">Railtie</span><span class="o">::</span><span class="no">Configurable</span><span class="p">)</span>
-  <span class="k">end</span>
+</pre></td><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">inherited</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+  <span class="o">...</span>
+  <span class="n">base</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="ss">:include</span><span class="p">,</span> <span class="no">Railtie</span><span class="o">::</span><span class="no">Configurable</span><span class="p">)</span>
+<span class="k">end</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p><code>Railtie::Configurable</code> has <code>method_missing</code> which does exactly our case -
 proxying our calls to instance. You see that all logic rely on <code>self.inhereted</code>
@@ -67,25 +65,25 @@ callback. Let&rsquo;s check it:</p>
 11
 12
 13
-</pre></td><td class="rouge-code"><pre>  <span class="k">class</span> <span class="nc">Parent</span>
-    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">inherited</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
-      <span class="nb">puts</span> <span class="s1">'Inside inherited'</span>
-    <span class="k">end</span>
+</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Parent</span>
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">inherited</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+    <span class="nb">puts</span> <span class="s1">'Inside inherited'</span>
   <span class="k">end</span>
+<span class="k">end</span>
 
-  <span class="k">class</span> <span class="nc">Child</span> <span class="o">&lt;</span> <span class="no">Parent</span>
-    <span class="nb">puts</span> <span class="s1">'We are inside class definition'</span>
-  <span class="k">end</span>
+<span class="k">class</span> <span class="nc">Child</span> <span class="o">&lt;</span> <span class="no">Parent</span>
+  <span class="nb">puts</span> <span class="s1">'We are inside class definition'</span>
+<span class="k">end</span>
 
-  <span class="n">app</span> <span class="o">=</span> <span class="no">Class</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">Parent</span><span class="p">)</span> <span class="k">do</span>
-    <span class="nb">puts</span> <span class="s1">'We are inside class definition'</span>
-  <span class="k">end</span>
+<span class="n">app</span> <span class="o">=</span> <span class="no">Class</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">Parent</span><span class="p">)</span> <span class="k">do</span>
+  <span class="nb">puts</span> <span class="s1">'We are inside class definition'</span>
+<span class="k">end</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>If you run this code you&rsquo;ll see that for <code>Class.new</code> we&rsquo;ll get this:</p>
 <div class="highlight"><pre class="highlight plaintext"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
-</pre></td><td class="rouge-code"><pre>  We are inside class definition
-  Inside inherited
+</pre></td><td class="rouge-code"><pre>We are inside class definition
+Inside inherited
 </pre></td></tr></tbody></table></code></pre></div>
 <p>Ruby 1.8 cannot find <code>routes</code>, even <code>method_missing</code> just because
 <code>self.inherited</code> chain couldn&rsquo;t be invoked inside our block, it would be
@@ -104,7 +102,7 @@ invoked after class definition. Be careful!</p>
         Copyright © 2012-2018
         <a href="https://github.com/route" target="_blank">Dmitry Vorotilin</a>
         |
-        <a href="cv.html" target="_blank">CV</a>
+        <a href="/cv.html" target="_blank">CV</a>
       </footer>
       <div class="yandex_metrika">
         <!-- Yandex.Metrika informer -->

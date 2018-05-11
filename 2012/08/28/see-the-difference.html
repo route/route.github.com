@@ -6,9 +6,7 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <meta name="description" content="Free Web tutorials">
-    <meta name="keywords" content="HTML,CSS,XML,JavaScript">
-    <meta name="author" content="John Doe">
+    <meta name="author" content="Dmitry Vorotilin">
 
     <link href="/stylesheets/application.css" rel="stylesheet" />
     <script src="/javascripts/application.js"></script>
@@ -40,15 +38,15 @@ in Rails but if you don&rsquo;t here you are:</p>
 7
 8
 9
-</pre></td><td class="rouge-code"><pre>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">wrap</span><span class="p">(</span><span class="n">object</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">object</span><span class="p">.</span><span class="nf">nil?</span>
-      <span class="p">[]</span>
-    <span class="k">elsif</span> <span class="n">object</span><span class="p">.</span><span class="nf">respond_to?</span><span class="p">(</span><span class="ss">:to_ary</span><span class="p">)</span>
-      <span class="n">object</span><span class="p">.</span><span class="nf">to_ary</span> <span class="o">||</span> <span class="p">[</span><span class="n">object</span><span class="p">]</span>
-    <span class="k">else</span>
-      <span class="p">[</span><span class="n">object</span><span class="p">]</span>
-    <span class="k">end</span>
+</pre></td><td class="rouge-code"><pre><span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">wrap</span><span class="p">(</span><span class="n">object</span><span class="p">)</span>
+  <span class="k">if</span> <span class="n">object</span><span class="p">.</span><span class="nf">nil?</span>
+    <span class="p">[]</span>
+  <span class="k">elsif</span> <span class="n">object</span><span class="p">.</span><span class="nf">respond_to?</span><span class="p">(</span><span class="ss">:to_ary</span><span class="p">)</span>
+    <span class="n">object</span><span class="p">.</span><span class="nf">to_ary</span> <span class="o">||</span> <span class="p">[</span><span class="n">object</span><span class="p">]</span>
+  <span class="k">else</span>
+    <span class="p">[</span><span class="n">object</span><span class="p">]</span>
   <span class="k">end</span>
+<span class="k">end</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>And you probably know about
 <a href="http://rxr.whitequark.org/mri/source/object.c#2624">Kernel#Array</a>:</p>
@@ -69,23 +67,23 @@ in Rails but if you don&rsquo;t here you are:</p>
 15
 16
 17
-</pre></td><td class="rouge-code"><pre>  <span class="n">VALUE</span>
-  <span class="nf">rb_Array</span><span class="p">(</span><span class="n">VALUE</span> <span class="n">val</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">VALUE</span> <span class="n">tmp</span> <span class="o">=</span> <span class="n">rb_check_array_type</span><span class="p">(</span><span class="n">val</span><span class="p">);</span>
+</pre></td><td class="rouge-code"><pre><span class="n">VALUE</span>
+<span class="nf">rb_Array</span><span class="p">(</span><span class="n">VALUE</span> <span class="n">val</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">VALUE</span> <span class="n">tmp</span> <span class="o">=</span> <span class="n">rb_check_array_type</span><span class="p">(</span><span class="n">val</span><span class="p">);</span>
 
+  <span class="k">if</span> <span class="p">(</span><span class="n">NIL_P</span><span class="p">(</span><span class="n">tmp</span><span class="p">))</span> <span class="p">{</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">rb_check_convert_type</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">T_ARRAY</span><span class="p">,</span> <span class="s">"Array"</span><span class="p">,</span> <span class="s">"to_a"</span><span class="p">);</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">NIL_P</span><span class="p">(</span><span class="n">tmp</span><span class="p">))</span> <span class="p">{</span>
-      <span class="n">tmp</span> <span class="o">=</span> <span class="n">rb_check_convert_type</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">T_ARRAY</span><span class="p">,</span> <span class="s">"Array"</span><span class="p">,</span> <span class="s">"to_a"</span><span class="p">);</span>
-      <span class="k">if</span> <span class="p">(</span><span class="n">NIL_P</span><span class="p">(</span><span class="n">tmp</span><span class="p">))</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">rb_ary_new3</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">val</span><span class="p">);</span>
-      <span class="p">}</span>
+      <span class="k">return</span> <span class="n">rb_ary_new3</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">val</span><span class="p">);</span>
     <span class="p">}</span>
-    <span class="k">return</span> <span class="n">tmp</span><span class="p">;</span>
   <span class="p">}</span>
+  <span class="k">return</span> <span class="n">tmp</span><span class="p">;</span>
+<span class="p">}</span>
 
-  <span class="k">static</span> <span class="n">VALUE</span>
-  <span class="nf">rb_f_array</span><span class="p">(</span><span class="n">VALUE</span> <span class="n">obj</span><span class="p">,</span> <span class="n">VALUE</span> <span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">rb_Array</span><span class="p">(</span><span class="n">arg</span><span class="p">);</span>
-  <span class="p">}</span>
+<span class="k">static</span> <span class="n">VALUE</span>
+<span class="nf">rb_f_array</span><span class="p">(</span><span class="n">VALUE</span> <span class="n">obj</span><span class="p">,</span> <span class="n">VALUE</span> <span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">rb_Array</span><span class="p">(</span><span class="n">arg</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>Let&rsquo;s talk about ruby realization first of all.
 When you invoke <code>Array(object)</code>, ruby will try to convert object into array
@@ -99,7 +97,7 @@ with object as its element.</p>
 
 <p>Now take a look at Rails realization. If object is <code>nil</code> it returns empty
 array. If object responds to <code>to_ary</code> method it returns the result
-or if the result is <code>nil</code> just <code>[object]</code>. And finally it returns 
+or if the result is <code>nil</code> just <code>[object]</code>. And finally it returns
 <code>[object]</code>.</p>
 
 <p>You see that Rails method doesn&rsquo;t call <code>to_a</code>.
@@ -129,7 +127,7 @@ of it and rely on it. You should be waiting for troubles from everywhere.</p>
         Copyright © 2012-2018
         <a href="https://github.com/route" target="_blank">Dmitry Vorotilin</a>
         |
-        <a href="cv.html" target="_blank">CV</a>
+        <a href="/cv.html" target="_blank">CV</a>
       </footer>
       <div class="yandex_metrika">
         <!-- Yandex.Metrika informer -->

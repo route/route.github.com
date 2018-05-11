@@ -6,9 +6,7 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <meta name="description" content="Free Web tutorials">
-    <meta name="keywords" content="HTML,CSS,XML,JavaScript">
-    <meta name="author" content="John Doe">
+    <meta name="author" content="Dmitry Vorotilin">
 
     <link href="/stylesheets/application.css" rel="stylesheet" />
     <script src="/javascripts/application.js"></script>
@@ -57,11 +55,11 @@ for <code>AS::D</code>. Consider this example:</p>
 3
 4
 5
-</pre></td><td class="rouge-code"><pre>  <span class="c1"># Meanwhile you can add sleep here and make changes in a.rb</span>
+</pre></td><td class="rouge-code"><pre><span class="c1"># Meanwhile you can add sleep here and make changes in a.rb</span>
 
-  <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Dependencies</span><span class="p">.</span><span class="nf">clear</span> <span class="c1"># Removes A from memory</span>
+<span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Dependencies</span><span class="p">.</span><span class="nf">clear</span> <span class="c1"># Removes A from memory</span>
 
-  <span class="no">A</span> <span class="c1"># Will load A again</span>
+<span class="no">A</span> <span class="c1"># Will load A again</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>I&rsquo;ve just introduced the method Rails reloads your code with — <code>clear</code>. Let&rsquo;s
 dig dipper and see how <code>AS::D</code> actually works. There are two different constant
@@ -73,9 +71,9 @@ demand. What does removing constant from memory mean? There&rsquo;s a method cal
 <div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
-</pre></td><td class="rouge-code"><pre>  <span class="k">module</span> <span class="nn">A</span><span class="p">;</span> <span class="k">end</span>
-  <span class="no">Object</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="ss">:remove_const</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">)</span>
-  <span class="no">A</span> <span class="c1"># =&gt; uninitialized constant A (NameError)</span>
+</pre></td><td class="rouge-code"><pre><span class="k">module</span> <span class="nn">A</span><span class="p">;</span> <span class="k">end</span>
+<span class="no">Object</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="ss">:remove_const</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">)</span>
+<span class="no">A</span> <span class="c1"># =&gt; uninitialized constant A (NameError)</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>But what if we remove constant for existing instance of a class:</p>
 <div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
@@ -89,17 +87,17 @@ demand. What does removing constant from memory mean? There&rsquo;s a method cal
 9
 10
 11
-</pre></td><td class="rouge-code"><pre>  <span class="k">class</span> <span class="nc">A</span>
-    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">value</span>
-      <span class="s1">'value'</span>
-    <span class="k">end</span>
+</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">A</span>
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">value</span>
+    <span class="s1">'value'</span>
   <span class="k">end</span>
+<span class="k">end</span>
 
-  <span class="n">a</span> <span class="o">=</span> <span class="no">A</span><span class="p">.</span><span class="nf">new</span>
-  <span class="no">Object</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="ss">:remove_const</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">)</span>
-  <span class="n">a</span><span class="p">.</span><span class="nf">class</span> <span class="c1"># =&gt; A</span>
-  <span class="n">a</span><span class="p">.</span><span class="nf">class</span><span class="p">.</span><span class="nf">value</span> <span class="c1"># =&gt; 'value'</span>
-  <span class="no">A</span> <span class="c1"># =&gt; uninitialized constant A (NameError)</span>
+<span class="n">a</span> <span class="o">=</span> <span class="no">A</span><span class="p">.</span><span class="nf">new</span>
+<span class="no">Object</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="ss">:remove_const</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">)</span>
+<span class="n">a</span><span class="p">.</span><span class="nf">class</span> <span class="c1"># =&gt; A</span>
+<span class="n">a</span><span class="p">.</span><span class="nf">class</span><span class="p">.</span><span class="nf">value</span> <span class="c1"># =&gt; 'value'</span>
+<span class="no">A</span> <span class="c1"># =&gt; uninitialized constant A (NameError)</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>That&rsquo;s interesting because constant name was removed from memory but its
 instance still shows us its class and we can even call class methods on it. It
@@ -114,11 +112,11 @@ Ruby classes via <code>AS::D.hook!</code>.</p>
 3
 4
 5
-</pre></td><td class="rouge-code"><pre>  <span class="k">def</span> <span class="nf">hook!</span>
-    <span class="no">Object</span><span class="p">.</span><span class="nf">class_eval</span> <span class="p">{</span> <span class="kp">include</span> <span class="no">Loadable</span> <span class="p">}</span>
-    <span class="no">Module</span><span class="p">.</span><span class="nf">class_eval</span> <span class="p">{</span> <span class="kp">include</span> <span class="no">ModuleConstMissing</span> <span class="p">}</span>
-    <span class="no">Exception</span><span class="p">.</span><span class="nf">class_eval</span> <span class="p">{</span> <span class="kp">include</span> <span class="no">Blamable</span> <span class="p">}</span>
-  <span class="k">end</span>
+</pre></td><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">hook!</span>
+  <span class="no">Object</span><span class="p">.</span><span class="nf">class_eval</span> <span class="p">{</span> <span class="kp">include</span> <span class="no">Loadable</span> <span class="p">}</span>
+  <span class="no">Module</span><span class="p">.</span><span class="nf">class_eval</span> <span class="p">{</span> <span class="kp">include</span> <span class="no">ModuleConstMissing</span> <span class="p">}</span>
+  <span class="no">Exception</span><span class="p">.</span><span class="nf">class_eval</span> <span class="p">{</span> <span class="kp">include</span> <span class="no">Blamable</span> <span class="p">}</span>
+<span class="k">end</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>Methods injected into <code>Object</code> overwrite methods like <code>load</code> and <code>require</code> in
 order to monitor new constants, that said, it depends on loading strategy.
@@ -133,14 +131,14 @@ to show you how <code>AS::D</code> works with this example:</p>
 6
 7
 8
-</pre></td><td class="rouge-code"><pre>  <span class="c1"># /autoloadable/a.rb</span>
-  <span class="c1"># module A</span>
-  <span class="c1"># end</span>
+</pre></td><td class="rouge-code"><pre><span class="c1"># /autoloadable/a.rb</span>
+<span class="c1"># module A</span>
+<span class="c1"># end</span>
 
-  <span class="nb">require</span> <span class="s1">'active_support/dependencies'</span>
-  <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Dependencies</span><span class="p">.</span><span class="nf">autoload_paths</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'/autoloadable'</span><span class="p">]</span>
+<span class="nb">require</span> <span class="s1">'active_support/dependencies'</span>
+<span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Dependencies</span><span class="p">.</span><span class="nf">autoload_paths</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'/autoloadable'</span><span class="p">]</span>
 
-  <span class="no">A</span>
+<span class="no">A</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <ol>
 <li>Declaring constant <code>A</code> triggers <code>Module#const_missing</code>, that was overwritten
@@ -184,18 +182,18 @@ which gives us ability to use folders like module namespaces:</p>
 10
 11
 12
-</pre></td><td class="rouge-code"><pre>  <span class="c1"># /autoloadable/a.rb</span>
-  <span class="c1"># module A</span>
-  <span class="c1"># end</span>
+</pre></td><td class="rouge-code"><pre><span class="c1"># /autoloadable/a.rb</span>
+<span class="c1"># module A</span>
+<span class="c1"># end</span>
 
-  <span class="c1"># /autoloadable/a/b.rb</span>
-  <span class="c1"># module A</span>
-  <span class="c1">#   module B</span>
-  <span class="c1">#     C = 'c'</span>
-  <span class="c1">#   end</span>
-  <span class="c1"># end</span>
+<span class="c1"># /autoloadable/a/b.rb</span>
+<span class="c1"># module A</span>
+<span class="c1">#   module B</span>
+<span class="c1">#     C = 'c'</span>
+<span class="c1">#   end</span>
+<span class="c1"># end</span>
 
-  <span class="no">A</span><span class="o">::</span><span class="no">B</span><span class="o">::</span><span class="no">C</span> <span class="o">=&gt;</span> <span class="s1">'c'</span>
+<span class="no">A</span><span class="o">::</span><span class="no">B</span><span class="o">::</span><span class="no">C</span> <span class="o">=&gt;</span> <span class="s1">'c'</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>or even so:</p>
 <div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
@@ -204,12 +202,12 @@ which gives us ability to use folders like module namespaces:</p>
 4
 5
 6
-</pre></td><td class="rouge-code"><pre>  <span class="c1"># /autoloadable/a/b.rb</span>
-  <span class="c1"># module A::B</span>
-  <span class="c1">#   C = 'c'</span>
-  <span class="c1"># end</span>
+</pre></td><td class="rouge-code"><pre><span class="c1"># /autoloadable/a/b.rb</span>
+<span class="c1"># module A::B</span>
+<span class="c1">#   C = 'c'</span>
+<span class="c1"># end</span>
 
-  <span class="no">A</span><span class="o">::</span><span class="no">B</span><span class="o">::</span><span class="no">C</span> <span class="o">=&gt;</span> <span class="s1">'c'</span>
+<span class="no">A</span><span class="o">::</span><span class="no">B</span><span class="o">::</span><span class="no">C</span> <span class="o">=&gt;</span> <span class="s1">'c'</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>Although we haven&rsquo;t defined module <code>A</code>, it has been created for us automatically
 because of existing directory <code>a</code>. It&rsquo;s really convinient, because you are not
@@ -227,14 +225,14 @@ an idea about the nesting, this example works as expected:</p>
 6
 7
 8
-</pre></td><td class="rouge-code"><pre>  <span class="c1"># /autoloadable/b.rb</span>
-  <span class="k">module</span> <span class="nn">B</span>
-  <span class="k">end</span>
+</pre></td><td class="rouge-code"><pre><span class="c1"># /autoloadable/b.rb</span>
+<span class="k">module</span> <span class="nn">B</span>
+<span class="k">end</span>
 
-  <span class="c1"># /autoloadable/a.rb</span>
-  <span class="k">module</span> <span class="nn">A</span>
-    <span class="no">B</span> <span class="c1"># =&gt; B</span>
-  <span class="k">end</span>
+<span class="c1"># /autoloadable/a.rb</span>
+<span class="k">module</span> <span class="nn">A</span>
+  <span class="no">B</span> <span class="c1"># =&gt; B</span>
+<span class="k">end</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>but this shows wrong results:</p>
 <div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
@@ -246,15 +244,15 @@ an idea about the nesting, this example works as expected:</p>
 7
 8
 9
-</pre></td><td class="rouge-code"><pre>  <span class="c1"># /autoloadable/a.rb</span>
-  <span class="k">module</span> <span class="nn">A</span>
-  <span class="k">end</span>
+</pre></td><td class="rouge-code"><pre><span class="c1"># /autoloadable/a.rb</span>
+<span class="k">module</span> <span class="nn">A</span>
+<span class="k">end</span>
 
-  <span class="c1"># /autoloadable/b.rb</span>
-  <span class="k">module</span> <span class="nn">B</span>
-  <span class="k">end</span>
+<span class="c1"># /autoloadable/b.rb</span>
+<span class="k">module</span> <span class="nn">B</span>
+<span class="k">end</span>
 
-  <span class="nb">p</span> <span class="no">A</span><span class="o">::</span><span class="no">B</span> <span class="c1"># =&gt; B</span>
+<span class="nb">p</span> <span class="no">A</span><span class="o">::</span><span class="no">B</span> <span class="c1"># =&gt; B</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>Is that right? I don&rsquo;t think so. If we had used pure Ruby it would have thrown
 <code>NameError: uninitialized constant A::B</code>, because we explicitly said we need <code>B</code>
@@ -271,15 +269,15 @@ little info to <code>const_missing</code> and <code>AS::D</code> can do nothing 
 7
 8
 9
-</pre></td><td class="rouge-code"><pre>  <span class="c1"># /autoloadable/a.rb</span>
-  <span class="c1"># module A; end</span>
+</pre></td><td class="rouge-code"><pre><span class="c1"># /autoloadable/a.rb</span>
+<span class="c1"># module A; end</span>
 
-  <span class="c1"># /autoloadable/namespace/a/b.rb</span>
-  <span class="c1"># module Namespace::A::B</span>
-  <span class="c1">#  A</span>
-  <span class="c1"># end</span>
+<span class="c1"># /autoloadable/namespace/a/b.rb</span>
+<span class="c1"># module Namespace::A::B</span>
+<span class="c1">#  A</span>
+<span class="c1"># end</span>
 
-  <span class="no">Namespace</span><span class="o">::</span><span class="no">A</span><span class="o">::</span><span class="no">B</span> <span class="c1"># =&gt; What is A inside this namespace?</span>
+<span class="no">Namespace</span><span class="o">::</span><span class="no">A</span><span class="o">::</span><span class="no">B</span> <span class="c1"># =&gt; What is A inside this namespace?</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>What would you expect from this example? I think in Ruby it&rsquo;s obviously
 top-level <code>A</code>, but since <code>AS::D</code> doesn&rsquo;t know about nesting, would you expect it
@@ -306,21 +304,21 @@ because of this:</p>
 13
 14
 15
-</pre></td><td class="rouge-code"><pre>  <span class="c1"># c.rb</span>
-  <span class="c1"># C = 'c'</span>
+</pre></td><td class="rouge-code"><pre><span class="c1"># c.rb</span>
+<span class="c1"># C = 'c'</span>
 
-  <span class="c1"># a/c.rb</span>
-  <span class="c1"># module A</span>
-  <span class="c1">#   C = 'ac'</span>
-  <span class="c1"># end</span>
+<span class="c1"># a/c.rb</span>
+<span class="c1"># module A</span>
+<span class="c1">#   C = 'ac'</span>
+<span class="c1"># end</span>
 
-  <span class="c1"># a/b.rb</span>
-  <span class="c1"># module A::B</span>
-  <span class="c1">#   C</span>
-  <span class="c1"># end</span>
+<span class="c1"># a/b.rb</span>
+<span class="c1"># module A::B</span>
+<span class="c1">#   C</span>
+<span class="c1"># end</span>
 
-  <span class="no">A</span><span class="o">::</span><span class="no">B</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; 'ac'</span>
-  <span class="no">A</span><span class="o">::</span><span class="no">B</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; uninitialized constant A::B::C</span>
+<span class="no">A</span><span class="o">::</span><span class="no">B</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; 'ac'</span>
+<span class="no">A</span><span class="o">::</span><span class="no">B</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; uninitialized constant A::B::C</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>Calling it twice gives us an error, because of the same case we&rsquo;ve considered
 above. The first time <code>AS::D</code> resolves <code>C</code> through as usual, but the second time
@@ -351,24 +349,24 @@ which is still sad. That&rsquo;s why I&rsquo;d prefer an error.</p>
 16
 17
 18
-</pre></td><td class="rouge-code"><pre>  <span class="c1"># autoloadable/a.rb</span>
-  <span class="c1"># module A</span>
-  <span class="c1">#   sleep 5</span>
-  <span class="c1">#   def self.hello</span>
-  <span class="c1">#     'hello'</span>
-  <span class="c1">#   end</span>
-  <span class="c1"># end</span>
+</pre></td><td class="rouge-code"><pre><span class="c1"># autoloadable/a.rb</span>
+<span class="c1"># module A</span>
+<span class="c1">#   sleep 5</span>
+<span class="c1">#   def self.hello</span>
+<span class="c1">#     'hello'</span>
+<span class="c1">#   end</span>
+<span class="c1"># end</span>
 
-  <span class="k">class</span> <span class="nc">Module</span>
-    <span class="k">def</span> <span class="nf">const_missing</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
-      <span class="nb">require</span> <span class="s2">"./autoloadable/</span><span class="si">#{</span><span class="nb">name</span><span class="p">.</span><span class="nf">downcase</span><span class="si">}</span><span class="s2">.rb"</span>
-      <span class="no">Object</span><span class="p">.</span><span class="nf">const_get</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
-    <span class="k">end</span>
+<span class="k">class</span> <span class="nc">Module</span>
+  <span class="k">def</span> <span class="nf">const_missing</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+    <span class="nb">require</span> <span class="s2">"./autoloadable/</span><span class="si">#{</span><span class="nb">name</span><span class="p">.</span><span class="nf">downcase</span><span class="si">}</span><span class="s2">.rb"</span>
+    <span class="no">Object</span><span class="p">.</span><span class="nf">const_get</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
   <span class="k">end</span>
+<span class="k">end</span>
 
-  <span class="n">t1</span> <span class="o">=</span> <span class="no">Thread</span><span class="p">.</span><span class="nf">new</span> <span class="p">{</span> <span class="no">A</span><span class="p">.</span><span class="nf">hello</span> <span class="p">}</span>
-  <span class="n">t2</span> <span class="o">=</span> <span class="no">Thread</span><span class="p">.</span><span class="nf">new</span> <span class="p">{</span> <span class="no">A</span><span class="p">.</span><span class="nf">hello</span> <span class="p">}</span>
-  <span class="n">t1</span><span class="p">.</span><span class="nf">join</span><span class="p">;</span> <span class="n">t2</span><span class="p">.</span><span class="nf">join</span>
+<span class="n">t1</span> <span class="o">=</span> <span class="no">Thread</span><span class="p">.</span><span class="nf">new</span> <span class="p">{</span> <span class="no">A</span><span class="p">.</span><span class="nf">hello</span> <span class="p">}</span>
+<span class="n">t2</span> <span class="o">=</span> <span class="no">Thread</span><span class="p">.</span><span class="nf">new</span> <span class="p">{</span> <span class="no">A</span><span class="p">.</span><span class="nf">hello</span> <span class="p">}</span>
+<span class="n">t1</span><span class="p">.</span><span class="nf">join</span><span class="p">;</span> <span class="n">t2</span><span class="p">.</span><span class="nf">join</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>The result is <code>undefined method &#39;hello&#39; for A:Module (NoMethodError)</code>. Why?
 Because second thread takes over when the first is awaiting sleeping. At that
@@ -393,10 +391,10 @@ reproduce even without <code>AS::D</code>:</p>
 2
 3
 4
-</pre></td><td class="rouge-code"><pre>  <span class="k">class</span> <span class="nc">B</span><span class="p">;</span> <span class="k">end</span>
-  <span class="k">class</span> <span class="nc">A</span><span class="p">;</span> <span class="k">end</span>
+</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">B</span><span class="p">;</span> <span class="k">end</span>
+<span class="k">class</span> <span class="nc">A</span><span class="p">;</span> <span class="k">end</span>
 
-  <span class="no">A</span><span class="o">::</span><span class="no">B</span>
+<span class="no">A</span><span class="o">::</span><span class="no">B</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>Since <code>A.ancestors</code> is <code>[A, Object, Kernel, BasicObject]</code> and contains class
 <code>Object</code> and <code>B</code> are already defined as top level constants, Ruby shows us a
@@ -406,10 +404,10 @@ constant. Notice that for modules the situation is different:</p>
 2
 3
 4
-</pre></td><td class="rouge-code"><pre>  <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
-  <span class="k">module</span> <span class="nn">A</span><span class="p">;</span> <span class="k">end</span>
+</pre></td><td class="rouge-code"><pre><span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
+<span class="k">module</span> <span class="nn">A</span><span class="p">;</span> <span class="k">end</span>
 
-  <span class="no">A</span><span class="o">::</span><span class="no">B</span>
+<span class="no">A</span><span class="o">::</span><span class="no">B</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>It gives us just &lsquo;uninitialized constant A::B (NameError)&rsquo; because the ancestors
 chain doesn&rsquo;t contain <code>Object</code>.</p>
@@ -430,17 +428,17 @@ chain doesn&rsquo;t contain <code>Object</code>.</p>
 9
 10
 11
-</pre></td><td class="rouge-code"><pre>  <span class="c1"># /autoloadable/a.rb</span>
-  <span class="c1"># B</span>
-  <span class="c1"># module A</span>
-  <span class="c1"># end</span>
+</pre></td><td class="rouge-code"><pre><span class="c1"># /autoloadable/a.rb</span>
+<span class="c1"># B</span>
+<span class="c1"># module A</span>
+<span class="c1"># end</span>
 
-  <span class="c1"># /autoloadable/b.rb</span>
-  <span class="c1"># A</span>
-  <span class="c1"># module B</span>
-  <span class="c1"># end</span>
+<span class="c1"># /autoloadable/b.rb</span>
+<span class="c1"># A</span>
+<span class="c1"># module B</span>
+<span class="c1"># end</span>
 
-  <span class="no">A</span>
+<span class="no">A</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>If we try to access constant <code>A</code> we&rsquo;ll see this error. <code>AS::D</code> makes an
 assumption that this constant is defined in file <code>a.rb</code>. When it loads this file
@@ -468,22 +466,22 @@ multi-threaded environment.</p>
 14
 15
 16
-</pre></td><td class="rouge-code"><pre>  <span class="c1"># /autoloadable/money.rb</span>
-  <span class="c1"># class Money</span>
-  <span class="c1"># end</span>
+</pre></td><td class="rouge-code"><pre><span class="c1"># /autoloadable/money.rb</span>
+<span class="c1"># class Money</span>
+<span class="c1"># end</span>
 
-  <span class="c1"># /autoloadable/customer.rb</span>
-  <span class="c1"># class Customer</span>
-  <span class="c1">#   def money</span>
-  <span class="c1">#     Money.new</span>
-  <span class="c1">#   end</span>
-  <span class="c1"># end</span>
+<span class="c1"># /autoloadable/customer.rb</span>
+<span class="c1"># class Customer</span>
+<span class="c1">#   def money</span>
+<span class="c1">#     Money.new</span>
+<span class="c1">#   end</span>
+<span class="c1"># end</span>
 
-  <span class="n">customer</span> <span class="o">=</span> <span class="no">Customer</span><span class="p">.</span><span class="nf">new</span>
+<span class="n">customer</span> <span class="o">=</span> <span class="no">Customer</span><span class="p">.</span><span class="nf">new</span>
 
-  <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Dependencies</span><span class="p">.</span><span class="nf">clear</span>
+<span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Dependencies</span><span class="p">.</span><span class="nf">clear</span>
 
-  <span class="n">customer</span><span class="p">.</span><span class="nf">money</span>
+<span class="n">customer</span><span class="p">.</span><span class="nf">money</span>
 </pre></td></tr></tbody></table></code></pre></div>
 <p>It happens because class for <code>Customer</code> was autoloaded, but class for <code>Money</code>
 wasn&rsquo;t because we haven&rsquo;t invoked <code>Money.new</code> before <code>AS::D.clear</code>. Then
@@ -532,7 +530,7 @@ may load your code in another order.</p></li>
         Copyright © 2012-2018
         <a href="https://github.com/route" target="_blank">Dmitry Vorotilin</a>
         |
-        <a href="cv.html" target="_blank">CV</a>
+        <a href="/cv.html" target="_blank">CV</a>
       </footer>
       <div class="yandex_metrika">
         <!-- Yandex.Metrika informer -->

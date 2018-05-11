@@ -5,10 +5,93 @@
   <id>http://blog.url.com/</id>
   <link href="http://blog.url.com/"/>
   <link href="http://blog.url.com/feed.xml" rel="self"/>
-  <updated>2018-04-24T03:00:00+03:00</updated>
+  <updated>2018-05-11T03:00:00+03:00</updated>
   <author>
     <name>Blog Author</name>
   </author>
+  <entry>
+    <title>Stop using ActiveRecord's first method</title>
+    <link rel="alternate" href="/2018/05/11/stop-using-active-record-first.html"/>
+    <id>/2018/05/11/stop-using-active-record-first.html</id>
+    <published>2018-05-11T03:00:00+03:00</published>
+    <updated>2018-05-11T03:00:00+03:00</updated>
+    <author>
+      <name>Article Author</name>
+    </author>
+    <summary type="html">&lt;p&gt;If you’ve grown with Rails like me you know that everyone used and perhaps still
+use everywhere &lt;code&gt;first&lt;/code&gt;. You type it without hesitation.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="/images/irb.png" alt="hacking"&gt;&lt;/p&gt;
+
+&lt;p&gt;I know that it’s so simple that maybe it even doesn’t deserve a post but just
+stop doing that.&lt;/p&gt;
+
+&lt;p&gt;There’s a much...&lt;/p&gt;</summary>
+    <content type="html">&lt;p&gt;If you&amp;rsquo;ve grown with Rails like me you know that everyone used and perhaps still
+use everywhere &lt;code&gt;first&lt;/code&gt;. You type it without hesitation.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="/images/irb.png" alt="hacking" /&gt;&lt;/p&gt;
+
+&lt;p&gt;I know that it&amp;rsquo;s so simple that maybe it even doesn&amp;rsquo;t deserve a post but just
+stop doing that.&lt;/p&gt;
+
+&lt;p&gt;There&amp;rsquo;s a much better method &lt;a href="https://github.com/rails/rails/commit/1379375f93c53d4c49fa8592b6117c3ade263f2e"&gt;take&lt;/a&gt;
+added long ago Apr 27, 2012 and if you say right now:&lt;/p&gt;
+
+&lt;p&gt;- I know all that!&lt;/p&gt;
+
+&lt;p&gt;then things are getting more intersting with PostgreSQL v10 at least:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight sql"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;EXPLAIN&lt;/span&gt; &lt;span class="k"&gt;ANALYZE&lt;/span&gt; &lt;span class="k"&gt;SELECT&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="k"&gt;FROM&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt; &lt;span class="k"&gt;WHERE&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;"deleted_at"&lt;/span&gt; &lt;span class="k"&gt;IS&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt; &lt;span class="k"&gt;AND&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;"user_id"&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="k"&gt;order&lt;/span&gt; &lt;span class="k"&gt;by&lt;/span&gt; &lt;span class="n"&gt;id&lt;/span&gt; &lt;span class="k"&gt;ASC&lt;/span&gt; &lt;span class="k"&gt;limit&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+                                                                    &lt;span class="n"&gt;QUERY&lt;/span&gt; &lt;span class="n"&gt;PLAN&lt;/span&gt;                                                                    
+&lt;span class="c1"&gt;--------------------------------------------------------------------------------------------------------------------------------------------------&lt;/span&gt;
+ &lt;span class="k"&gt;Limit&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;26&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;91&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;327&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;actual&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;875&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;875&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+   &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;  &lt;span class="k"&gt;Index&lt;/span&gt; &lt;span class="n"&gt;Scan&lt;/span&gt; &lt;span class="k"&gt;using&lt;/span&gt; &lt;span class="n"&gt;posts_pkey&lt;/span&gt; &lt;span class="k"&gt;on&lt;/span&gt; &lt;span class="n"&gt;posts&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;2057670&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;78&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;76800&lt;/span&gt; &lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;327&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;actual&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;874&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;874&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+         &lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;deleted_at&lt;/span&gt; &lt;span class="k"&gt;IS&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;AND&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;user_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+         &lt;span class="k"&gt;Rows&lt;/span&gt; &lt;span class="n"&gt;Removed&lt;/span&gt; &lt;span class="k"&gt;by&lt;/span&gt; &lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;26826499&lt;/span&gt;
+ &lt;span class="n"&gt;Planning&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;202&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt;
+ &lt;span class="n"&gt;Execution&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;905&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Doesn&amp;rsquo;t it look creepy? According to &lt;a href="https://stackoverflow.com/questions/21385555/postgresql-query-very-slow-with-limit-1"&gt;stackoverflow&lt;/a&gt;
+it can be an issue in the planner and given that you have pretty large table not
+with 10 posts of course this query becomes drastically slower than planned. So a
+combination of two issues results in a waste of time for investigation. First of
+all it shouldn&amp;rsquo;t have happened if we used &lt;code&gt;take&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight sql"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;EXPLAIN&lt;/span&gt; &lt;span class="k"&gt;ANALYZE&lt;/span&gt; &lt;span class="k"&gt;SELECT&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="k"&gt;FROM&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt; &lt;span class="k"&gt;WHERE&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;"deleted_at"&lt;/span&gt; &lt;span class="k"&gt;IS&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt; &lt;span class="k"&gt;AND&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;"user_id"&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="k"&gt;limit&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+                                                     &lt;span class="n"&gt;QUERY&lt;/span&gt; &lt;span class="n"&gt;PLAN&lt;/span&gt;                                                     
+&lt;span class="c1"&gt;--------------------------------------------------------------------------------------------------------------------&lt;/span&gt;
+ &lt;span class="k"&gt;Limit&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;00&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;13&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;40&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;327&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;actual&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;979&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;979&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+   &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;  &lt;span class="n"&gt;Seq&lt;/span&gt; &lt;span class="n"&gt;Scan&lt;/span&gt; &lt;span class="k"&gt;on&lt;/span&gt; &lt;span class="n"&gt;posts&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;00&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;1029108&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;93&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;76800&lt;/span&gt; &lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;327&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;actual&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;978&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;978&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+         &lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;deleted_at&lt;/span&gt; &lt;span class="k"&gt;IS&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;AND&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;user_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+         &lt;span class="k"&gt;Rows&lt;/span&gt; &lt;span class="n"&gt;Removed&lt;/span&gt; &lt;span class="k"&gt;by&lt;/span&gt; &lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;3463&lt;/span&gt;
+ &lt;span class="n"&gt;Planning&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;606&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt;
+ &lt;span class="n"&gt;Execution&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;047&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Force yourself typing &lt;code&gt;take&lt;/code&gt; instead of &lt;code&gt;first&lt;/code&gt; if you don&amp;rsquo;t care about the order
+which in most cases is the case.&lt;/p&gt;
+</content>
+  </entry>
   <entry>
     <title>Telegram drama</title>
     <link rel="alternate" href="/2018/04/24/telegram-drama.html"/>
@@ -18,19 +101,18 @@
     <author>
       <name>Article Author</name>
     </author>
-    <summary type="html">&lt;p&gt;I didn’t write a word in the blog for almost 4 years because I didn’t have time
-or most likely motivation to do it. But current circumstances forced me.&lt;/p&gt;
-
-&lt;p&gt;In my childhood internet and network looked like a magick. In movies they showed
-something like...&lt;/p&gt;</summary>
-    <content type="html">&lt;p&gt;I didn&amp;rsquo;t write a word in the blog for almost 4 years because I didn&amp;rsquo;t have time
-or most likely motivation to do it. But current circumstances forced me.&lt;/p&gt;
-
-&lt;p&gt;In my childhood internet and network looked like a magick. In movies they showed
+    <summary type="html">&lt;p&gt;In my childhood internet and network looked like a magick. In movies they showed
 something like ping output and I definitely thought that someone hacked someone
 else.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src="https://www.techworm.net/wp-content/uploads/2016/03/Movies-Based-On-Hacking-e1457858868314.png" alt="hacking" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="/images/hackers.png" alt="hacking"&gt;&lt;/p&gt;
+
+&lt;p&gt;I’m located in Russia and I work for Chicago based startup thanks 21st century...&lt;/p&gt;</summary>
+    <content type="html">&lt;p&gt;In my childhood internet and network looked like a magick. In movies they showed
+something like ping output and I definitely thought that someone hacked someone
+else.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="/images/hackers.png" alt="hacking" /&gt;&lt;/p&gt;
 
 &lt;p&gt;I&amp;rsquo;m located in Russia and I work for Chicago based startup thanks 21st century
 for remote. We have our servers on AWS and DigitalOcean. Thereon this long
@@ -1056,11 +1138,11 @@ for &lt;code&gt;AS::D&lt;/code&gt;. Consider this example:&lt;/p&gt;
 3
 4
 5
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# Meanwhile you can add sleep here and make changes in a.rb&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# Meanwhile you can add sleep here and make changes in a.rb&lt;/span&gt;
 
-  &lt;span class="no"&gt;ActiveSupport&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Dependencies&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;clear&lt;/span&gt; &lt;span class="c1"&gt;# Removes A from memory&lt;/span&gt;
+&lt;span class="no"&gt;ActiveSupport&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Dependencies&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;clear&lt;/span&gt; &lt;span class="c1"&gt;# Removes A from memory&lt;/span&gt;
 
-  &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="c1"&gt;# Will load A again&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="c1"&gt;# Will load A again&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;I&amp;rsquo;ve just introduced the method Rails reloads your code with — &lt;code&gt;clear&lt;/code&gt;. Let&amp;rsquo;s
 dig dipper and see how &lt;code&gt;AS::D&lt;/code&gt; actually works. There are two different constant
@@ -1072,9 +1154,9 @@ demand. What does removing constant from memory mean? There&amp;rsquo;s a method
 &lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
 2
 3
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-  &lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;:remove_const&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'A'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-  &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A (NameError)&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;:remove_const&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'A'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A (NameError)&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;But what if we remove constant for existing instance of a class:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
@@ -1088,17 +1170,17 @@ demand. What does removing constant from memory mean? There&amp;rsquo;s a method
 9
 10
 11
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;
-    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nc"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;value&lt;/span&gt;
-      &lt;span class="s1"&gt;'value'&lt;/span&gt;
-    &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;
+  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nc"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;value&lt;/span&gt;
+    &lt;span class="s1"&gt;'value'&lt;/span&gt;
   &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 
-  &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;
-  &lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;:remove_const&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'A'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-  &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; A&lt;/span&gt;
-  &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;value&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'value'&lt;/span&gt;
-  &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A (NameError)&lt;/span&gt;
+&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;
+&lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;:remove_const&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'A'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; A&lt;/span&gt;
+&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;value&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'value'&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A (NameError)&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;That&amp;rsquo;s interesting because constant name was removed from memory but its
 instance still shows us its class and we can even call class methods on it. It
@@ -1113,11 +1195,11 @@ Ruby classes via &lt;code&gt;AS::D.hook!&lt;/code&gt;.&lt;/p&gt;
 3
 4
 5
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;hook!&lt;/span&gt;
-    &lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class_eval&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="kp"&gt;include&lt;/span&gt; &lt;span class="no"&gt;Loadable&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
-    &lt;span class="no"&gt;Module&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class_eval&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="kp"&gt;include&lt;/span&gt; &lt;span class="no"&gt;ModuleConstMissing&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
-    &lt;span class="no"&gt;Exception&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class_eval&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="kp"&gt;include&lt;/span&gt; &lt;span class="no"&gt;Blamable&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;hook!&lt;/span&gt;
+  &lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class_eval&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="kp"&gt;include&lt;/span&gt; &lt;span class="no"&gt;Loadable&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="no"&gt;Module&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class_eval&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="kp"&gt;include&lt;/span&gt; &lt;span class="no"&gt;ModuleConstMissing&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="no"&gt;Exception&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class_eval&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="kp"&gt;include&lt;/span&gt; &lt;span class="no"&gt;Blamable&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Methods injected into &lt;code&gt;Object&lt;/code&gt; overwrite methods like &lt;code&gt;load&lt;/code&gt; and &lt;code&gt;require&lt;/code&gt; in
 order to monitor new constants, that said, it depends on loading strategy.
@@ -1132,14 +1214,14 @@ to show you how &lt;code&gt;AS::D&lt;/code&gt; works with this example:&lt;/p&gt
 6
 7
 8
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
-  &lt;span class="c1"&gt;# module A&lt;/span&gt;
-  &lt;span class="c1"&gt;# end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
 
-  &lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s1"&gt;'active_support/dependencies'&lt;/span&gt;
-  &lt;span class="no"&gt;ActiveSupport&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Dependencies&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;autoload_paths&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'/autoloadable'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s1"&gt;'active_support/dependencies'&lt;/span&gt;
+&lt;span class="no"&gt;ActiveSupport&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Dependencies&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;autoload_paths&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'/autoloadable'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
 
-  &lt;span class="no"&gt;A&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;ol&gt;
 &lt;li&gt;Declaring constant &lt;code&gt;A&lt;/code&gt; triggers &lt;code&gt;Module#const_missing&lt;/code&gt;, that was overwritten
@@ -1183,18 +1265,18 @@ which gives us ability to use folders like module namespaces:&lt;/p&gt;
 10
 11
 12
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
-  &lt;span class="c1"&gt;# module A&lt;/span&gt;
-  &lt;span class="c1"&gt;# end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
 
-  &lt;span class="c1"&gt;# /autoloadable/a/b.rb&lt;/span&gt;
-  &lt;span class="c1"&gt;# module A&lt;/span&gt;
-  &lt;span class="c1"&gt;#   module B&lt;/span&gt;
-  &lt;span class="c1"&gt;#     C = 'c'&lt;/span&gt;
-  &lt;span class="c1"&gt;#   end&lt;/span&gt;
-  &lt;span class="c1"&gt;# end&lt;/span&gt;
+&lt;span class="c1"&gt;# /autoloadable/a/b.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;#   module B&lt;/span&gt;
+&lt;span class="c1"&gt;#     C = 'c'&lt;/span&gt;
+&lt;span class="c1"&gt;#   end&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
 
-  &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="s1"&gt;'c'&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="s1"&gt;'c'&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;or even so:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
@@ -1203,12 +1285,12 @@ which gives us ability to use folders like module namespaces:&lt;/p&gt;
 4
 5
 6
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# /autoloadable/a/b.rb&lt;/span&gt;
-  &lt;span class="c1"&gt;# module A::B&lt;/span&gt;
-  &lt;span class="c1"&gt;#   C = 'c'&lt;/span&gt;
-  &lt;span class="c1"&gt;# end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# /autoloadable/a/b.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A::B&lt;/span&gt;
+&lt;span class="c1"&gt;#   C = 'c'&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
 
-  &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="s1"&gt;'c'&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="s1"&gt;'c'&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Although we haven&amp;rsquo;t defined module &lt;code&gt;A&lt;/code&gt;, it has been created for us automatically
 because of existing directory &lt;code&gt;a&lt;/code&gt;. It&amp;rsquo;s really convinient, because you are not
@@ -1226,14 +1308,14 @@ an idea about the nesting, this example works as expected:&lt;/p&gt;
 6
 7
 8
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# /autoloadable/b.rb&lt;/span&gt;
-  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# /autoloadable/b.rb&lt;/span&gt;
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 
-  &lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
-  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
-    &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; B&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
+  &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; B&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;but this shows wrong results:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
@@ -1245,15 +1327,15 @@ an idea about the nesting, this example works as expected:&lt;/p&gt;
 7
 8
 9
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
-  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 
-  &lt;span class="c1"&gt;# /autoloadable/b.rb&lt;/span&gt;
-  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="c1"&gt;# /autoloadable/b.rb&lt;/span&gt;
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 
-  &lt;span class="nb"&gt;p&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; B&lt;/span&gt;
+&lt;span class="nb"&gt;p&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; B&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Is that right? I don&amp;rsquo;t think so. If we had used pure Ruby it would have thrown
 &lt;code&gt;NameError: uninitialized constant A::B&lt;/code&gt;, because we explicitly said we need &lt;code&gt;B&lt;/code&gt;
@@ -1270,15 +1352,15 @@ little info to &lt;code&gt;const_missing&lt;/code&gt; and &lt;code&gt;AS::D&lt;/
 7
 8
 9
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
-  &lt;span class="c1"&gt;# module A; end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A; end&lt;/span&gt;
 
-  &lt;span class="c1"&gt;# /autoloadable/namespace/a/b.rb&lt;/span&gt;
-  &lt;span class="c1"&gt;# module Namespace::A::B&lt;/span&gt;
-  &lt;span class="c1"&gt;#  A&lt;/span&gt;
-  &lt;span class="c1"&gt;# end&lt;/span&gt;
+&lt;span class="c1"&gt;# /autoloadable/namespace/a/b.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module Namespace::A::B&lt;/span&gt;
+&lt;span class="c1"&gt;#  A&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
 
-  &lt;span class="no"&gt;Namespace&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; What is A inside this namespace?&lt;/span&gt;
+&lt;span class="no"&gt;Namespace&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; What is A inside this namespace?&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;What would you expect from this example? I think in Ruby it&amp;rsquo;s obviously
 top-level &lt;code&gt;A&lt;/code&gt;, but since &lt;code&gt;AS::D&lt;/code&gt; doesn&amp;rsquo;t know about nesting, would you expect it
@@ -1305,21 +1387,21 @@ because of this:&lt;/p&gt;
 13
 14
 15
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# c.rb&lt;/span&gt;
-  &lt;span class="c1"&gt;# C = 'c'&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# c.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# C = 'c'&lt;/span&gt;
 
-  &lt;span class="c1"&gt;# a/c.rb&lt;/span&gt;
-  &lt;span class="c1"&gt;# module A&lt;/span&gt;
-  &lt;span class="c1"&gt;#   C = 'ac'&lt;/span&gt;
-  &lt;span class="c1"&gt;# end&lt;/span&gt;
+&lt;span class="c1"&gt;# a/c.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;#   C = 'ac'&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
 
-  &lt;span class="c1"&gt;# a/b.rb&lt;/span&gt;
-  &lt;span class="c1"&gt;# module A::B&lt;/span&gt;
-  &lt;span class="c1"&gt;#   C&lt;/span&gt;
-  &lt;span class="c1"&gt;# end&lt;/span&gt;
+&lt;span class="c1"&gt;# a/b.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A::B&lt;/span&gt;
+&lt;span class="c1"&gt;#   C&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
 
-  &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'ac'&lt;/span&gt;
-  &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A::B::C&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'ac'&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A::B::C&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Calling it twice gives us an error, because of the same case we&amp;rsquo;ve considered
 above. The first time &lt;code&gt;AS::D&lt;/code&gt; resolves &lt;code&gt;C&lt;/code&gt; through as usual, but the second time
@@ -1350,24 +1432,24 @@ which is still sad. That&amp;rsquo;s why I&amp;rsquo;d prefer an error.&lt;/p&gt
 16
 17
 18
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# autoloadable/a.rb&lt;/span&gt;
-  &lt;span class="c1"&gt;# module A&lt;/span&gt;
-  &lt;span class="c1"&gt;#   sleep 5&lt;/span&gt;
-  &lt;span class="c1"&gt;#   def self.hello&lt;/span&gt;
-  &lt;span class="c1"&gt;#     'hello'&lt;/span&gt;
-  &lt;span class="c1"&gt;#   end&lt;/span&gt;
-  &lt;span class="c1"&gt;# end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# autoloadable/a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;#   sleep 5&lt;/span&gt;
+&lt;span class="c1"&gt;#   def self.hello&lt;/span&gt;
+&lt;span class="c1"&gt;#     'hello'&lt;/span&gt;
+&lt;span class="c1"&gt;#   end&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
 
-  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Module&lt;/span&gt;
-    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;const_missing&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;name&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-      &lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s2"&gt;"./autoloadable/&lt;/span&gt;&lt;span class="si"&gt;#{&lt;/span&gt;&lt;span class="nb"&gt;name&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;downcase&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;.rb"&lt;/span&gt;
-      &lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;const_get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;name&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Module&lt;/span&gt;
+  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;const_missing&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;name&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s2"&gt;"./autoloadable/&lt;/span&gt;&lt;span class="si"&gt;#{&lt;/span&gt;&lt;span class="nb"&gt;name&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;downcase&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;.rb"&lt;/span&gt;
+    &lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;const_get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;name&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
   &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 
-  &lt;span class="n"&gt;t1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Thread&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;hello&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
-  &lt;span class="n"&gt;t2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Thread&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;hello&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
-  &lt;span class="n"&gt;t1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;join&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;t2&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;join&lt;/span&gt;
+&lt;span class="n"&gt;t1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Thread&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;hello&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="n"&gt;t2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Thread&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;hello&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="n"&gt;t1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;join&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;t2&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;join&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;The result is &lt;code&gt;undefined method &amp;#39;hello&amp;#39; for A:Module (NoMethodError)&lt;/code&gt;. Why?
 Because second thread takes over when the first is awaiting sleeping. At that
@@ -1392,10 +1474,10 @@ reproduce even without &lt;code&gt;AS::D&lt;/code&gt;:&lt;/p&gt;
 2
 3
 4
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
 
-  &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Since &lt;code&gt;A.ancestors&lt;/code&gt; is &lt;code&gt;[A, Object, Kernel, BasicObject]&lt;/code&gt; and contains class
 &lt;code&gt;Object&lt;/code&gt; and &lt;code&gt;B&lt;/code&gt; are already defined as top level constants, Ruby shows us a
@@ -1405,10 +1487,10 @@ constant. Notice that for modules the situation is different:&lt;/p&gt;
 2
 3
 4
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
 
-  &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;It gives us just &amp;lsquo;uninitialized constant A::B (NameError)&amp;rsquo; because the ancestors
 chain doesn&amp;rsquo;t contain &lt;code&gt;Object&lt;/code&gt;.&lt;/p&gt;
@@ -1429,17 +1511,17 @@ chain doesn&amp;rsquo;t contain &lt;code&gt;Object&lt;/code&gt;.&lt;/p&gt;
 9
 10
 11
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
-  &lt;span class="c1"&gt;# B&lt;/span&gt;
-  &lt;span class="c1"&gt;# module A&lt;/span&gt;
-  &lt;span class="c1"&gt;# end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# B&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
 
-  &lt;span class="c1"&gt;# /autoloadable/b.rb&lt;/span&gt;
-  &lt;span class="c1"&gt;# A&lt;/span&gt;
-  &lt;span class="c1"&gt;# module B&lt;/span&gt;
-  &lt;span class="c1"&gt;# end&lt;/span&gt;
+&lt;span class="c1"&gt;# /autoloadable/b.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# A&lt;/span&gt;
+&lt;span class="c1"&gt;# module B&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
 
-  &lt;span class="no"&gt;A&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;If we try to access constant &lt;code&gt;A&lt;/code&gt; we&amp;rsquo;ll see this error. &lt;code&gt;AS::D&lt;/code&gt; makes an
 assumption that this constant is defined in file &lt;code&gt;a.rb&lt;/code&gt;. When it loads this file
@@ -1467,22 +1549,22 @@ multi-threaded environment.&lt;/p&gt;
 14
 15
 16
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# /autoloadable/money.rb&lt;/span&gt;
-  &lt;span class="c1"&gt;# class Money&lt;/span&gt;
-  &lt;span class="c1"&gt;# end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# /autoloadable/money.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# class Money&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
 
-  &lt;span class="c1"&gt;# /autoloadable/customer.rb&lt;/span&gt;
-  &lt;span class="c1"&gt;# class Customer&lt;/span&gt;
-  &lt;span class="c1"&gt;#   def money&lt;/span&gt;
-  &lt;span class="c1"&gt;#     Money.new&lt;/span&gt;
-  &lt;span class="c1"&gt;#   end&lt;/span&gt;
-  &lt;span class="c1"&gt;# end&lt;/span&gt;
+&lt;span class="c1"&gt;# /autoloadable/customer.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# class Customer&lt;/span&gt;
+&lt;span class="c1"&gt;#   def money&lt;/span&gt;
+&lt;span class="c1"&gt;#     Money.new&lt;/span&gt;
+&lt;span class="c1"&gt;#   end&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
 
-  &lt;span class="n"&gt;customer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Customer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;
+&lt;span class="n"&gt;customer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Customer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;
 
-  &lt;span class="no"&gt;ActiveSupport&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Dependencies&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;clear&lt;/span&gt;
+&lt;span class="no"&gt;ActiveSupport&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Dependencies&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;clear&lt;/span&gt;
 
-  &lt;span class="n"&gt;customer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;money&lt;/span&gt;
+&lt;span class="n"&gt;customer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;money&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;It happens because class for &lt;code&gt;Customer&lt;/code&gt; was autoloaded, but class for &lt;code&gt;Money&lt;/code&gt;
 wasn&amp;rsquo;t because we haven&amp;rsquo;t invoked &lt;code&gt;Money.new&lt;/code&gt; before &lt;code&gt;AS::D.clear&lt;/code&gt;. Then
@@ -1572,20 +1654,20 @@ a constant:&lt;/p&gt;
 2
 3
 4
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'a'&lt;/span&gt;
-  &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'b'&lt;/span&gt;
-  &lt;span class="c1"&gt;#./a.rb:2: warning: already initialized constant A&lt;/span&gt;
-  &lt;span class="c1"&gt;#./a.rb:1: warning: previous definition of A was here&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'a'&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'b'&lt;/span&gt;
+&lt;span class="c1"&gt;#./a.rb:2: warning: already initialized constant A&lt;/span&gt;
+&lt;span class="c1"&gt;#./a.rb:1: warning: previous definition of A was here&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;The same thing for classes:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
 2
 3
 4
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-  &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'b'&lt;/span&gt;
-  &lt;span class="c1"&gt;#./a.rb:2: warning: already initialized constant A&lt;/span&gt;
-  &lt;span class="c1"&gt;#./a.rb:1: warning: previous definition of A was here&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'b'&lt;/span&gt;
+&lt;span class="c1"&gt;#./a.rb:2: warning: already initialized constant A&lt;/span&gt;
+&lt;span class="c1"&gt;#./a.rb:1: warning: previous definition of A was here&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Since the constant &lt;code&gt;A&lt;/code&gt; is just a reference for the class&amp;rsquo; object (remember class
 is object in Ruby, right?) and we try to reassign it with new value then we see
@@ -1628,22 +1710,22 @@ a file in the current directory or directories that is relative to current.&lt;/
 14
 15
 16
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# a.rb&lt;/span&gt;
-  &lt;span class="c1"&gt;# module A&lt;/span&gt;
-  &lt;span class="c1"&gt;#   C = 'constant'&lt;/span&gt;
-  &lt;span class="c1"&gt;# end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;#   C = 'constant'&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
 
-  &lt;span class="n"&gt;before&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="vg"&gt;$"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;dup&lt;/span&gt;
-  &lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s1"&gt;'a'&lt;/span&gt;
-  &lt;span class="vg"&gt;$"&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;before&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; ['/Users/route/Projects/dependencies/a.rb']&lt;/span&gt;
+&lt;span class="n"&gt;before&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="vg"&gt;$"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;dup&lt;/span&gt;
+&lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s1"&gt;'a'&lt;/span&gt;
+&lt;span class="vg"&gt;$"&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;before&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; ['/Users/route/Projects/dependencies/a.rb']&lt;/span&gt;
 
-  &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'constant'&lt;/span&gt;
-  &lt;span class="nb"&gt;sleep&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;
-  &lt;span class="c1"&gt;# Meanwhile changing constant value to 'changed'&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'constant'&lt;/span&gt;
+&lt;span class="nb"&gt;sleep&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;
+&lt;span class="c1"&gt;# Meanwhile changing constant value to 'changed'&lt;/span&gt;
 
-  &lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s1"&gt;'a'&lt;/span&gt;
+&lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s1"&gt;'a'&lt;/span&gt;
 
-  &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'constant'&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'constant'&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;&lt;code&gt;Kernel#load(filename, wrap=false)&lt;/code&gt; loads and executes the Ruby program in the
 filename. If the filename does not resolve to an absolute path, the file is
@@ -1672,24 +1754,24 @@ extension.&lt;/p&gt;
 16
 17
 18
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# a.rb&lt;/span&gt;
-  &lt;span class="c1"&gt;# module A&lt;/span&gt;
-  &lt;span class="c1"&gt;#   C = 'constant'&lt;/span&gt;
-  &lt;span class="c1"&gt;# end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;#   C = 'constant'&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
 
-  &lt;span class="n"&gt;before&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="vg"&gt;$"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;dup&lt;/span&gt;
-  &lt;span class="nb"&gt;load&lt;/span&gt; &lt;span class="s1"&gt;'./a.rb'&lt;/span&gt;
-  &lt;span class="vg"&gt;$"&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;before&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; []&lt;/span&gt;
+&lt;span class="n"&gt;before&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="vg"&gt;$"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;dup&lt;/span&gt;
+&lt;span class="nb"&gt;load&lt;/span&gt; &lt;span class="s1"&gt;'./a.rb'&lt;/span&gt;
+&lt;span class="vg"&gt;$"&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;before&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; []&lt;/span&gt;
 
-  &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'constant'&lt;/span&gt;
-  &lt;span class="nb"&gt;sleep&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;
-  &lt;span class="c1"&gt;# Meanwhile changing constant value to 'changed'&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'constant'&lt;/span&gt;
+&lt;span class="nb"&gt;sleep&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;
+&lt;span class="c1"&gt;# Meanwhile changing constant value to 'changed'&lt;/span&gt;
 
-  &lt;span class="nb"&gt;load&lt;/span&gt; &lt;span class="s1"&gt;'./a.rb'&lt;/span&gt;
+&lt;span class="nb"&gt;load&lt;/span&gt; &lt;span class="s1"&gt;'./a.rb'&lt;/span&gt;
 
-  &lt;span class="c1"&gt;# ./a.rb:2: warning: already initialized constant A::C&lt;/span&gt;
-  &lt;span class="c1"&gt;# ./a.rb:2: warning: previous definition of C was here&lt;/span&gt;
-  &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'changed'&lt;/span&gt;
+&lt;span class="c1"&gt;# ./a.rb:2: warning: already initialized constant A::C&lt;/span&gt;
+&lt;span class="c1"&gt;# ./a.rb:2: warning: previous definition of C was here&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'changed'&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;With warnings but the code was reloaded and we can even see the changes we&amp;rsquo;ve
 made. Let&amp;rsquo;s add optional parameter &lt;code&gt;wrap&lt;/code&gt;:&lt;/p&gt;
@@ -1706,17 +1788,17 @@ made. Let&amp;rsquo;s add optional parameter &lt;code&gt;wrap&lt;/code&gt;:&lt;/
 9
 10
 11
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# a.rb&lt;/span&gt;
-  &lt;span class="c1"&gt;# module A&lt;/span&gt;
-  &lt;span class="c1"&gt;#   C = 'constant'&lt;/span&gt;
-  &lt;span class="c1"&gt;# end&lt;/span&gt;
-  &lt;span class="c1"&gt;#&lt;/span&gt;
-  &lt;span class="c1"&gt;# $A = A&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;#   C = 'constant'&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
+&lt;span class="c1"&gt;#&lt;/span&gt;
+&lt;span class="c1"&gt;# $A = A&lt;/span&gt;
 
-  &lt;span class="nb"&gt;load&lt;/span&gt; &lt;span class="s1"&gt;'./a.rb'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kp"&gt;true&lt;/span&gt;
+&lt;span class="nb"&gt;load&lt;/span&gt; &lt;span class="s1"&gt;'./a.rb'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kp"&gt;true&lt;/span&gt;
 
-  &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A (NameError)&lt;/span&gt;
-  &lt;span class="vg"&gt;$A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'constant'&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A (NameError)&lt;/span&gt;
+&lt;span class="vg"&gt;$A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'constant'&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;You see that Ruby hasn&amp;rsquo;t polluted global namespace and wrapped all the constants
 from the file to an anonymous module, but global variables still could be
@@ -1733,12 +1815,12 @@ accessed.&lt;/p&gt;
 4
 5
 6
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# a.rb&lt;/span&gt;
-  &lt;span class="c1"&gt;# module A&lt;/span&gt;
-  &lt;span class="c1"&gt;#   p 'loading'&lt;/span&gt;
-  &lt;span class="c1"&gt;# end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;#   p 'loading'&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
 
-  &lt;span class="nb"&gt;autoload&lt;/span&gt; &lt;span class="ss"&gt;:A&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'a'&lt;/span&gt;
+&lt;span class="nb"&gt;autoload&lt;/span&gt; &lt;span class="ss"&gt;:A&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'a'&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;It won&amp;rsquo;t produce anything useful, because we&amp;rsquo;ve just declared that constant &lt;code&gt;A&lt;/code&gt;
 can be found in a file but we&amp;rsquo;ve never used it.&lt;/p&gt;
@@ -1751,13 +1833,13 @@ can be found in a file but we&amp;rsquo;ve never used it.&lt;/p&gt;
 5
 6
 7
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# a.rb&lt;/span&gt;
-  &lt;span class="c1"&gt;# module A&lt;/span&gt;
-  &lt;span class="c1"&gt;#   p 'loading'&lt;/span&gt;
-  &lt;span class="c1"&gt;# end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;#   p 'loading'&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
 
-  &lt;span class="nb"&gt;autoload&lt;/span&gt; &lt;span class="ss"&gt;:A&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'a'&lt;/span&gt;
-  &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; Gives output 'loading'&lt;/span&gt;
+&lt;span class="nb"&gt;autoload&lt;/span&gt; &lt;span class="ss"&gt;:A&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'a'&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; Gives output 'loading'&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;In other words &lt;code&gt;autoload&lt;/code&gt; makes us to load code lazily on demand decreasing time
 during the boot. There were some problems with thread safety and &lt;code&gt;autoload&lt;/code&gt;,
@@ -1777,19 +1859,19 @@ it works properly even with threads for now:&lt;/p&gt;
 11
 12
 13
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="c1"&gt;# a.rb&lt;/span&gt;
-  &lt;span class="c1"&gt;# module A&lt;/span&gt;
-  &lt;span class="c1"&gt;#   sleep 5&lt;/span&gt;
-  &lt;span class="c1"&gt;#   def self.hello&lt;/span&gt;
-  &lt;span class="c1"&gt;#     'hello'&lt;/span&gt;
-  &lt;span class="c1"&gt;#   end&lt;/span&gt;
-  &lt;span class="c1"&gt;# end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="c1"&gt;# a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;#   sleep 5&lt;/span&gt;
+&lt;span class="c1"&gt;#   def self.hello&lt;/span&gt;
+&lt;span class="c1"&gt;#     'hello'&lt;/span&gt;
+&lt;span class="c1"&gt;#   end&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
 
-  &lt;span class="nb"&gt;autoload&lt;/span&gt; &lt;span class="ss"&gt;:A&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'./a'&lt;/span&gt;
+&lt;span class="nb"&gt;autoload&lt;/span&gt; &lt;span class="ss"&gt;:A&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'./a'&lt;/span&gt;
 
-  &lt;span class="n"&gt;t1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Thread&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;hello&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
-  &lt;span class="n"&gt;t2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Thread&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;hello&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
-  &lt;span class="n"&gt;t1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;join&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;t2&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;join&lt;/span&gt;
+&lt;span class="n"&gt;t1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Thread&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;hello&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="n"&gt;t2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Thread&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;hello&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="n"&gt;t1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;join&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;t2&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;join&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;I was expecting that second thread would throw an error that method &lt;code&gt;hello&lt;/code&gt; is
 undefined because module &lt;code&gt;A&lt;/code&gt; had been loaded by first thread but because of
@@ -1838,45 +1920,45 @@ code tells about itself:&lt;/p&gt;
 37
 38
 39
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;Kernel&lt;/span&gt;
-    &lt;span class="c1"&gt;# Constants defined in Kernel&lt;/span&gt;
-    &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;E&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;F&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'defined in kernel'&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;Kernel&lt;/span&gt;
+  &lt;span class="c1"&gt;# Constants defined in Kernel&lt;/span&gt;
+  &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;E&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;F&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'defined in kernel'&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Top-level or 'global' constants defined in Object&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;E&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'defined at top-level'&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Super&lt;/span&gt;
+  &lt;span class="c1"&gt;# Constants defined in a superclass&lt;/span&gt;
+  &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'defined in superclass'&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;Included&lt;/span&gt;
+  &lt;span class="c1"&gt;# Constants defined in an included module&lt;/span&gt;
+  &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'defined in included module'&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;Enclosing&lt;/span&gt;
+  &lt;span class="c1"&gt;# Constants defined in an enclosing module&lt;/span&gt;
+  &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'defined in enclosing module'&lt;/span&gt;
+
+  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Local&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;Super&lt;/span&gt;
+    &lt;span class="kp"&gt;include&lt;/span&gt; &lt;span class="no"&gt;Included&lt;/span&gt;
+
+    &lt;span class="c1"&gt;# Locally defined constant&lt;/span&gt;
+    &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'defined locally'&lt;/span&gt;
+
+    &lt;span class="c1"&gt;# The list of modules searched, in the order searched&lt;/span&gt;
+    &lt;span class="c1"&gt;# [Enclosing::Local, Enclosing, Included, Super, Object, Kernel, BasicObject]&lt;/span&gt;
+    &lt;span class="c1"&gt;# (Module.nesting + self.ancestors + Object.ancestors).uniq&lt;/span&gt;
+    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;  &lt;span class="c1"&gt;# Prints "defined locally"&lt;/span&gt;
+    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt;  &lt;span class="c1"&gt;# Prints "defined in enclosing module"&lt;/span&gt;
+    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt;  &lt;span class="c1"&gt;# Prints "defined in included module"&lt;/span&gt;
+    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="no"&gt;D&lt;/span&gt;  &lt;span class="c1"&gt;# Prints "defined in superclass"&lt;/span&gt;
+    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="no"&gt;E&lt;/span&gt;  &lt;span class="c1"&gt;# Prints "defined at top-level"&lt;/span&gt;
+    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="no"&gt;F&lt;/span&gt;  &lt;span class="c1"&gt;# Prints "defined in kernel"&lt;/span&gt;
   &lt;span class="k"&gt;end&lt;/span&gt;
-
-  &lt;span class="c1"&gt;# Top-level or 'global' constants defined in Object&lt;/span&gt;
-  &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;E&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'defined at top-level'&lt;/span&gt;
-
-  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Super&lt;/span&gt;
-    &lt;span class="c1"&gt;# Constants defined in a superclass&lt;/span&gt;
-    &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'defined in superclass'&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-
-  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;Included&lt;/span&gt;
-    &lt;span class="c1"&gt;# Constants defined in an included module&lt;/span&gt;
-    &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'defined in included module'&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-
-  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;Enclosing&lt;/span&gt;
-    &lt;span class="c1"&gt;# Constants defined in an enclosing module&lt;/span&gt;
-    &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'defined in enclosing module'&lt;/span&gt;
-
-    &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Local&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;Super&lt;/span&gt;
-      &lt;span class="kp"&gt;include&lt;/span&gt; &lt;span class="no"&gt;Included&lt;/span&gt;
-
-      &lt;span class="c1"&gt;# Locally defined constant&lt;/span&gt;
-      &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'defined locally'&lt;/span&gt;
-
-      &lt;span class="c1"&gt;# The list of modules searched, in the order searched&lt;/span&gt;
-      &lt;span class="c1"&gt;# [Enclosing::Local, Enclosing, Included, Super, Object, Kernel, BasicObject]&lt;/span&gt;
-      &lt;span class="c1"&gt;# (Module.nesting + self.ancestors + Object.ancestors).uniq&lt;/span&gt;
-      &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;  &lt;span class="c1"&gt;# Prints "defined locally"&lt;/span&gt;
-      &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt;  &lt;span class="c1"&gt;# Prints "defined in enclosing module"&lt;/span&gt;
-      &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt;  &lt;span class="c1"&gt;# Prints "defined in included module"&lt;/span&gt;
-      &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="no"&gt;D&lt;/span&gt;  &lt;span class="c1"&gt;# Prints "defined in superclass"&lt;/span&gt;
-      &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="no"&gt;E&lt;/span&gt;  &lt;span class="c1"&gt;# Prints "defined at top-level"&lt;/span&gt;
-      &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="no"&gt;F&lt;/span&gt;  &lt;span class="c1"&gt;# Prints "defined in kernel"&lt;/span&gt;
-    &lt;span class="k"&gt;end&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;So the path Ruby follows in order to resolve constant name starts with
 &lt;code&gt;Module.nesting&lt;/code&gt; which of course starts with itself and then all enclosing
@@ -1891,15 +1973,15 @@ chain is applied.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
 2
 3
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
-    &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;or&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
 2
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A::B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A::B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Pay attention that &lt;code&gt;Module.nesting&lt;/code&gt; for these two forms is different and turns
 out that your constant name resolution will be different too:&lt;/p&gt;
@@ -1918,21 +2000,21 @@ out that your constant name resolution will be different too:&lt;/p&gt;
 13
 14
 15
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
-    &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'c'&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
+  &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'c'&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 
-  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
-    &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;
-      &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'c'&lt;/span&gt;
-      &lt;span class="no"&gt;Module&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;nesting&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; [A::B, A]&lt;/span&gt;
-    &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;
+    &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'c'&lt;/span&gt;
+    &lt;span class="no"&gt;Module&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;nesting&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; [A::B, A]&lt;/span&gt;
   &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 
-  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A::B&lt;/span&gt;
-    &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; NameError: uninitialized constant A::B::C&lt;/span&gt;
-    &lt;span class="no"&gt;Module&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;nesting&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; [A::B]&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A::B&lt;/span&gt;
+  &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; NameError: uninitialized constant A::B::C&lt;/span&gt;
+  &lt;span class="no"&gt;Module&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;nesting&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; [A::B]&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;2) Inheritance:&lt;/p&gt;
 
@@ -1951,19 +2033,19 @@ by &lt;code&gt;class&lt;/code&gt; and &lt;code&gt;module&lt;/code&gt; statements
 11
 12
 13
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Parent&lt;/span&gt;
-    &lt;span class="no"&gt;CONST&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'parent'&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Parent&lt;/span&gt;
+  &lt;span class="no"&gt;CONST&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'parent'&lt;/span&gt;
 
-    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nc"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;const&lt;/span&gt;
-      &lt;span class="no"&gt;CONST&lt;/span&gt;
-    &lt;span class="k"&gt;end&lt;/span&gt;
+  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nc"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;const&lt;/span&gt;
+    &lt;span class="no"&gt;CONST&lt;/span&gt;
   &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 
-  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Child&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;Parent&lt;/span&gt;
-    &lt;span class="no"&gt;CONST&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'child'&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Child&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;Parent&lt;/span&gt;
+  &lt;span class="no"&gt;CONST&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'child'&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 
-  &lt;span class="no"&gt;Child&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;const&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; parent&lt;/span&gt;
+&lt;span class="no"&gt;Child&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;const&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; parent&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;In this example method is invoked on parent class, so its class is the innermost
 one. To change things you could use &lt;code&gt;self::CONST&lt;/code&gt; this way you&amp;rsquo;re explicitly
@@ -1978,16 +2060,16 @@ currently opened class and its ancestors which is &lt;code&gt;Object&lt;/code&gt
 2
 3
 4
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Object&lt;/span&gt;
-    &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;C&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-  &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; true&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Object&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;C&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; true&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;or&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
 2
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;C&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-  &lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; true&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;C&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; true&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;This in turn explains why top-level constants are available throughout your
 program. Almost all classes in Ruby inherit from &lt;code&gt;Object&lt;/code&gt;, so &lt;code&gt;Object&lt;/code&gt; is almost
@@ -2000,10 +2082,10 @@ not in the lookup chain:&lt;/p&gt;
 2
 3
 4
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Foo&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;BasicObject&lt;/span&gt;
-    &lt;span class="no"&gt;Kernel&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-  &lt;span class="c1"&gt;# NameError: uninitialized constant Foo::Kernel&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Foo&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;BasicObject&lt;/span&gt;
+  &lt;span class="no"&gt;Kernel&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="c1"&gt;# NameError: uninitialized constant Foo::Kernel&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;For cases like this, and anywhere else you want to be explicit, Ruby allows you
 to use &lt;code&gt;::Kernel&lt;/code&gt; to access &lt;code&gt;Object::Kernel&lt;/code&gt;.&lt;/p&gt;
@@ -2023,14 +2105,14 @@ point the block was defined:&lt;/p&gt;
 6
 7
 8
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;
-    &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 
-  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;C&lt;/span&gt;
-    &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-    &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class_eval&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;C&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+  &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class_eval&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Confusingly however, if you pass a &lt;code&gt;String&lt;/code&gt; to these methods, then the &lt;code&gt;String&lt;/code&gt;
 is evaluated with &lt;code&gt;Module.nesting&lt;/code&gt; containing just the class/module itself (for
@@ -2044,14 +2126,14 @@ is evaluated with &lt;code&gt;Module.nesting&lt;/code&gt; containing just the cl
 6
 7
 8
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
-    &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 
-  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;C&lt;/span&gt;
-    &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-    &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;module_eval&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"B"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;C&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+  &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;module_eval&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"B"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
 2
 3
@@ -2061,15 +2143,15 @@ is evaluated with &lt;code&gt;Module.nesting&lt;/code&gt; containing just the cl
 7
 8
 9
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
-    &lt;span class="no"&gt;X&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
-    &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
+  &lt;span class="no"&gt;X&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 
-  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;C&lt;/span&gt;
-    &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-    &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;module_eval&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"X"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A::B::X (NameError)&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;C&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+  &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;module_eval&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"X"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A::B::X (NameError)&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;5) Singleton class:&lt;/p&gt;
 
@@ -2081,12 +2163,12 @@ defined in the class itself:&lt;/p&gt;
 4
 5
 6
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;
-    &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;
-    &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant Class::B&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;
+  &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant Class::B&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;This is because the ancestors of the singleton class of a class do not include
 the class itself, they start at the &lt;code&gt;Class&lt;/code&gt; class.&lt;/p&gt;
@@ -2096,12 +2178,12 @@ the class itself, they start at the &lt;code&gt;Class&lt;/code&gt; class.&lt;/p&
 4
 5
 6
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;
-    &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;
-    &lt;span class="nb"&gt;ancestors&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; [Class, Module, Object, Kernel, BasicObject]&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;
+  &lt;span class="nb"&gt;ancestors&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; [Class, Module, Object, Kernel, BasicObject]&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Lastly, imagine we access a constant that isn&amp;rsquo;t defined at all then
 &lt;code&gt;self.const_missing&lt;/code&gt; is invoked on the class that needs constant or if it wasn&amp;rsquo;t
@@ -2137,20 +2219,20 @@ I won’t show you all those tests, just a small piece:&lt;/p&gt;
 2
 3
 &lt;/pre&gt;&lt;/td&gt;
-&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="no"&gt;Class&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;Rails&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Application&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
-    &lt;span class="n"&gt;routes&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;append&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="o"&gt;...&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="no"&gt;Class&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;Rails&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Application&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+  &lt;span class="n"&gt;routes&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;append&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="o"&gt;...&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;
 &lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;All of them were passed on my laptop, but...&lt;/p&gt;</summary>
+&lt;p&gt;All of them were passed on my laptop, but Travis...&lt;/p&gt;</summary>
     <content type="html">&lt;p&gt;This post is about the bug I found when I was writing tests for &lt;code&gt;quiet_assets&lt;/code&gt;.
 I won&amp;rsquo;t show you all those tests, just a small piece:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
 2
 3
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="no"&gt;Class&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;Rails&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Application&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
-    &lt;span class="n"&gt;routes&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;append&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="o"&gt;...&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="no"&gt;Class&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;Rails&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Application&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+  &lt;span class="n"&gt;routes&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;append&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="o"&gt;...&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;All of them were passed on my laptop, but Travis-CI showed me the odd message
 for Ruby 1.8:
@@ -2168,10 +2250,10 @@ classes you&amp;rsquo;ll see that &lt;code&gt;Rails::Railtie&lt;/code&gt; has mo
 2
 3
 4
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;inherited&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;base&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="o"&gt;...&lt;/span&gt;
-    &lt;span class="n"&gt;base&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;:include&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="no"&gt;Railtie&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Configurable&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;inherited&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;base&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="o"&gt;...&lt;/span&gt;
+  &lt;span class="n"&gt;base&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;:include&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="no"&gt;Railtie&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Configurable&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;&lt;code&gt;Railtie::Configurable&lt;/code&gt; has &lt;code&gt;method_missing&lt;/code&gt; which does exactly our case -
 proxying our calls to instance. You see that all logic rely on &lt;code&gt;self.inhereted&lt;/code&gt;
@@ -2189,138 +2271,29 @@ callback. Let&amp;rsquo;s check it:&lt;/p&gt;
 11
 12
 13
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Parent&lt;/span&gt;
-    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nc"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;inherited&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;base&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-      &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="s1"&gt;'Inside inherited'&lt;/span&gt;
-    &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Parent&lt;/span&gt;
+  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nc"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;inherited&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;base&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="s1"&gt;'Inside inherited'&lt;/span&gt;
   &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 
-  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Child&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;Parent&lt;/span&gt;
-    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="s1"&gt;'We are inside class definition'&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Child&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;Parent&lt;/span&gt;
+  &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="s1"&gt;'We are inside class definition'&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 
-  &lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Class&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;Parent&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
-    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="s1"&gt;'We are inside class definition'&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Class&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;Parent&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+  &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="s1"&gt;'We are inside class definition'&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;If you run this code you&amp;rsquo;ll see that for &lt;code&gt;Class.new&lt;/code&gt; we&amp;rsquo;ll get this:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre class="highlight plaintext"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
 2
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  We are inside class definition
-  Inside inherited
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;We are inside class definition
+Inside inherited
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Ruby 1.8 cannot find &lt;code&gt;routes&lt;/code&gt;, even &lt;code&gt;method_missing&lt;/code&gt; just because
 &lt;code&gt;self.inherited&lt;/code&gt; chain couldn&amp;rsquo;t be invoked inside our block, it would be
 invoked after class definition. Be careful!&lt;/p&gt;
-</content>
-  </entry>
-  <entry>
-    <title>See the difference</title>
-    <link rel="alternate" href="/2012/08/28/see-the-difference.html"/>
-    <id>/2012/08/28/see-the-difference.html</id>
-    <published>2012-08-28T04:00:00+04:00</published>
-    <updated>2012-08-28T04:00:00+04:00</updated>
-    <author>
-      <name>Article Author</name>
-    </author>
-    <summary type="html">&lt;p&gt;Yesterday I faced the strange behaviour of the array wrapping in context
-of Arel. I tried to wrap something like this &lt;code&gt;User.arel_table[:id]&lt;/code&gt; but
-&lt;code&gt;Array(User.arel_table[:id])&lt;/code&gt; and &lt;code&gt;Array.wrap(User.arel_table[:id])&lt;/code&gt;
-gave me different results. Now I’ll tell...&lt;/p&gt;</summary>
-    <content type="html">&lt;p&gt;Yesterday I faced the strange behaviour of the array wrapping in context
-of Arel. I tried to wrap something like this &lt;code&gt;User.arel_table[:id]&lt;/code&gt; but
-&lt;code&gt;Array(User.arel_table[:id])&lt;/code&gt; and &lt;code&gt;Array.wrap(User.arel_table[:id])&lt;/code&gt;
-gave me different results. Now I&amp;rsquo;ll tell you why you have to know about
-some differences in array wrapping and why Rails contains their own wrap
-realization.&lt;/p&gt;
-
-&lt;p&gt;You probably know about
-&lt;a href="https://github.com/rails/rails/blob/master/activesupport/lib/active_support/core_ext/array/wrap.rb#L36"&gt;Array.wrap&lt;/a&gt;
-in Rails but if you don&amp;rsquo;t here you are:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
-2
-3
-4
-5
-6
-7
-8
-9
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nc"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;wrap&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;object&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;object&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;nil?&lt;/span&gt;
-      &lt;span class="p"&gt;[]&lt;/span&gt;
-    &lt;span class="k"&gt;elsif&lt;/span&gt; &lt;span class="n"&gt;object&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;respond_to?&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;:to_ary&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-      &lt;span class="n"&gt;object&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;to_ary&lt;/span&gt; &lt;span class="o"&gt;||&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;object&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-    &lt;span class="k"&gt;else&lt;/span&gt;
-      &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;object&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-    &lt;span class="k"&gt;end&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;And you probably know about
-&lt;a href="http://rxr.whitequark.org/mri/source/object.c#2624"&gt;Kernel#Array&lt;/a&gt;:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight c"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;  &lt;span class="n"&gt;VALUE&lt;/span&gt;
-  &lt;span class="nf"&gt;rb_Array&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;VALUE&lt;/span&gt; &lt;span class="n"&gt;val&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-    &lt;span class="n"&gt;VALUE&lt;/span&gt; &lt;span class="n"&gt;tmp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;rb_check_array_type&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;val&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;NIL_P&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tmp&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-      &lt;span class="n"&gt;tmp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;rb_check_convert_type&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;val&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;T_ARRAY&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"Array"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"to_a"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-      &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;NIL_P&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tmp&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;rb_ary_new3&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;val&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-      &lt;span class="p"&gt;}&lt;/span&gt;
-    &lt;span class="p"&gt;}&lt;/span&gt;
-    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;tmp&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-  &lt;span class="p"&gt;}&lt;/span&gt;
-
-  &lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="n"&gt;VALUE&lt;/span&gt;
-  &lt;span class="nf"&gt;rb_f_array&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;VALUE&lt;/span&gt; &lt;span class="n"&gt;obj&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;VALUE&lt;/span&gt; &lt;span class="n"&gt;arg&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;rb_Array&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;arg&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-  &lt;span class="p"&gt;}&lt;/span&gt;
-&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Let&amp;rsquo;s talk about ruby realization first of all.
-When you invoke &lt;code&gt;Array(object)&lt;/code&gt;, ruby will try to convert object into array
-by means of &lt;code&gt;rb_check_array_type(val)&lt;/code&gt; call. At the first step this
-function will try to invoke &lt;code&gt;to_ary&lt;/code&gt; and if it&amp;rsquo;s defined and result differ
-from &lt;code&gt;nil&lt;/code&gt; and the same class as and &lt;code&gt;Array&lt;/code&gt; it&amp;rsquo;ll be returned.
-The second step (Line 6) (if result of the first step was &lt;code&gt;nil&lt;/code&gt;)
-is &lt;code&gt;to_a&lt;/code&gt;, here is the same thing as described above. The third and final
-step (Line 8) (if steps above return &lt;code&gt;nil&lt;/code&gt;) is new array will be created
-with object as its element.&lt;/p&gt;
-
-&lt;p&gt;Now take a look at Rails realization. If object is &lt;code&gt;nil&lt;/code&gt; it returns empty
-array. If object responds to &lt;code&gt;to_ary&lt;/code&gt; method it returns the result
-or if the result is &lt;code&gt;nil&lt;/code&gt; just &lt;code&gt;[object]&lt;/code&gt;. And finally it returns 
-&lt;code&gt;[object]&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;You see that Rails method doesn&amp;rsquo;t call &lt;code&gt;to_a&lt;/code&gt;.
-And one thing I haven&amp;rsquo;t mentioned is raise. Yep. Ruby version will raise
-exception if object that you return in &lt;code&gt;to_ary&lt;/code&gt; or &lt;code&gt;to_a&lt;/code&gt; methods isn&amp;rsquo;t
-&lt;code&gt;Array&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Now you and me know why &lt;code&gt;Array(object)&lt;/code&gt; returns me not what I wanted
-because of overridden &lt;code&gt;to_a&lt;/code&gt; method in Arel.
-And in my case I select Rails version of course.&lt;/p&gt;
-
-&lt;p&gt;There are things I have never thought about and just used them.
-They seemed to me very simple but in reality they are tiniest bits of a big
-complicated mechanism. We use too many abstraction levels and work on the top
-of it and rely on it. You should be waiting for troubles from everywhere.&lt;/p&gt;
 </content>
   </entry>
 </feed>

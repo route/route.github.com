@@ -1,29 +1,35 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-    <title>Telegram drama</title>
     <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <meta name="author" content="Dmitry Vorotilin">
 
-    <link href="/stylesheets/application.css" rel="stylesheet" />
-    <script src="/javascripts/application.js"></script>
+    <title>Telegram drama</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+
+    <link href="/stylesheets/application.css" rel="stylesheet" /><link href="/stylesheets/highlighting.css" rel="stylesheet" />
   </head>
   <body>
-    <div class="content">
-      <header>
-        <a href="/">Blog</a>
-      </header>
-        <article>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <header>
+  <a href="/">Blog</a>
+  |
+  <a href="/cv.html">Me</a>
+</header>
+
+
+            <article>
     <h1>Telegram drama</h1>
     <time>April 24, 2018</time>
     <p>In my childhood internet and network looked like a magick. In movies they showed
 something like ping output and I definitely thought that someone hacked someone
 else.</p>
 
-<p><img src="/images/hackers.png" alt="hacking" /></p>
+<p><img src="/images/hackers.png" class="img-fluid"></p>
 
 <p>I&rsquo;m located in Russia and I work for Chicago based startup thanks 21st century
 for remote. We have our servers on AWS and DigitalOcean. Thereon this long
@@ -44,17 +50,7 @@ other privately.</p>
 <p>As usually this morning I tried to connect to one of our web services and
 surprise what? It timed out. ICMP traffic wasn&rsquo;t blocked though. Let&rsquo;s say a
 domain for this server for simplification is <code>a.com</code>.</p>
-<div class="highlight"><pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>ping a.com
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>ping a.com
 PING 159.89.184.10: 64 data bytes
 72 bytes from 159.89.184.10: <span class="nv">seq</span><span class="o">=</span>0 <span class="nv">ttl</span><span class="o">=</span>52 <span class="nb">time</span><span class="o">=</span>141.242 ms
 72 bytes from 159.89.184.10: <span class="nv">seq</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>52 <span class="nb">time</span><span class="o">=</span>140.809 ms
@@ -64,7 +60,7 @@ PING 159.89.184.10: 64 data bytes
 
 5 packets transmitted, 5 packets received, 0% packet loss
 round-trip min/avg/max <span class="o">=</span> 140.702/140.918/141.242 ms
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>You would say so what? I&rsquo;ll tell you that for example if I want to open torrent
 tracker <a href="http://rutracker.org">rutracker.org</a> (which has been blocked for years
 in Russia) ISP redirects me to its <a href="http://warning.rt.ru/?id=9&amp;st=0&amp;dt=195.82.146.214&amp;rs=http%3A%2F%2Frutracker.org%2Fforum%2Findex.php">own page</a>
@@ -80,36 +76,7 @@ saying that they don&rsquo;t block it as well as Roskomnadzor. So most likely it
 DigitalOcean who blocks it. As you wish guys&hellip; I go to DigitalOcean and
 together we investigate it. Opening <code>chrome://net-internals</code> is very intersting
 sometimes and confirms time out:</p>
-<div class="highlight"><pre class="highlight plaintext"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-</pre></td><td class="rouge-code"><pre>14057: URL_REQUEST
+<div class="highlight"><pre class="highlight plaintext"><code>14057: URL_REQUEST
 https://a.com/
 Start Time: 2018-04-24 08:07:06.009
 
@@ -138,28 +105,9 @@ t=169195 [st=24521]   -URL_REQUEST_START_JOB
 t=169195 [st=24521]    URL_REQUEST_DELEGATE  [dt=0]
 t=169195 [st=24521] -REQUEST_ALIVE
                      --&gt; net_error = -118 (ERR_CONNECTION_TIMED_OUT)
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>Traceroute from my machine to this IP shows a few intermidiate backbone providers:</p>
-<div class="highlight"><pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-</pre></td><td class="rouge-code"><pre>traceroute to a.com <span class="o">(</span>159.89.184.10<span class="o">)</span>, 30 hops max, 60 byte packets
+<div class="highlight"><pre class="highlight shell"><code>traceroute to a.com <span class="o">(</span>159.89.184.10<span class="o">)</span>, 30 hops max, 60 byte packets
  1  gateway <span class="o">(</span>192.168.0.1<span class="o">)</span>  0.417 ms  0.484 ms  0.568 ms
  2  100.103.0.1 <span class="o">(</span>100.103.0.1<span class="o">)</span>  4.935 ms  4.992 ms  5.020 ms
  3  213.59.232.208 <span class="o">(</span>213.59.232.208<span class="o">)</span>  38.910 ms 213.59.232.204 <span class="o">(</span>213.59.232.204<span class="o">)</span>  5.076 ms 213.59.232.208 <span class="o">(</span>213.59.232.208<span class="o">)</span>  5.339 ms
@@ -178,20 +126,9 @@ t=169195 [st=24521] -REQUEST_ALIVE
 16  digitalocean-ic-306498-nyk-b3.c.telia.net <span class="o">(</span>62.115.45.10<span class="o">)</span>  145.430 ms  145.572 ms  158.371 ms
 17  <span class="k">*</span> <span class="k">*</span> <span class="k">*</span>
 18  159.89.184.10 <span class="o">(</span>159.89.184.10<span class="o">)</span>  154.054 ms  140.789 ms  141.688 ms
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>While in reverse from the droplet there&rsquo;s only one of them:</p>
-<div class="highlight"><pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-</pre></td><td class="rouge-code"><pre>traceroute to 95.32.215.86 <span class="o">(</span>95.32.215.86<span class="o">)</span>, 30 hops max, 60 byte packets
+<div class="highlight"><pre class="highlight shell"><code>traceroute to 95.32.215.86 <span class="o">(</span>95.32.215.86<span class="o">)</span>, 30 hops max, 60 byte packets
  1  159.89.176.253 <span class="o">(</span>159.89.176.253<span class="o">)</span>  0.290 ms  0.263 ms  0.231 ms
  2  138.197.248.28 <span class="o">(</span>138.197.248.28<span class="o">)</span>  0.478 ms  0.469 ms  0.456 ms
  3  nyk-b3-link.telia.net <span class="o">(</span>62.115.45.9<span class="o">)</span>  1.021 ms  1.058 ms  1.043 ms
@@ -202,78 +139,45 @@ t=169195 [st=24521] -REQUEST_ALIVE
  8  rostelecom-ic-319651-ffm-b1.c.telia.net <span class="o">(</span>62.115.151.97<span class="o">)</span>  156.199 ms  156.187 ms  156.198 ms
  9  213.59.212.103 <span class="o">(</span>213.59.212.103<span class="o">)</span>  138.304 ms  149.985 ms rostelecom-ic-319651-ffm-b1.c.telia.net <span class="o">(</span>62.115.151.97<span class="o">)</span>  158.270 ms
 10  86.215.32.95.dsl-dynamic.vsi.ru <span class="o">(</span>95.32.215.86<span class="o">)</span>  139.571 ms  139.690 ms  139.701 ms
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>BGP might have an answer why the route changes. I found pretty interesting site
 BTW <a href="https://bgpstream.com/">bgpstream.com</a></p>
 
 <p>Let&rsquo;s monitor outgoing and incoming traffic:</p>
-<div class="highlight"><pre class="highlight plaintext"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-</pre></td><td class="rouge-code"><pre>$ curl http://a.com
-curl: (7) Failed to connect to a.com port 80: Connection timed out
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>curl http://a.com
+curl: <span class="o">(</span>7<span class="o">)</span> Failed to connect to a.com port 80: Connection timed out
 
-$ sudo tcpdump -nn -vvv -i enp4s0 dst 159.89.184.10 or src 159.89.184.10
-tcpdump: listening on enp4s0, link-type EN10MB (Ethernet), capture size 262144 bytes
-23:38:18.908971 IP (tos 0x0, ttl 64, id 59563, offset 0, flags [DF], proto TCP (6), length 60)
-    192.168.0.13.41722 &gt; 159.89.184.10.80: Flags [S], cksum 0xd52f (correct), seq 1092877667, win 29200, options [mss 1460,sackOK,TS val 3908771289 ecr 0,nop,wscale 7], length 0
-23:38:18.925014 IP (tos 0x0, ttl 58, id 1, offset 0, flags [none], proto TCP (6), length 40)
-    159.89.184.10.80 &gt; 192.168.0.13.41722: Flags [R], cksum 0x43e5 (correct), seq 0, win 29200, length 0
-23:38:19.932815 IP (tos 0x0, ttl 64, id 59564, offset 0, flags [DF], proto TCP (6), length 60)
-    192.168.0.13.41722 &gt; 159.89.184.10.80: Flags [S], cksum 0xd12f (correct), seq 1092877667, win 29200, options [mss 1460,sackOK,TS val 3908772313 ecr 0,nop,wscale 7], length 0
-23:38:19.948956 IP (tos 0x0, ttl 58, id 1, offset 0, flags [none], proto TCP (6), length 40)
-    159.89.184.10.80 &gt; 192.168.0.13.41722: Flags [R], cksum 0x43e5 (correct), seq 0, win 29200, length 0
-23:38:21.948826 IP (tos 0x0, ttl 64, id 59565, offset 0, flags [DF], proto TCP (6), length 60)
-    192.168.0.13.41722 &gt; 159.89.184.10.80: Flags [S], cksum 0xc94f (correct), seq 1092877667, win 29200, options [mss 1460,sackOK,TS val 3908774329 ecr 0,nop,wscale 7], length 0
-23:38:21.965036 IP (tos 0x0, ttl 58, id 1, offset 0, flags [none], proto TCP (6), length 40)
-    159.89.184.10.80 &gt; 192.168.0.13.41722: Flags [R], cksum 0x43e5 (correct), seq 0, win 29200, length 0
-23:38:26.044817 IP (tos 0x0, ttl 64, id 59566, offset 0, flags [DF], proto TCP (6), length 60)
-    192.168.0.13.41722 &gt; 159.89.184.10.80: Flags [S], cksum 0xb94f (correct), seq 1092877667, win 29200, options [mss 1460,sackOK,TS val 3908778425 ecr 0,nop,wscale 7], length 0
-23:38:26.061047 IP (tos 0x0, ttl 58, id 1, offset 0, flags [none], proto TCP (6), length 40)
-    159.89.184.10.80 &gt; 192.168.0.13.41722: Flags [R], cksum 0x43e5 (correct), seq 0, win 29200, length 0
-23:38:34.236838 IP (tos 0x0, ttl 64, id 59567, offset 0, flags [DF], proto TCP (6), length 60)
-    192.168.0.13.41722 &gt; 159.89.184.10.80: Flags [S], cksum 0x994f (correct), seq 1092877667, win 29200, options [mss 1460,sackOK,TS val 3908786617 ecr 0,nop,wscale 7], length 0
-23:38:34.252685 IP (tos 0x0, ttl 58, id 1, offset 0, flags [none], proto TCP (6), length 40)
-    159.89.184.10.80 &gt; 192.168.0.13.41722: Flags [R], cksum 0x43e5 (correct), seq 0, win 29200, length 0
-23:38:50.364856 IP (tos 0x0, ttl 64, id 59568, offset 0, flags [DF], proto TCP (6), length 60)
-    192.168.0.13.41722 &gt; 159.89.184.10.80: Flags [S], cksum 0x5a4e (correct), seq 1092877667, win 29200, options [mss 1460,sackOK,TS val 3908802746 ecr 0,nop,wscale 7], length 0
-23:38:50.381002 IP (tos 0x0, ttl 58, id 1, offset 0, flags [none], proto TCP (6), length 40)
-    159.89.184.10.80 &gt; 192.168.0.13.41722: Flags [R], cksum 0x43e5 (correct), seq 0, win 29200, length 0
-23:39:22.620807 IP (tos 0x0, ttl 64, id 59569, offset 0, flags [DF], proto TCP (6), length 60)
-    192.168.0.13.41722 &gt; 159.89.184.10.80: Flags [S], cksum 0xdc4d (correct), seq 1092877667, win 29200, options [mss 1460,sackOK,TS val 3908835002 ecr 0,nop,wscale 7], length 0
-23:39:22.637077 IP (tos 0x0, ttl 58, id 1, offset 0, flags [none], proto TCP (6), length 40)
-    159.89.184.10.80 &gt; 192.168.0.13.41722: Flags [R], cksum 0x43e5 (correct), seq 0, win 29200, length 0
-</pre></td></tr></tbody></table></code></pre></div>
+<span class="nv">$ </span><span class="nb">sudo </span>tcpdump <span class="nt">-nn</span> <span class="nt">-vvv</span> <span class="nt">-i</span> enp4s0 dst 159.89.184.10 or src 159.89.184.10
+tcpdump: listening on enp4s0, link-type EN10MB <span class="o">(</span>Ethernet<span class="o">)</span>, capture size 262144 bytes
+23:38:18.908971 IP <span class="o">(</span>tos 0x0, ttl 64, id 59563, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 60<span class="o">)</span>
+    192.168.0.13.41722 <span class="o">&gt;</span> 159.89.184.10.80: Flags <span class="o">[</span>S], cksum 0xd52f <span class="o">(</span>correct<span class="o">)</span>, seq 1092877667, win 29200, options <span class="o">[</span>mss 1460,sackOK,TS val 3908771289 ecr 0,nop,wscale 7], length 0
+23:38:18.925014 IP <span class="o">(</span>tos 0x0, ttl 58, id 1, offset 0, flags <span class="o">[</span>none], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 40<span class="o">)</span>
+    159.89.184.10.80 <span class="o">&gt;</span> 192.168.0.13.41722: Flags <span class="o">[</span>R], cksum 0x43e5 <span class="o">(</span>correct<span class="o">)</span>, seq 0, win 29200, length 0
+23:38:19.932815 IP <span class="o">(</span>tos 0x0, ttl 64, id 59564, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 60<span class="o">)</span>
+    192.168.0.13.41722 <span class="o">&gt;</span> 159.89.184.10.80: Flags <span class="o">[</span>S], cksum 0xd12f <span class="o">(</span>correct<span class="o">)</span>, seq 1092877667, win 29200, options <span class="o">[</span>mss 1460,sackOK,TS val 3908772313 ecr 0,nop,wscale 7], length 0
+23:38:19.948956 IP <span class="o">(</span>tos 0x0, ttl 58, id 1, offset 0, flags <span class="o">[</span>none], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 40<span class="o">)</span>
+    159.89.184.10.80 <span class="o">&gt;</span> 192.168.0.13.41722: Flags <span class="o">[</span>R], cksum 0x43e5 <span class="o">(</span>correct<span class="o">)</span>, seq 0, win 29200, length 0
+23:38:21.948826 IP <span class="o">(</span>tos 0x0, ttl 64, id 59565, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 60<span class="o">)</span>
+    192.168.0.13.41722 <span class="o">&gt;</span> 159.89.184.10.80: Flags <span class="o">[</span>S], cksum 0xc94f <span class="o">(</span>correct<span class="o">)</span>, seq 1092877667, win 29200, options <span class="o">[</span>mss 1460,sackOK,TS val 3908774329 ecr 0,nop,wscale 7], length 0
+23:38:21.965036 IP <span class="o">(</span>tos 0x0, ttl 58, id 1, offset 0, flags <span class="o">[</span>none], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 40<span class="o">)</span>
+    159.89.184.10.80 <span class="o">&gt;</span> 192.168.0.13.41722: Flags <span class="o">[</span>R], cksum 0x43e5 <span class="o">(</span>correct<span class="o">)</span>, seq 0, win 29200, length 0
+23:38:26.044817 IP <span class="o">(</span>tos 0x0, ttl 64, id 59566, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 60<span class="o">)</span>
+    192.168.0.13.41722 <span class="o">&gt;</span> 159.89.184.10.80: Flags <span class="o">[</span>S], cksum 0xb94f <span class="o">(</span>correct<span class="o">)</span>, seq 1092877667, win 29200, options <span class="o">[</span>mss 1460,sackOK,TS val 3908778425 ecr 0,nop,wscale 7], length 0
+23:38:26.061047 IP <span class="o">(</span>tos 0x0, ttl 58, id 1, offset 0, flags <span class="o">[</span>none], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 40<span class="o">)</span>
+    159.89.184.10.80 <span class="o">&gt;</span> 192.168.0.13.41722: Flags <span class="o">[</span>R], cksum 0x43e5 <span class="o">(</span>correct<span class="o">)</span>, seq 0, win 29200, length 0
+23:38:34.236838 IP <span class="o">(</span>tos 0x0, ttl 64, id 59567, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 60<span class="o">)</span>
+    192.168.0.13.41722 <span class="o">&gt;</span> 159.89.184.10.80: Flags <span class="o">[</span>S], cksum 0x994f <span class="o">(</span>correct<span class="o">)</span>, seq 1092877667, win 29200, options <span class="o">[</span>mss 1460,sackOK,TS val 3908786617 ecr 0,nop,wscale 7], length 0
+23:38:34.252685 IP <span class="o">(</span>tos 0x0, ttl 58, id 1, offset 0, flags <span class="o">[</span>none], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 40<span class="o">)</span>
+    159.89.184.10.80 <span class="o">&gt;</span> 192.168.0.13.41722: Flags <span class="o">[</span>R], cksum 0x43e5 <span class="o">(</span>correct<span class="o">)</span>, seq 0, win 29200, length 0
+23:38:50.364856 IP <span class="o">(</span>tos 0x0, ttl 64, id 59568, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 60<span class="o">)</span>
+    192.168.0.13.41722 <span class="o">&gt;</span> 159.89.184.10.80: Flags <span class="o">[</span>S], cksum 0x5a4e <span class="o">(</span>correct<span class="o">)</span>, seq 1092877667, win 29200, options <span class="o">[</span>mss 1460,sackOK,TS val 3908802746 ecr 0,nop,wscale 7], length 0
+23:38:50.381002 IP <span class="o">(</span>tos 0x0, ttl 58, id 1, offset 0, flags <span class="o">[</span>none], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 40<span class="o">)</span>
+    159.89.184.10.80 <span class="o">&gt;</span> 192.168.0.13.41722: Flags <span class="o">[</span>R], cksum 0x43e5 <span class="o">(</span>correct<span class="o">)</span>, seq 0, win 29200, length 0
+23:39:22.620807 IP <span class="o">(</span>tos 0x0, ttl 64, id 59569, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 60<span class="o">)</span>
+    192.168.0.13.41722 <span class="o">&gt;</span> 159.89.184.10.80: Flags <span class="o">[</span>S], cksum 0xdc4d <span class="o">(</span>correct<span class="o">)</span>, seq 1092877667, win 29200, options <span class="o">[</span>mss 1460,sackOK,TS val 3908835002 ecr 0,nop,wscale 7], length 0
+23:39:22.637077 IP <span class="o">(</span>tos 0x0, ttl 58, id 1, offset 0, flags <span class="o">[</span>none], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 40<span class="o">)</span>
+    159.89.184.10.80 <span class="o">&gt;</span> 192.168.0.13.41722: Flags <span class="o">[</span>R], cksum 0x43e5 <span class="o">(</span>correct<span class="o">)</span>, seq 0, win 29200, length 0
+</code></pre></div>
 <p>Goodbye 3-Way TCP Handshake which should be (SYN, SYN-ACK, ACK) and hello RST
 after SYN. You can see them as [S] and [R] flags. In other words all outgoing
 http traffic dropped in the middle. Does it mean Roskomnadzor no longer needs
@@ -286,52 +190,7 @@ a man will feed her.</p>
 ability for incoming http request go behind it and reach Ngnix on my PC.</p>
 
 <p>We ssh into the droplet and try to connect with curl:</p>
-<div class="highlight"><pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>curl http://95.32.183.155
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>curl http://95.32.183.155
 &lt;<span class="o">!</span>DOCTYPE html&gt;
 &lt;html&gt;
 &lt;head&gt;
@@ -376,36 +235,9 @@ Commercial support is available at
     159.89.184.10.55928 <span class="o">&gt;</span> 95.32.183.155.80: Flags <span class="o">[</span>F.], cksum 0x6e46 <span class="o">(</span>incorrect -&gt; 0xd3c0<span class="o">)</span>, seq 77, ack 860, win 242, options <span class="o">[</span>nop,nop,TS val 1175838483 ecr 3637509632], length 0
 05:40:20.503792 IP <span class="o">(</span>tos 0x0, ttl 64, id 14147, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 52<span class="o">)</span>
     159.89.184.10.55928 <span class="o">&gt;</span> 95.32.183.155.80: Flags <span class="o">[</span>.], cksum 0x6e46 <span class="o">(</span>incorrect -&gt; 0xd2ff<span class="o">)</span>, seq 78, ack 861, win 242, options <span class="o">[</span>nop,nop,TS val 1175838521 ecr 3637509786], length 0
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>It works. Let&rsquo;s send an outdoing packet from the droplet with source port 80:</p>
-<div class="highlight"><pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>yes | nc <span class="nt">-p</span> 80 <span class="nt">-t</span> 95.32.183.155 80
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>yes | nc <span class="nt">-p</span> 80 <span class="nt">-t</span> 95.32.183.155 80
 
 <span class="nv">$ </span><span class="nb">sudo </span>tcpdump <span class="nt">-nn</span> <span class="nt">-vvv</span> <span class="nt">-i</span> eth0 dst 95.32.183.155 and dst port 80 or src 95.32.183.155 and dst port 80
 tcpdump: listening on eth0, link-type EN10MB <span class="o">(</span>Ethernet<span class="o">)</span>, capture size 262144 bytes
@@ -432,7 +264,7 @@ tcpdump: listening on eth0, link-type EN10MB <span class="o">(</span>Ethernet<sp
 05:39:50.251998 IP <span class="o">(</span>tos 0x28, ttl 49, id 34134, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 40<span class="o">)</span>
     95.32.183.155.80 <span class="o">&gt;</span> 159.89.184.10.80: Flags <span class="o">[</span>R], cksum 0x0de9 <span class="o">(</span>correct<span class="o">)</span>, seq 3723973952, win 0, length 0
 05:39:50.252020 IP <span class="o">(</span>tos 0x28, ttl 49, id 34135, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 40<span class="o">)</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>TCP handshake and reset after all. Looks weird and empty on my side. Now I
 wonder if we can catch where exactly http traffic drops. With traceroute we can
 see where ICMP packets go but does that mean HTTP goes the same direction and
@@ -445,22 +277,7 @@ better. Instead it&rsquo;s a place for intertainment controlled by goverment.</p
 
 <p>If you read until this point there&rsquo;s a small bonus for you:
 It&rsquo;s known fact that rutracker is blocked.</p>
-<div class="highlight"><pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>curl <span class="nt">-vvv</span> http://rutracker.org/forum/index.php
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>curl <span class="nt">-vvv</span> http://rutracker.org/forum/index.php
 <span class="k">*</span>   Trying 195.82.146.214...
 <span class="k">*</span> TCP_NODELAY <span class="nb">set</span>
 <span class="k">*</span> Connected to rutracker.org <span class="o">(</span>195.82.146.214<span class="o">)</span> port 80 <span class="o">(</span><span class="c">#0)</span>
@@ -475,73 +292,34 @@ It&rsquo;s known fact that rutracker is blocked.</p>
 &lt; Location: http://warning.rt.ru/?id<span class="o">=</span>9&amp;st<span class="o">=</span>0&amp;dt<span class="o">=</span>195.82.146.214&amp;rs<span class="o">=</span>http%3A%2F%2Frutracker.org%2Fforum%2Findex.php
 &lt;
 <span class="k">*</span> Closing connection 0
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>Run this if you have Rostelekom <code>(printf &#39;GET /forum/index.php HTTP/1.1\r\nHost: rutracker.org\r\n\r\n&#39;; sleep 1) | nc rutracker.org 80</code></p>
 
 <p>and you&rsquo;ll see:</p>
-<div class="highlight"><pre class="highlight html"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-</pre></td><td class="rouge-code"><pre>HTTP/1.1 302 Found
+<div class="highlight"><pre class="highlight shell"><code>HTTP/1.1 302 Found
 Connection: close
 Content-Length: 2
-Location: http://warning.rt.ru/?id=9<span class="err">&amp;</span>st=0<span class="err">&amp;</span>dt=195.82.146.214<span class="err">&amp;</span>rs=http%3A%2F%2Frutracker.org%2Fforum%2Findex.php
+Location: http://warning.rt.ru/?id<span class="o">=</span>9&amp;st<span class="o">=</span>0&amp;dt<span class="o">=</span>195.82.146.214&amp;rs<span class="o">=</span>http%3A%2F%2Frutracker.org%2Fforum%2Findex.php
 
 OK Accept-Encoding
 X-BB-ID: rto
 X-Frame-Options: SAMEORIGIN
 
 1f90
-<span class="cp">&lt;!DOCTYPE html&gt;</span>
-<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"ru"</span><span class="nt">&gt;</span>
-<span class="nt">&lt;head&gt;</span>
+&lt;<span class="o">!</span>DOCTYPE html&gt;
+&lt;html <span class="nv">lang</span><span class="o">=</span><span class="s2">"ru"</span><span class="o">&gt;</span>
+&lt;head&gt;
 
-<span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"Windows-1251"</span><span class="nt">&gt;</span>
-<span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">"description"</span> <span class="na">content=</span><span class="s">"���������� ������������� ���������� ������. ������� ��������� ������, ������, �����, ���������.."</span><span class="nt">&gt;</span>
+&lt;meta <span class="nv">charset</span><span class="o">=</span><span class="s2">"Windows-1251"</span><span class="o">&gt;</span>
+&lt;meta <span class="nv">name</span><span class="o">=</span><span class="s2">"description"</span> <span class="nv">content</span><span class="o">=</span><span class="s2">"���������� ������������� ���������� ������. ������� ��������� ������, ������, �����, ���������.."</span><span class="o">&gt;</span>
 
-<span class="nt">&lt;title&gt;</span>BitTorrent ������ RuTracker.org<span class="nt">&lt;/title&gt;</span>
+&lt;title&gt;BitTorrent ������ RuTracker.org&lt;/title&gt;
 ...
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>They intercept traffic and put 302 redirect and below goes original page.
 Is that <a href="https://habr.com/post/335436/">passive DPI</a>? Remove carriage
 return headers now and watch plain 200:</p>
-<div class="highlight"><pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-</pre></td><td class="rouge-code"><pre><span class="o">(</span><span class="nb">printf</span> <span class="s1">'GET /forum/index.php HTTP/1.1\nHost: rutracker.org\n\n'</span><span class="p">;</span> sleep 1<span class="o">)</span> | nc rutracker.org 80
+<div class="highlight"><pre class="highlight shell"><code><span class="o">(</span><span class="nb">printf</span> <span class="s1">'GET /forum/index.php HTTP/1.1\nHost: rutracker.org\n\n'</span><span class="p">;</span> sleep 1<span class="o">)</span> | nc rutracker.org 80
 
 HTTP/1.1 200 OK
 Server: nginx
@@ -561,7 +339,7 @@ X-Frame-Options: SAMEORIGIN
 &lt;meta <span class="nv">charset</span><span class="o">=</span><span class="s2">"Windows-1251"</span><span class="o">&gt;</span>
 &lt;meta <span class="nv">name</span><span class="o">=</span><span class="s2">"description"</span> <span class="nv">content</span><span class="o">=</span><span class="s2">"���������� ������������� ���������� ������. ������� ��������� ������, ������, �����, ���������.."</span><span class="o">&gt;</span>
 
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>Unfortunately the story for DO is completely different because the traffic is
 blocked somwhere in between.</p>
 
@@ -577,77 +355,7 @@ blocked somwhere in between.</p>
 </ul>
 
 <p>Rostelekom convo:</p>
-<div class="highlight"><pre class="highlight plaintext"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
-68
-69
-70
-</pre></td><td class="rouge-code"><pre>Вы
+<div class="highlight"><pre class="highlight plaintext"><code>Вы
 Добрый день, скажите почему у меня не открывается http://a.com/
 
 Вы
@@ -717,129 +425,9 @@ curl: (7) Failed to connect to a.com port 443: Connection timed out
 По вашему обращению было создано задание № 132147087. В ближайшее время,
 Ваш вопрос будет решен. При необходимости, с Вами свяжутся по контактному
 номеру телефона. Пожалуйста, не отключайте оборудование от сети.
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>DigitalOcean convo:</p>
-<div class="highlight"><pre class="highlight plaintext"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
-68
-69
-70
-71
-72
-73
-74
-75
-76
-77
-78
-79
-80
-81
-82
-83
-84
-85
-86
-87
-88
-89
-90
-91
-92
-93
-94
-95
-96
-97
-98
-99
-100
-101
-102
-103
-104
-105
-106
-107
-108
-109
-110
-111
-112
-113
-114
-115
-116
-117
-118
-119
-120
-</pre></td><td class="rouge-code"><pre>*Me*
+<div class="highlight"><pre class="highlight plaintext"><code>*Me*
 As you likely aware in Russia they try to block Telegram yet hopelessly. I tried
 to connect to one of our servers today without luck. The url was
 http://a.com/ (159.89.184.10) and it timed out.
@@ -959,7 +547,7 @@ There is unfortunately not much we can do about that, since we don't have
 control over how your ISP might manage or block traffic. I would recommend
 bringing this to the attention of your ISP and seeing if they can confirm if
 this is the case or not.
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
     <div class="share">
       <a href="https://twitter.com/share" class="twitter-share-button" data-via="rO_Oute">Tweet</a>
       <script type="text/javascript">
@@ -969,47 +557,49 @@ this is the case or not.
       </script>
     </div>
   </article>
-      <footer>
-        Copyright © 2012-2018
-        <a href="https://github.com/route" target="_blank">Dmitry Vorotilin</a>
-        |
-        <a href="/cv.html" target="_blank">CV</a>
-      </footer>
-      <div class="yandex_metrika">
-        <!-- Yandex.Metrika informer -->
-<a href="https://metrika.yandex.ru/stat/?id=25785359&amp;from=informer"
-target="_blank" rel="nofollow"><img src="//bs.yandex.ru/informer/25785359/1_0_FFFFFFFF_EFEFEFFF_0_pageviews"
-style="width:80px; height:15px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры)" /></a>
-<!-- /Yandex.Metrika informer -->
 
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-(function (d, w, c) {
-    (w[c] = w[c] || []).push(function() {
-        try {
-            w.yaCounter25785359 = new Ya.Metrika({id:25785359,
-                    webvisor:true,
-                    clickmap:true,
-                    trackLinks:true,
-                    accurateTrackBounce:true});
-        } catch(e) { }
-    });
+          <footer>
+  Copyright © 2012-2018
+</footer>
 
-    var n = d.getElementsByTagName("script")[0],
-        s = d.createElement("script"),
-        f = function () { n.parentNode.insertBefore(s, n); };
-    s.type = "text/javascript";
-    s.async = true;
-    s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";
 
-    if (w.opera == "[object Opera]") {
-        d.addEventListener("DOMContentLoaded", f, false);
-    } else { f(); }
-})(document, window, "yandex_metrika_callbacks");
-</script>
-<noscript><div><img src="//mc.yandex.ru/watch/25785359" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
+          <div class="yandex_metrika">
+  <!-- Yandex.Metrika informer -->
+  <a href="https://metrika.yandex.ru/stat/?id=25785359&amp;from=informer"
+  target="_blank" rel="nofollow"><img src="//bs.yandex.ru/informer/25785359/1_0_FFFFFFFF_EFEFEFFF_0_pageviews"
+  style="width:80px; height:15px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры)" /></a>
+  <!-- /Yandex.Metrika informer -->
 
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+  (function (d, w, c) {
+      (w[c] = w[c] || []).push(function() {
+          try {
+              w.yaCounter25785359 = new Ya.Metrika({id:25785359,
+                      webvisor:true,
+                      clickmap:true,
+                      trackLinks:true,
+                      accurateTrackBounce:true});
+          } catch(e) { }
+      });
+
+      var n = d.getElementsByTagName("script")[0],
+          s = d.createElement("script"),
+          f = function () { n.parentNode.insertBefore(s, n); };
+      s.type = "text/javascript";
+      s.async = true;
+      s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";
+
+      if (w.opera == "[object Opera]") {
+          d.addEventListener("DOMContentLoaded", f, false);
+      } else { f(); }
+  })(document, window, "yandex_metrika_callbacks");
+  </script>
+  <noscript><div><img src="//mc.yandex.ru/watch/25785359" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+</div>
+
+        </div>
       </div>
     </div>
   </body>

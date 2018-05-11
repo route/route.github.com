@@ -1,535 +1,79 @@
-/* line 5, ../../../../../.rbenv/versions/2.5.1/lib/ruby/gems/2.5.0/gems/compass-core-1.0.3/stylesheets/compass/reset/_utilities.scss */
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font: inherit;
-  font-size: 100%;
-  vertical-align: baseline; }
-
-/* line 22, ../../../../../.rbenv/versions/2.5.1/lib/ruby/gems/2.5.0/gems/compass-core-1.0.3/stylesheets/compass/reset/_utilities.scss */
-html {
-  line-height: 1; }
-
-/* line 24, ../../../../../.rbenv/versions/2.5.1/lib/ruby/gems/2.5.0/gems/compass-core-1.0.3/stylesheets/compass/reset/_utilities.scss */
-ol, ul {
-  list-style: none; }
-
-/* line 26, ../../../../../.rbenv/versions/2.5.1/lib/ruby/gems/2.5.0/gems/compass-core-1.0.3/stylesheets/compass/reset/_utilities.scss */
-table {
-  border-collapse: collapse;
-  border-spacing: 0; }
-
-/* line 28, ../../../../../.rbenv/versions/2.5.1/lib/ruby/gems/2.5.0/gems/compass-core-1.0.3/stylesheets/compass/reset/_utilities.scss */
-caption, th, td {
-  text-align: left;
-  font-weight: normal;
-  vertical-align: middle; }
-
-/* line 30, ../../../../../.rbenv/versions/2.5.1/lib/ruby/gems/2.5.0/gems/compass-core-1.0.3/stylesheets/compass/reset/_utilities.scss */
-q, blockquote {
-  quotes: none; }
-  /* line 103, ../../../../../.rbenv/versions/2.5.1/lib/ruby/gems/2.5.0/gems/compass-core-1.0.3/stylesheets/compass/reset/_utilities.scss */
-  q:before, q:after, blockquote:before, blockquote:after {
-    content: "";
-    content: none; }
-
-/* line 32, ../../../../../.rbenv/versions/2.5.1/lib/ruby/gems/2.5.0/gems/compass-core-1.0.3/stylesheets/compass/reset/_utilities.scss */
-a img {
-  border: none; }
-
-/* line 116, ../../../../../.rbenv/versions/2.5.1/lib/ruby/gems/2.5.0/gems/compass-core-1.0.3/stylesheets/compass/reset/_utilities.scss */
-article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {
-  display: block; }
-
-/* line 1, _highlight.css.scss */
-p code, ul code, ol code {
-  font-family: "Monaco", "Menlo", "Courier New", monospace;
-  display: inline-block;
-  white-space: no-wrap;
-  background: ghostWhite;
-  font-size: .8em;
-  line-height: 1.5em;
-  color: #555;
-  border: 1px solid #DDD;
-  border-radius: 0.4em;
-  padding: 0 .3em;
-  margin: -1px 0; }
-
-/* line 19, _highlight.css.scss */
-.highlight {
-  margin-bottom: 10px;
-  overflow: auto;
-  background-color: #f8f8ff;
-  border: 1px solid #d2d2d2;
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px; }
-
-/* line 28, _highlight.css.scss */
-pre.highlight {
-  margin: 0; }
-
-/* line 32, _highlight.css.scss */
-.rouge-table {
-  border: 0px solid;
-  width: 100%;
-  color: #000;
-  font-family: "Monaco", monospace;
-  font-size: 14px; }
-  /* line 39, _highlight.css.scss */
-  .rouge-table .rouge-gutter {
-    width: 35px; }
-    /* line 42, _highlight.css.scss */
-    .rouge-table .rouge-gutter .lineno {
-      width: 25px;
-      min-width: 25px;
-      background-color: #eee;
-      text-align: center;
-      color: #aaa;
-      font-size: 12px;
-      -moz-border-top-left-radius: 10px;
-      -webkit-border-top-left-radius: 10px;
-      -moz-border-bottom-left-radius: 10px;
-      -webkit-border-bottom-left-radius: 10px; }
-  /* line 56, _highlight.css.scss */
-  .rouge-table .rouge-code pre {
-    /* Comment */
-    /* Error */
-    /* Keyword */
-    /* Operator */
-    /* Comment.Multiline */
-    /* Comment.Preproc */
-    /* Comment.Single */
-    /* Comment.Special */
-    /* Generic.Deleted */
-    /* Generic.Deleted.Specific */
-    /* Generic.Emph */
-    /* Generic.Error */
-    /* Generic.Heading */
-    /* Generic.Inserted */
-    /* Generic.Inserted.Specific */
-    /* Generic.Output */
-    /* Generic.Prompt */
-    /* Generic.Strong */
-    /* Generic.Subheading */
-    /* Generic.Traceback */
-    /* Keyword.Constant */
-    /* Keyword.Declaration */
-    /* Keyword.Pseudo */
-    /* Keyword.Reserved */
-    /* Keyword.Type */
-    /* Literal.Number */
-    /* Literal.String */
-    /* Name.Attribute */
-    /* Name.Builtin */
-    /* Name.Class */
-    /* Name.Constant */
-    /* Name.Entity */
-    /* Name.Exception */
-    /* Name.Function */
-    /* Name.Namespace */
-    /* Name.Tag */
-    /* Name.Variable */
-    /* Operator.Word */
-    /* Text.Whitespace */
-    /* Literal.Number.Float */
-    /* Literal.Number.Hex */
-    /* Literal.Number.Integer */
-    /* Literal.Number.Oct */
-    /* Literal.String.Backtick */
-    /* Literal.String.Char */
-    /* Literal.String.Doc */
-    /* Literal.String.Double */
-    /* Literal.String.Escape */
-    /* Literal.String.Heredoc */
-    /* Literal.String.Interpol */
-    /* Literal.String.Other */
-    /* Literal.String.Regex */
-    /* Literal.String.Single */
-    /* Literal.String.Symbol */
-    /* Name.Builtin.Pseudo */
-    /* Name.Variable.Class */
-    /* Name.Variable.Global */
-    /* Name.Variable.Instance */
-    /* Literal.Number.Integer.Long */ }
-    /* line 57, _highlight.css.scss */
-    .rouge-table .rouge-code pre .c {
-      color: #999988;
-      font-style: italic; }
-    /* line 58, _highlight.css.scss */
-    .rouge-table .rouge-code pre .err {
-      color: #a61717;
-      background-color: #e3d2d2; }
-    /* line 59, _highlight.css.scss */
-    .rouge-table .rouge-code pre .k {
-      color: #000000;
-      font-weight: bold; }
-    /* line 60, _highlight.css.scss */
-    .rouge-table .rouge-code pre .o {
-      color: #000000;
-      font-weight: bold; }
-    /* line 61, _highlight.css.scss */
-    .rouge-table .rouge-code pre .cm {
-      color: #999988;
-      font-style: italic; }
-    /* line 62, _highlight.css.scss */
-    .rouge-table .rouge-code pre .cp {
-      color: #999999;
-      font-weight: bold; }
-    /* line 63, _highlight.css.scss */
-    .rouge-table .rouge-code pre .c1 {
-      color: #999988;
-      font-style: italic; }
-    /* line 64, _highlight.css.scss */
-    .rouge-table .rouge-code pre .cs {
-      color: #999999;
-      font-weight: bold;
-      font-style: italic; }
-    /* line 65, _highlight.css.scss */
-    .rouge-table .rouge-code pre .gd {
-      color: #000000;
-      background-color: #ffdddd; }
-    /* line 66, _highlight.css.scss */
-    .rouge-table .rouge-code pre .gd .x {
-      color: #000000;
-      background-color: #ffaaaa; }
-    /* line 67, _highlight.css.scss */
-    .rouge-table .rouge-code pre .ge {
-      color: #000000;
-      font-style: italic; }
-    /* line 68, _highlight.css.scss */
-    .rouge-table .rouge-code pre .gr {
-      color: #aa0000; }
-    /* line 69, _highlight.css.scss */
-    .rouge-table .rouge-code pre .gh {
-      color: #999999; }
-    /* line 70, _highlight.css.scss */
-    .rouge-table .rouge-code pre .gi {
-      color: #000000;
-      background-color: #ddffdd; }
-    /* line 71, _highlight.css.scss */
-    .rouge-table .rouge-code pre .gi .x {
-      color: #000000;
-      background-color: #aaffaa; }
-    /* line 72, _highlight.css.scss */
-    .rouge-table .rouge-code pre .go {
-      color: #888888; }
-    /* line 73, _highlight.css.scss */
-    .rouge-table .rouge-code pre .gp {
-      color: #555555; }
-    /* line 74, _highlight.css.scss */
-    .rouge-table .rouge-code pre .gs {
-      font-weight: bold; }
-    /* line 75, _highlight.css.scss */
-    .rouge-table .rouge-code pre .gu {
-      color: #aaaaaa; }
-    /* line 76, _highlight.css.scss */
-    .rouge-table .rouge-code pre .gt {
-      color: #aa0000; }
-    /* line 77, _highlight.css.scss */
-    .rouge-table .rouge-code pre .kc {
-      color: #000000;
-      font-weight: bold; }
-    /* line 78, _highlight.css.scss */
-    .rouge-table .rouge-code pre .kd {
-      color: #000000;
-      font-weight: bold; }
-    /* line 79, _highlight.css.scss */
-    .rouge-table .rouge-code pre .kp {
-      color: #000000;
-      font-weight: bold; }
-    /* line 80, _highlight.css.scss */
-    .rouge-table .rouge-code pre .kr {
-      color: #000000;
-      font-weight: bold; }
-    /* line 81, _highlight.css.scss */
-    .rouge-table .rouge-code pre .kt {
-      color: #445588;
-      font-weight: bold; }
-    /* line 82, _highlight.css.scss */
-    .rouge-table .rouge-code pre .m {
-      color: #009999; }
-    /* line 83, _highlight.css.scss */
-    .rouge-table .rouge-code pre .s {
-      color: #d14; }
-    /* line 84, _highlight.css.scss */
-    .rouge-table .rouge-code pre .na {
-      color: #008080; }
-    /* line 85, _highlight.css.scss */
-    .rouge-table .rouge-code pre .nb {
-      color: #0086B3; }
-    /* line 86, _highlight.css.scss */
-    .rouge-table .rouge-code pre .nc {
-      color: #445588;
-      font-weight: bold; }
-    /* line 87, _highlight.css.scss */
-    .rouge-table .rouge-code pre .no {
-      color: #008080; }
-    /* line 88, _highlight.css.scss */
-    .rouge-table .rouge-code pre .ni {
-      color: #800080; }
-    /* line 89, _highlight.css.scss */
-    .rouge-table .rouge-code pre .ne {
-      color: #990000;
-      font-weight: bold; }
-    /* line 90, _highlight.css.scss */
-    .rouge-table .rouge-code pre .nf {
-      color: #990000;
-      font-weight: bold; }
-    /* line 91, _highlight.css.scss */
-    .rouge-table .rouge-code pre .nn {
-      color: #555555; }
-    /* line 92, _highlight.css.scss */
-    .rouge-table .rouge-code pre .nt {
-      color: #000080; }
-    /* line 93, _highlight.css.scss */
-    .rouge-table .rouge-code pre .nv {
-      color: #008080; }
-    /* line 94, _highlight.css.scss */
-    .rouge-table .rouge-code pre .ow {
-      color: #000000;
-      font-weight: bold; }
-    /* line 95, _highlight.css.scss */
-    .rouge-table .rouge-code pre .w {
-      color: #bbbbbb; }
-    /* line 96, _highlight.css.scss */
-    .rouge-table .rouge-code pre .mf {
-      color: #009999; }
-    /* line 97, _highlight.css.scss */
-    .rouge-table .rouge-code pre .mh {
-      color: #009999; }
-    /* line 98, _highlight.css.scss */
-    .rouge-table .rouge-code pre .mi {
-      color: #009999; }
-    /* line 99, _highlight.css.scss */
-    .rouge-table .rouge-code pre .mo {
-      color: #009999; }
-    /* line 100, _highlight.css.scss */
-    .rouge-table .rouge-code pre .sb {
-      color: #d14; }
-    /* line 101, _highlight.css.scss */
-    .rouge-table .rouge-code pre .sc {
-      color: #d14; }
-    /* line 102, _highlight.css.scss */
-    .rouge-table .rouge-code pre .sd {
-      color: #d14; }
-    /* line 103, _highlight.css.scss */
-    .rouge-table .rouge-code pre .s2 {
-      color: #d14; }
-    /* line 104, _highlight.css.scss */
-    .rouge-table .rouge-code pre .se {
-      color: #d14; }
-    /* line 105, _highlight.css.scss */
-    .rouge-table .rouge-code pre .sh {
-      color: #d14; }
-    /* line 106, _highlight.css.scss */
-    .rouge-table .rouge-code pre .si {
-      color: #d14; }
-    /* line 107, _highlight.css.scss */
-    .rouge-table .rouge-code pre .sx {
-      color: #d14; }
-    /* line 108, _highlight.css.scss */
-    .rouge-table .rouge-code pre .sr {
-      color: #009926; }
-    /* line 109, _highlight.css.scss */
-    .rouge-table .rouge-code pre .s1 {
-      color: #d14; }
-    /* line 110, _highlight.css.scss */
-    .rouge-table .rouge-code pre .ss {
-      color: #990073; }
-    /* line 111, _highlight.css.scss */
-    .rouge-table .rouge-code pre .bp {
-      color: #999999; }
-    /* line 112, _highlight.css.scss */
-    .rouge-table .rouge-code pre .vc {
-      color: #008080; }
-    /* line 113, _highlight.css.scss */
-    .rouge-table .rouge-code pre .vg {
-      color: #008080; }
-    /* line 114, _highlight.css.scss */
-    .rouge-table .rouge-code pre .vi {
-      color: #008080; }
-    /* line 115, _highlight.css.scss */
-    .rouge-table .rouge-code pre .il {
-      color: #009999; }
-
-@font-face {
-  font-family: "Museo700";
-  src: url("/stylesheets/fonts/museo700-regular-webfont.ttf") format('truetype'), url("/stylesheets/fonts/museo700-regular-webfont.woff") format('woff'), url("/stylesheets/fonts/museo700-regular-webfont.eot") format('embedded-opentype'); }
-@font-face {
-  font-family: "Museo500";
-  src: url("/stylesheets/fonts/museo500-regular-webfont.ttf") format('truetype'), url("/stylesheets/fonts/museo500-regular-webfont.woff") format('woff'), url("/stylesheets/fonts/museo500-regular-webfont.eot") format('embedded-opentype'); }
-@font-face {
-  font-family: "Museo300";
-  src: url("/stylesheets/fonts/museo300-regular-webfont.ttf") format('truetype'), url("/stylesheets/fonts/museo300-regular-webfont.woff") format('woff'), url("/stylesheets/fonts/museo300-regular-webfont.eot") format('embedded-opentype'); }
-/* line 28, application.css.scss */
+@import url("https://fonts.googleapis.com/css?family=Fjord+One");
 body {
   background-color: #fff;
   color: #3f3f3f;
-  font-family: "Museo300", "Helvetica Neue", sans-serif;
-  font-size: 17px;
-  line-height: 26px; }
+  font-family: 'Fjord One', serif;
+  font-size: 20px;
+  line-height: 1.5; }
 
-/* line 36, application.css.scss */
-a {
-  text-decoration: none;
-  font-family: "Museo500", "Helvetica Neue", sans-serif;
-  color: #59990d;
-  text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid #cfe2b9; }
-  /* line 44, application.css.scss */
-  a:hover, a:focus {
-    border-bottom: 0px; }
-
-/* line 49, application.css.scss */
-h1, h2, h3 {
-  font-family: "Georgia", sans-serif;
-  color: #74ab2e;
-  font-weight: bold;
-  font-size: 24px;
-  text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
-  line-height: 28px;
-  margin-bottom: 1px; }
-
-/* line 54, application.css.scss */
-h2 {
-  font-size: 22px;
-  line-height: 50px; }
-
-/* line 58, application.css.scss */
-h3 {
-  color: #3f3f3f;
-  font-size: 18px;
-  line-height: 50px; }
-
-/* line 64, application.css.scss */
-ol {
-  list-style-type: decimal; }
-
-/* line 67, application.css.scss */
-ul {
-  list-style-type: disc; }
-
-/* line 70, application.css.scss */
-ol li, ul li {
-  margin: 10px 10px 10px 30px; }
-
-/* line 73, application.css.scss */
-img {
-  max-width: 600px;
-  display: block;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  margin-left: auto;
-  margin-right: auto; }
-
-/* line 82, application.css.scss */
-.content {
-  width: 950px;
-  margin: 0 auto;
-  overflow: hidden;
-  *zoom: 1;
-  width: 790px; }
-  /* line 85, application.css.scss */
-  .content > header {
+.container {
+  max-width: 790px; }
+  .container .row .col a {
+    color: #1a0710;
+    text-decoration: none;
+    text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid #cc3a7f; }
+    .container .row .col a:hover, .container .row .col a:focus {
+      border-bottom: 0px; }
+  .container .row .col h1, .container .row .col h2, .container .row .col h3 {
+    color: #2e0c1c;
+    font-weight: bold;
+    font-size: 24px;
+    text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
+    line-height: 28px;
+    margin-bottom: 1px; }
+  .container .row .col ol {
+    list-style-type: decimal; }
+  .container .row .col ul {
+    list-style-type: disc; }
+  .container .row .col ol li, .container .row .col ul li {
+    margin: 10px 10px 10px 30px; }
+  .container .row .col img {
+    display: block;
+    margin: 20px auto 20px auto; }
+  .container .row .col > header {
     height: 64px;
     border-bottom: 1px solid silver;
     margin-bottom: 30px; }
-    /* line 89, application.css.scss */
-    .content > header a {
-      color: #000;
+    .container .row .col > header a {
+      color: #000000;
       line-height: 64px;
+      font-size: 18px;
       border-bottom: 0px; }
-  /* line 96, application.css.scss */
-  .content > header, .content footer {
-    font-family: "Museo500", sans-serif;
-    float: left;
-    margin-right: 10px;
-    width: 790px; }
-    /* line 147, ../../../../../.rbenv/versions/2.5.1/lib/ruby/gems/2.5.0/gems/compass-blueprint-1.0.0/framework/blueprint/stylesheets/blueprint/_grid.scss */
-    * html .content > header, * html .content footer {
-      overflow-x: hidden; }
-  /* line 102, application.css.scss */
-  .content > section {
-    float: left;
-    margin-right: 10px;
-    width: 790px; }
-    /* line 147, ../../../../../.rbenv/versions/2.5.1/lib/ruby/gems/2.5.0/gems/compass-blueprint-1.0.0/framework/blueprint/stylesheets/blueprint/_grid.scss */
-    * html .content > section {
-      overflow-x: hidden; }
-    /* line 104, application.css.scss */
-    .content > section article {
-      padding-bottom: 60px; }
-      /* line 107, application.css.scss */
-      .content > section article header a {
-        font-family: "Georgia", sans-serif;
-        color: #74ab2e;
-        font-weight: bold;
-        font-size: 24px;
-        text-shadow: 1px 1px rgba(0, 0, 0, 0.1); }
-      /* line 110, application.css.scss */
-      .content > section article header time {
-        display: block;
-        line-height: 32px;
-        font-size: 11px;
-        color: #aaa; }
-      /* line 114, application.css.scss */
-      .content > section article footer {
-        line-height: 32px; }
-        /* line 115, application.css.scss */
-        .content > section article footer a {
-          font-size: 14px; }
-  /* line 124, application.css.scss */
-  .content > article {
-    float: left;
-    margin-right: 10px;
-    width: 790px; }
-    /* line 147, ../../../../../.rbenv/versions/2.5.1/lib/ruby/gems/2.5.0/gems/compass-blueprint-1.0.0/framework/blueprint/stylesheets/blueprint/_grid.scss */
-    * html .content > article {
-      overflow-x: hidden; }
-    /* line 126, application.css.scss */
-    .content > article time {
+  .container .row .col > section article {
+    padding-bottom: 60px; }
+    .container .row .col > section article header a {
+      color: #2e0c1c;
+      font-weight: bold;
+      font-size: 24px;
+      text-shadow: 1px 1px rgba(0, 0, 0, 0.1); }
+    .container .row .col > section article header time {
       display: block;
       line-height: 32px;
       font-size: 11px;
-      color: #aaa; }
-    /* line 129, application.css.scss */
-    .content > article p {
-      padding-bottom: 10px; }
-    /* line 132, application.css.scss */
-    .content > article .share {
-      padding-top: 50px;
-      text-align: center; }
-  /* line 138, application.css.scss */
-  .content > footer {
-    color: #aaa;
+      color: #aaaaaa; }
+    .container .row .col > section article footer {
+      line-height: 32px; }
+      .container .row .col > section article footer a {
+        font-size: 14px; }
+  .container .row .col > article time {
+    display: block;
+    line-height: 32px;
+    font-size: 11px;
+    color: #aaaaaa; }
+  .container .row .col > article p {
+    padding-bottom: 10px; }
+  .container .row .col > article .share {
+    padding-top: 50px;
+    text-align: center; }
+  .container .row .col > footer {
+    color: #aaaaaa;
     font-size: 11px;
     line-height: 64px;
     text-align: center; }
-    /* line 143, application.css.scss */
-    .content > footer a {
-      color: #aaa;
-      border-bottom: 1px solid #aaa; }
-      /* line 146, application.css.scss */
-      .content > footer a:hover, .content > footer a:focus {
-        border-bottom: 0px; }
 
-/* line 153, application.css.scss */
 .yandex_metrika {
   text-align: center; }
-  /* line 155, application.css.scss */
   .yandex_metrika a {
     text-decoration: none;
     border: 0; }

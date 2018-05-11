@@ -1,30 +1,36 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-    <title>Stop using ActiveRecord's first method</title>
     <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <meta name="description" content="ActiveRecord slow query with limit 1. Postgresql query very slow with limit 1.">
     <meta name="keywords" content="rails, activerecord, first, postgresql planner, postgresql scheduler, slow query, limit 1">
-    <meta name="author" content="Dmitry Vorotilin">
 
-    <link href="/stylesheets/application.css" rel="stylesheet" />
-    <script src="/javascripts/application.js"></script>
+    <title>Stop using ActiveRecord's first method</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+
+    <link href="/stylesheets/application.css" rel="stylesheet" /><link href="/stylesheets/highlighting.css" rel="stylesheet" />
   </head>
   <body>
-    <div class="content">
-      <header>
-        <a href="/">Blog</a>
-      </header>
-        <article>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <header>
+  <a href="/">Blog</a>
+  |
+  <a href="/cv.html">Me</a>
+</header>
+
+
+            <article>
     <h1>Stop using ActiveRecord's first method</h1>
     <time>May 11, 2018</time>
     <p>If you&rsquo;ve grown with Rails like me you know that everyone used and perhaps still
 use everywhere <code>first</code>. You type it without hesitation.</p>
 
-<p><img src="/images/irb.png" alt="hacking" /></p>
+<p><img src="/images/ar-first.png" class="img-fluid"></p>
 
 <p>I know that it&rsquo;s so simple that maybe it even doesn&rsquo;t deserve a post but just
 stop doing that.</p>
@@ -35,17 +41,7 @@ added long ago Apr 27, 2012 and if you say right now:</p>
 <p>- I know all that!</p>
 
 <p>then things are getting more intersting with PostgreSQL v10 at least:</p>
-<div class="highlight"><pre class="highlight sql"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-</pre></td><td class="rouge-code"><pre><span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">"posts"</span> <span class="k">WHERE</span> <span class="nv">"posts"</span><span class="p">.</span><span class="nv">"deleted_at"</span> <span class="k">IS</span> <span class="k">NULL</span> <span class="k">AND</span> <span class="nv">"posts"</span><span class="p">.</span><span class="nv">"user_id"</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">order</span> <span class="k">by</span> <span class="n">id</span> <span class="k">ASC</span> <span class="k">limit</span> <span class="mi">1</span><span class="p">;</span>
+<div class="highlight"><pre class="highlight sql"><code><span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">"posts"</span> <span class="k">WHERE</span> <span class="nv">"posts"</span><span class="p">.</span><span class="nv">"deleted_at"</span> <span class="k">IS</span> <span class="k">NULL</span> <span class="k">AND</span> <span class="nv">"posts"</span><span class="p">.</span><span class="nv">"user_id"</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">order</span> <span class="k">by</span> <span class="n">id</span> <span class="k">ASC</span> <span class="k">limit</span> <span class="mi">1</span><span class="p">;</span>
                                                                     <span class="n">QUERY</span> <span class="n">PLAN</span>                                                                    
 <span class="c1">--------------------------------------------------------------------------------------------------------------------------------------------------</span>
  <span class="k">Limit</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">11</span><span class="p">..</span><span class="mi">26</span><span class="p">.</span><span class="mi">91</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1</span> <span class="n">width</span><span class="o">=</span><span class="mi">327</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="n">time</span><span class="o">=</span><span class="mi">37557</span><span class="p">.</span><span class="mi">875</span><span class="p">..</span><span class="mi">37557</span><span class="p">.</span><span class="mi">875</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -55,23 +51,13 @@ added long ago Apr 27, 2012 and if you say right now:</p>
  <span class="n">Planning</span> <span class="n">time</span><span class="p">:</span> <span class="mi">0</span><span class="p">.</span><span class="mi">202</span> <span class="n">ms</span>
  <span class="n">Execution</span> <span class="n">time</span><span class="p">:</span> <span class="mi">37557</span><span class="p">.</span><span class="mi">905</span> <span class="n">ms</span>
 <span class="p">(</span><span class="mi">6</span> <span class="k">rows</span><span class="p">)</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>Doesn&rsquo;t it look creepy? According to <a href="https://stackoverflow.com/questions/21385555/postgresql-query-very-slow-with-limit-1">stackoverflow</a>
 it can be an issue in the planner and given that you have pretty large table not
 with 10 posts of course this query becomes drastically slower than planned. So a
 combination of two issues results in a waste of time for investigation. First of
 all it shouldn&rsquo;t have happened if we used <code>take</code>:</p>
-<div class="highlight"><pre class="highlight sql"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-</pre></td><td class="rouge-code"><pre><span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">"posts"</span> <span class="k">WHERE</span> <span class="nv">"posts"</span><span class="p">.</span><span class="nv">"deleted_at"</span> <span class="k">IS</span> <span class="k">NULL</span> <span class="k">AND</span> <span class="nv">"posts"</span><span class="p">.</span><span class="nv">"user_id"</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">limit</span> <span class="mi">1</span><span class="p">;</span>
+<div class="highlight"><pre class="highlight sql"><code><span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">"posts"</span> <span class="k">WHERE</span> <span class="nv">"posts"</span><span class="p">.</span><span class="nv">"deleted_at"</span> <span class="k">IS</span> <span class="k">NULL</span> <span class="k">AND</span> <span class="nv">"posts"</span><span class="p">.</span><span class="nv">"user_id"</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">limit</span> <span class="mi">1</span><span class="p">;</span>
                                                      <span class="n">QUERY</span> <span class="n">PLAN</span>                                                     
 <span class="c1">--------------------------------------------------------------------------------------------------------------------</span>
  <span class="k">Limit</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">13</span><span class="p">.</span><span class="mi">40</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1</span> <span class="n">width</span><span class="o">=</span><span class="mi">327</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="n">time</span><span class="o">=</span><span class="mi">1</span><span class="p">.</span><span class="mi">979</span><span class="p">..</span><span class="mi">1</span><span class="p">.</span><span class="mi">979</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -81,7 +67,7 @@ all it shouldn&rsquo;t have happened if we used <code>take</code>:</p>
  <span class="n">Planning</span> <span class="n">time</span><span class="p">:</span> <span class="mi">1</span><span class="p">.</span><span class="mi">606</span> <span class="n">ms</span>
  <span class="n">Execution</span> <span class="n">time</span><span class="p">:</span> <span class="mi">2</span><span class="p">.</span><span class="mi">047</span> <span class="n">ms</span>
 <span class="p">(</span><span class="mi">6</span> <span class="k">rows</span><span class="p">)</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>Force yourself typing <code>take</code> instead of <code>first</code> if you don&rsquo;t care about the order
 which in most cases is the case.</p>
 
@@ -94,47 +80,49 @@ which in most cases is the case.</p>
       </script>
     </div>
   </article>
-      <footer>
-        Copyright © 2012-2018
-        <a href="https://github.com/route" target="_blank">Dmitry Vorotilin</a>
-        |
-        <a href="/cv.html" target="_blank">CV</a>
-      </footer>
-      <div class="yandex_metrika">
-        <!-- Yandex.Metrika informer -->
-<a href="https://metrika.yandex.ru/stat/?id=25785359&amp;from=informer"
-target="_blank" rel="nofollow"><img src="//bs.yandex.ru/informer/25785359/1_0_FFFFFFFF_EFEFEFFF_0_pageviews"
-style="width:80px; height:15px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры)" /></a>
-<!-- /Yandex.Metrika informer -->
 
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-(function (d, w, c) {
-    (w[c] = w[c] || []).push(function() {
-        try {
-            w.yaCounter25785359 = new Ya.Metrika({id:25785359,
-                    webvisor:true,
-                    clickmap:true,
-                    trackLinks:true,
-                    accurateTrackBounce:true});
-        } catch(e) { }
-    });
+          <footer>
+  Copyright © 2012-2018
+</footer>
 
-    var n = d.getElementsByTagName("script")[0],
-        s = d.createElement("script"),
-        f = function () { n.parentNode.insertBefore(s, n); };
-    s.type = "text/javascript";
-    s.async = true;
-    s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";
 
-    if (w.opera == "[object Opera]") {
-        d.addEventListener("DOMContentLoaded", f, false);
-    } else { f(); }
-})(document, window, "yandex_metrika_callbacks");
-</script>
-<noscript><div><img src="//mc.yandex.ru/watch/25785359" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
+          <div class="yandex_metrika">
+  <!-- Yandex.Metrika informer -->
+  <a href="https://metrika.yandex.ru/stat/?id=25785359&amp;from=informer"
+  target="_blank" rel="nofollow"><img src="//bs.yandex.ru/informer/25785359/1_0_FFFFFFFF_EFEFEFFF_0_pageviews"
+  style="width:80px; height:15px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры)" /></a>
+  <!-- /Yandex.Metrika informer -->
 
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+  (function (d, w, c) {
+      (w[c] = w[c] || []).push(function() {
+          try {
+              w.yaCounter25785359 = new Ya.Metrika({id:25785359,
+                      webvisor:true,
+                      clickmap:true,
+                      trackLinks:true,
+                      accurateTrackBounce:true});
+          } catch(e) { }
+      });
+
+      var n = d.getElementsByTagName("script")[0],
+          s = d.createElement("script"),
+          f = function () { n.parentNode.insertBefore(s, n); };
+      s.type = "text/javascript";
+      s.async = true;
+      s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";
+
+      if (w.opera == "[object Opera]") {
+          d.addEventListener("DOMContentLoaded", f, false);
+      } else { f(); }
+  })(document, window, "yandex_metrika_callbacks");
+  </script>
+  <noscript><div><img src="//mc.yandex.ru/watch/25785359" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+</div>
+
+        </div>
       </div>
     </div>
   </body>

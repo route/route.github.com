@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-    <title><%= current_page.data.title || "Blog" %></title>
     <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <%- if current_page.data.description -%>
@@ -12,28 +10,26 @@
     <%- if current_page.data.keywords -%>
     <meta name="keywords" content="<%= current_page.data.keywords %>">
     <%- end -%>
-    <meta name="author" content="Dmitry Vorotilin">
 
-    <%= stylesheet_link_tag "application" %>
-    <%= javascript_include_tag "application" %>
+    <title><%= current_page.data.title || "Blog" %></title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+
+    <%= stylesheet_link_tag "application", "highlighting" %>
   </head>
   <body>
-    <div class="content">
-      <header>
-        <%= link_to "Blog", "/" %>
-      </header>
-      <%= yield -%>
-      <footer>
-        Copyright © 2012-2018
-        <%= link_to "Dmitry Vorotilin", "https://github.com/route", target: "_blank" %>
-        |
-        <%= link_to "CV", "/cv.html", target: "_blank" %>
-      </footer>
-      <%- if !development? -%>
-      <div class="yandex_metrika">
-        <%= partial "yandex_metrika" %>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <%= partial "header" %>
+
+          <%= yield -%>
+
+          <%= partial "footer" %>
+
+          <%= partial "yandex_metrika" %>
+        </div>
       </div>
-      <%- end -%>
     </div>
   </body>
 </html>

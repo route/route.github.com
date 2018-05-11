@@ -1,18 +1,14 @@
 @charset "utf-8";
 
-@import "compass/reset";
-@import "blueprint/grid";
-@import "compass/css3/font-face";
+@import url('https://fonts.googleapis.com/css?family=Fjord+One');
 
-@import "highlight.css.scss";
-
-@include font-face("Museo700", font-files("/stylesheets/fonts/museo700-regular-webfont.ttf", "/stylesheets/fonts/museo700-regular-webfont.woff", "/stylesheets/fonts/museo700-regular-webfont.eot"));
-@include font-face("Museo500", font-files("/stylesheets/fonts/museo500-regular-webfont.ttf", "/stylesheets/fonts/museo500-regular-webfont.woff", "/stylesheets/fonts/museo500-regular-webfont.eot"));
-@include font-face("Museo300", font-files("/stylesheets/fonts/museo300-regular-webfont.ttf", "/stylesheets/fonts/museo300-regular-webfont.woff", "/stylesheets/fonts/museo300-regular-webfont.eot"));
+$color-header: #000000;
+$color-footer: #aaaaaa;
+$color-text:   #3f3f3f;
+$color-title:  #2e0c1c;
 
 @mixin title {
-  font-family: "Georgia", sans-serif;
-  color: #74ab2e;
+  color: $color-title;
   font-weight: bold;
   font-size: 24px;
   text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
@@ -22,129 +18,107 @@
   display: block;
   line-height: 32px;
   font-size: 11px;
-  color: #aaa;
+  color: $color-footer;
 }
 
 body {
   background-color: #fff;
-  color: #3f3f3f;
-  font-family: "Museo300", "Helvetica Neue", sans-serif;
-  font-size: 17px;
-  line-height: 26px;
+  color: $color-text;
+  font-family: 'Fjord One', serif;
+  font-size: 20px;
+  line-height: 1.5;
 }
 
-a {
-  text-decoration: none;
-  font-family: "Museo500", "Helvetica Neue", sans-serif;
-  color: #59990d;
+.container {
+  max-width: 790px;
 
-  text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid #cfe2b9;
+  .row {
+    .col {
+      a {
+        color: darken( $color-title, 5% );
+        text-decoration: none;
 
-  &:hover, &:focus {
-    border-bottom: 0px;
-  }
-}
+        text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid lighten( $color-title, 40% );
 
-h1, h2, h3 {
-  @include title;
-  line-height: 28px;
-  margin-bottom: 1px;
-}
-h2 {
-  font-size: 22px;
-  line-height: 50px;
-}
-h3 {
-  color: #3f3f3f;
-  font-size: 18px;
-  line-height: 50px;
-}
-
-ol {
-  list-style-type: decimal;
-}
-ul {
-  list-style-type: disc;
-}
-ol li, ul li {
-  margin: 10px 10px 10px 30px;
-}
-img {
-  max-width: 600px;
-  display: block;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.content {
-  @include container;
-  width: 790px;
-  > header {
-    height: 64px;
-    border-bottom: 1px solid silver;
-    margin-bottom: 30px;
-    a {
-      color: #000;
-      line-height: 64px;
-      border-bottom: 0px;
-    }
-  }
-
-  > header, footer {
-    font-family: "Museo500", sans-serif;
-    @include column(20);
-  }
-
-  // Main
-  > section {
-    @include column(20);
-    article {
-      padding-bottom: 60px;
-      header {
-        a {
-          @include title;
+        &:hover, &:focus {
+          border-bottom: 0px;
         }
+      }
+
+      h1, h2, h3 {
+        @include title;
+        line-height: 28px;
+        margin-bottom: 1px;
+      }
+
+      ol {
+        list-style-type: decimal;
+      }
+      ul {
+        list-style-type: disc;
+      }
+      ol li, ul li {
+        margin: 10px 10px 10px 30px;
+      }
+      img {
+        // max-width: 600px;
+        display: block;
+        margin: 20px auto 20px auto;
+      }
+
+      > header {
+        height: 64px;
+        border-bottom: 1px solid silver;
+        margin-bottom: 30px;
+        a {
+          color: $color-header;
+          line-height: 64px;
+          font-size: 18px;
+          border-bottom: 0px;
+        }
+      }
+
+      // Main
+      > section {
+        article {
+          padding-bottom: 60px;
+          header {
+            a {
+              @include title;
+            }
+            time {
+              @include time;
+            }
+          }
+          footer {
+            a {
+              font-size: 14px;
+            }
+            line-height: 32px;
+          }
+        }
+      }
+
+      // Post
+      > article {
         time {
           @include time;
         }
-      }
-      footer {
-        a {
-          font-size: 14px;
+        p {
+          padding-bottom: 10px;
         }
-        line-height: 32px;
+        .share {
+          padding-top: 50px;
+          text-align: center;
+        }
       }
-    }
-  }
 
-  // Post
-  > article {
-    @include column(20);
-    time {
-      @include time;
-    }
-    p {
-      padding-bottom: 10px;
-    }
-    .share {
-      padding-top: 50px;
-      text-align: center;
-    }
-  }
-
-  > footer {
-    color: #aaa;
-    font-size: 11px;
-    line-height: 64px;
-    text-align: center;
-    a {
-      color: #aaa;
-      border-bottom: 1px solid #aaa;
-      &:hover, &:focus {
-        border-bottom: 0px;
+      > footer {
+        color: $color-footer;
+        font-size: 11px;
+        line-height: 64px;
+        text-align: center;
       }
     }
   }

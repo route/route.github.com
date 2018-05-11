@@ -1,7 +1,3 @@
----
-layout: resume
----
-
 ### About me:
 I'm Dmitry Vorotilin – developer with knowledge of several programming
 languages and design patterns, open source contributor, strong team player.

@@ -8,7 +8,7 @@ keywords: rails, activerecord, first, postgresql planner, postgresql scheduler, 
 If you've grown with Rails like me you know that everyone used and perhaps still
 use everywhere `first`. You type it without hesitation.
 
-![hacking](/images/irb.png)
+<img src="/images/ar-first.png" class="img-fluid">
 
 I know that it's so simple that maybe it even doesn't deserve a post but just
 stop doing that.
@@ -20,7 +20,7 @@ added long ago Apr 27, 2012 and if you say right now:
 
 then things are getting more intersting with PostgreSQL v10 at least:
 
-```sql
+```sql?line_numbers=false
 EXPLAIN ANALYZE SELECT * FROM "posts" WHERE "posts"."deleted_at" IS NULL AND "posts"."user_id" = 1 order by id ASC limit 1;
                                                                     QUERY PLAN                                                                    
 --------------------------------------------------------------------------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ with 10 posts of course this query becomes drastically slower than planned. So a
 combination of two issues results in a waste of time for investigation. First of
 all it shouldn't have happened if we used `take`:
 
-```sql
+```sql?line_numbers=false
 EXPLAIN ANALYZE SELECT * FROM "posts" WHERE "posts"."deleted_at" IS NULL AND "posts"."user_id" = 1 limit 1;
                                                      QUERY PLAN                                                     
 --------------------------------------------------------------------------------------------------------------------

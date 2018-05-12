@@ -1,6 +1,6 @@
 ---
 title: Ruby loading and requiring files, constant name resolution
-tags: ruby, require, load, autoload, constant resolution
+tags: ruby
 ---
 
 This article has started as my own research on a slightly different theme —
@@ -61,16 +61,17 @@ different methods in order to 'concatenate' it. Here they are: `require`,
 
 `Kernel#require(name)` loads the given name, returning `true` if successful and
 `false` if the feature is already loaded. If the filename does not resolve to an
-absolute path, it will be searched for in the directories listed in
-`$LOAD_PATH ($:)`. Any constants or globals within the loaded source file will
-be available in the calling program's global namespace. However, local variables
-will not be propagated to the loading environment. With this method you can load
-even native extension(`.so`, `.dll` or the others depending on current
-platform). If you don't specify the extension Ruby starts with `.rb` and so on.
-The absolute path of the loaded file is added to `$LOADED_FEATURES ($")`. A file
-will not be loaded again if its path already appears in `$"`.
-`Kernel.require_relative(name)` is almost the same as `require` but it looks for
-a file in the current directory or directories that is relative to current.
+absolute path, it will be searched for in the directories listed in `$LOAD_PATH`.
+Any constants or globals within the loaded source file will be available in the
+calling program's global namespace. However, local variables will not be
+propagated to the loading environment. With this method you can load even native
+extension(`.so`, `.dll` or the others depending on current platform). If you
+don't specify the extension Ruby starts with `.rb` and so on. The absolute path
+of the loaded file is added to `$LOADED_FEATURES`. A file will not be
+loaded again if its path already appears in `$LOADED_FEATURES`.
+`Kernel.require_relative(name)` is almost the same as `require` but it looks
+for a file in the current directory or directories that is relative to the
+current.
 
 Example with `require`:
 
@@ -80,13 +81,12 @@ Example with `require`:
 #   C = 'constant'
 # end
 
-before = $".dup
+before = $LOADED_FEATURES.dup
 require 'a'
-$" - before # => ['/Users/route/Projects/dependencies/a.rb']
+$LOADED_FEATURES - before # => ['/Users/route/Projects/dependencies/a.rb']
 
 A::C # => 'constant'
-sleep 5
-# Meanwhile changing constant value to 'changed'
+sleep 15 # Meanwhile changing constant value to 'changed'
 
 require 'a'
 
@@ -109,13 +109,12 @@ Example with `load`:
 #   C = 'constant'
 # end
 
-before = $".dup
+before = $LOADED_FEATURES.dup
 load './a.rb'
-$" - before # => []
+$LOADED_FEATURES - before # => []
 
 A::C # => 'constant'
-sleep 5
-# Meanwhile changing constant value to 'changed'
+sleep 15 # Meanwhile changing constant value to 'changed'
 
 load './a.rb'
 

@@ -1,6 +1,6 @@
 ---
 title: Rails autoloading
-tags: ruby, rails, require, load, autoload, constant resolution, autoloading
+tags: ruby, rails
 ---
 
 There is much to be said about Rails autoloading and particularly about

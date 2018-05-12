@@ -1,10 +1,13 @@
+Time.zone = "Moscow"
+
 activate :autoprefixer do |prefix|
   prefix.browsers = "last 2 versions"
 end
 
-activate :syntax, line_numbers: true
+activate :syntax
 
 activate :blog do |blog|
+  blog.paginate = true
   blog.sources = "posts/:year-:month-:day-:title.html"
   blog.layout = "post"
   blog.tag_template = "tag.html"

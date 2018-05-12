@@ -1,12 +1,22 @@
-<%- blog.articles[0..10].each do |article| %>
-        <article>
-          <header>
-            <a href="<%= article.url %>"><%= article.title %></a>
-            <time><%= article.date.strftime("%B %e, %Y") %></time>
-          </header>
-          <p><%= article.summary %></p>
-          <footer>
-            <a href="<%= article.url %>">Read more</a>
-          </footer>
-        </article>
+---
+pageable: true
+per_page: 3
+changefreq: weekly
+---
+
+<%- page_articles.each do |article| %>
+          <article>
+              <header>
+                <h2><a href="<%= article.url %>"><%= article.title %></a></h2>
+                <time datetime="<%= article.date.strftime("%Y-%m-%d") %>"><%= article.date.strftime("%B %e, %Y") %></time>
+              </header>
+              <div>
+                <%= article.summary %>
+              </div>
+              <footer>
+                <a href="<%= article.url %>">Read more</a>
+              </footer>
+          </article>
 <% end %>
+
+<%= partial "paginate" %>

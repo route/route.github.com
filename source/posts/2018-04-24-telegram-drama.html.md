@@ -1,13 +1,14 @@
 ---
 title: Telegram drama
-tags: rkn, telegram, block, vpn
+tags: network
+description: Bypass telegram blocks in Russia
 ---
 
 In my childhood internet and network looked like a magick. In movies they showed
 something like ping output and I definitely thought that someone hacked someone
 else.
 
-<img src="/images/hackers.png" class="img-fluid">
+<img src="/images/hackers.png" class="img-fluid" alt="hackers">
 
 I'm located in Russia and I work for Chicago based startup thanks 21st century
 for remote. We have our servers on AWS and DigitalOcean. Thereon this long
@@ -29,7 +30,7 @@ As usually this morning I tried to connect to one of our web services and
 surprise what? It timed out. ICMP traffic wasn't blocked though. Let's say a
 domain for this server for simplification is `a.com`.
 
-```shell?line_numbers=false
+```shell
 $ ping a.com
 PING 159.89.184.10: 64 data bytes
 72 bytes from 159.89.184.10: seq=0 ttl=52 time=141.242 ms
@@ -58,7 +59,7 @@ DigitalOcean who blocks it. As you wish guys... I go to DigitalOcean and
 together we investigate it. Opening `chrome://net-internals` is very intersting
 sometimes and confirms time out:
 
-```text?line_numbers=false
+```text
 14057: URL_REQUEST
 https://a.com/
 Start Time: 2018-04-24 08:07:06.009
@@ -92,7 +93,7 @@ t=169195 [st=24521] -REQUEST_ALIVE
 
 Traceroute from my machine to this IP shows a few intermidiate backbone providers:
 
-```shell?line_numbers=false
+```shell
 traceroute to a.com (159.89.184.10), 30 hops max, 60 byte packets
  1  gateway (192.168.0.1)  0.417 ms  0.484 ms  0.568 ms
  2  100.103.0.1 (100.103.0.1)  4.935 ms  4.992 ms  5.020 ms
@@ -116,7 +117,7 @@ traceroute to a.com (159.89.184.10), 30 hops max, 60 byte packets
 
 While in reverse from the droplet there's only one of them:
 
-```shell?line_numbers=false
+```shell
 traceroute to 95.32.215.86 (95.32.215.86), 30 hops max, 60 byte packets
  1  159.89.176.253 (159.89.176.253)  0.290 ms  0.263 ms  0.231 ms
  2  138.197.248.28 (138.197.248.28)  0.478 ms  0.469 ms  0.456 ms
@@ -134,7 +135,7 @@ BTW [bgpstream.com](https://bgpstream.com/)
 
 Let's monitor outgoing and incoming traffic:
 
-```shell?line_numbers=false
+```shell
 $ curl http://a.com
 curl: (7) Failed to connect to a.com port 80: Connection timed out
 
@@ -182,7 +183,7 @@ ability for incoming http request go behind it and reach Ngnix on my PC.
 
 We ssh into the droplet and try to connect with curl:
 
-```shell?line_numbers=false
+```shell
 $ curl http://95.32.183.155
 <!DOCTYPE html>
 <html>
@@ -232,7 +233,7 @@ $ sudo tcpdump -nn -vvv -i eth0 dst 95.32.183.155 and dst port 80 or src 95.32.1
 
 It works. Let's send an outdoing packet from the droplet with source port 80:
 
-```shell?line_numbers=false
+```shell
 $ yes | nc -p 80 -t 95.32.183.155 80
 
 $ sudo tcpdump -nn -vvv -i eth0 dst 95.32.183.155 and dst port 80 or src 95.32.183.155 and dst port 80
@@ -275,7 +276,7 @@ better. Instead it's a place for intertainment controlled by goverment.
 If you read until this point there's a small bonus for you:
 It's known fact that rutracker is blocked.
 
-```shell?line_numbers=false
+```shell
 $ curl -vvv http://rutracker.org/forum/index.php
 *   Trying 195.82.146.214...
 * TCP_NODELAY set
@@ -297,7 +298,7 @@ Run this if you have Rostelekom `(printf 'GET /forum/index.php HTTP/1.1\r\nHost:
 
 and you'll see:
 
-```shell?line_numbers=false
+```shell
 HTTP/1.1 302 Found
 Connection: close
 Content-Length: 2
@@ -323,7 +324,7 @@ They intercept traffic and put 302 redirect and below goes original page.
 Is that [passive DPI](https://habr.com/post/335436/)? Remove carriage
 return headers now and watch plain 200:
 
-```shell?line_numbers=false
+```shell
 (printf 'GET /forum/index.php HTTP/1.1\nHost: rutracker.org\n\n'; sleep 1) | nc rutracker.org 80
 
 HTTP/1.1 200 OK
@@ -360,7 +361,7 @@ Here I should say that the reason remains unknown and I'll keep you posted.
 
 Rostelekom convo:
 
-```text?line_numbers=false
+```text
 Вы
 Добрый день, скажите почему у меня не открывается http://a.com/
 
@@ -435,7 +436,7 @@ curl: (7) Failed to connect to a.com port 443: Connection timed out
 
 DigitalOcean convo:
 
-```text?line_numbers=false
+```text
 *Me*
 As you likely aware in Russia they try to block Telegram yet hopelessly. I tried
 to connect to one of our servers today without luck. The url was

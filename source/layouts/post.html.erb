@@ -1,7 +1,12 @@
 <%- wrap_layout :application do %>
   <article>
-    <h1><%= current_page.title %></h1>
-    <time><%= current_page.date.strftime("%B %e, %Y") %></time>
+    <h2><%= current_page.title %></h2>
+    <div class="tags">
+      <%- current_page.data.tags.split(",").map(&:strip).each do |tag| -%>
+        <%= link_to tag, "/tags/#{tag}.html" %>
+      <%- end -%>
+    </div>
+    <time datetime="<%= current_page.date.strftime("%Y-%m-%d") %>"><%= current_page.date.strftime("%B %e, %Y") %></time>
     <%= yield %>
     <%- if !development? -%>
     <div class="share">

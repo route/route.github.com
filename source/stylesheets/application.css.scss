@@ -5,7 +5,7 @@
 $color-header: #000000;
 $color-footer: #aaaaaa;
 $color-text:   #3f3f3f;
-$color-title:  #2e0c1c;
+$color-title:  #741f46;
 
 @mixin title {
   color: $color-title;
@@ -49,7 +49,6 @@ body {
       h1, h2, h3 {
         @include title;
         line-height: 28px;
-        margin-bottom: 1px;
       }
 
       ol {
@@ -80,7 +79,7 @@ body {
       }
 
       // Main
-      > section {
+      > div {
         article {
           padding-bottom: 60px;
           header {
@@ -102,6 +101,11 @@ body {
 
       // Post
       > article {
+        .tags > a {
+          color: lighten( $color-title, 20% );
+          font-size: 14px;
+          border-bottom: 1px solid lighten( $color-title, 30% );
+        }
         time {
           @include time;
         }
@@ -125,6 +129,7 @@ body {
 }
 
 .yandex_metrika {
+  display: none;
   text-align: center;
   a {
     text-decoration: none;

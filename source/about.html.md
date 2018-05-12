@@ -1,5 +1,9 @@
+---
+title: About
+---
+
 ### About me:
-I'm Dmitry Vorotilin – developer with knowledge of several programming
+I'm [Dmitry Vorotilin](http://github.com/route) – developer with knowledge of several programming
 languages and design patterns, open source contributor, strong team player.
 Most of all I love my job, by the way it gives me an ability to live happily.
 I'm very curious about bugs and difficulties in programming and if I find
@@ -12,7 +16,7 @@ such projects like [Rails](http://contributors.rubyonrails.org/contributors/dmit
 [Ruby](https://github.com/ruby/ruby/pull/1475),
 MiniTest and so on. Besides job I like having fun with friends, cycling around
 the city, skating, playing football, doing sport and meeting new people. Go get
-in touch with me: <d.vorotilin@gmail.com>, [Github](http://github.com/route)
+in touch with me: <d.vorotilin@gmail.com>
 
 ### Technical:
 * Ruby/Go/Elixir/Erlang

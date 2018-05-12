@@ -1,6 +1,7 @@
 ---
 title: Query Trail
-tags: ruby, rails, sql, query, logger
+tags: ruby, rails, sql
+description: Log which line caused a query
 ---
 
 Recently I switched on a project with lots of legacy code. It was on Rails 2,

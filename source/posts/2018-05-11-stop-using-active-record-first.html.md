@@ -1,14 +1,13 @@
 ---
 title: Stop using ActiveRecord's first method
-tags: rails, activerecord, postgresql
-description: ActiveRecord slow query with limit 1. Postgresql query very slow with limit 1.
-keywords: rails, activerecord, first, postgresql planner, postgresql scheduler, slow query, limit 1
+tags: rails, activerecord, sql
+description: Postgresql slow query with limit 1
 ---
 
 If you've grown with Rails like me you know that everyone used and perhaps still
 use everywhere `first`. You type it without hesitation.
 
-<img src="/images/ar-first.png" class="img-fluid">
+<img src="/images/irb.png" class="img-fluid" alt="irb">
 
 I know that it's so simple that maybe it even doesn't deserve a post but just
 stop doing that.
@@ -20,7 +19,7 @@ added long ago Apr 27, 2012 and if you say right now:
 
 then things are getting more intersting with PostgreSQL v10 at least:
 
-```sql?line_numbers=false
+```sql
 EXPLAIN ANALYZE SELECT * FROM "posts" WHERE "posts"."deleted_at" IS NULL AND "posts"."user_id" = 1 order by id ASC limit 1;
                                                                     QUERY PLAN                                                                    
 --------------------------------------------------------------------------------------------------------------------------------------------------
@@ -39,7 +38,7 @@ with 10 posts of course this query becomes drastically slower than planned. So a
 combination of two issues results in a waste of time for investigation. First of
 all it shouldn't have happened if we used `take`:
 
-```sql?line_numbers=false
+```sql
 EXPLAIN ANALYZE SELECT * FROM "posts" WHERE "posts"."deleted_at" IS NULL AND "posts"."user_id" = 1 limit 1;
                                                      QUERY PLAN                                                     
 --------------------------------------------------------------------------------------------------------------------

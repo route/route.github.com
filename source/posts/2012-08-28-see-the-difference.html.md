@@ -1,6 +1,6 @@
 ---
 title: See the difference
-tags: ruby, rails, array, wrap
+tags: ruby, rails
 ---
 
 Yesterday I faced the strange behaviour of the array wrapping in context
@@ -29,7 +29,7 @@ end
 And you probably know about
 [Kernel#Array](http://rxr.whitequark.org/mri/source/object.c#2624):
 
-``` c
+```c?line_numbers=true
 VALUE
 rb_Array(VALUE val) {
   VALUE tmp = rb_check_array_type(val);

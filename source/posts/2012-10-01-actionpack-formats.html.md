@@ -1,7 +1,7 @@
 ---
 title: ActionPack formats
 published: false
-categories: ruby, rails, actionpack
+categories: ruby, rails
 ---
 
 

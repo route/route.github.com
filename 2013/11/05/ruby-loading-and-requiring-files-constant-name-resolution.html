@@ -3,12 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-
     <title>Ruby loading and requiring files, constant name resolution</title>
-
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
-
     <link href="/stylesheets/application.css" rel="stylesheet" /><link href="/stylesheets/highlighting.css" rel="stylesheet" />
   </head>
   <body>
@@ -16,15 +12,16 @@
       <div class="row">
         <div class="col">
           <header>
-  <a href="/">Blog</a>
-  |
-  <a href="/cv.html">Me</a>
-</header>
-
-
+            <a href="/">Write Code With Me</a>
+            |
+            <a href="/about.html">About</a>
+          </header>
             <article>
-    <h1>Ruby loading and requiring files, constant name resolution</h1>
-    <time>November  5, 2013</time>
+    <h2>Ruby loading and requiring files, constant name resolution</h2>
+    <div class="tags">
+        <a href="/tags/ruby.html">ruby</a>
+    </div>
+    <time datetime="2013-11-05">November  5, 2013</time>
     <p>This article has started as my own research on a slightly different theme —
 <a href="/2013/11/13/rails-autoloading.html">Rails autoloading</a>, but I couldn&rsquo;t describe
 it without saying a single word about Ruby itself. In this topic we&rsquo;ll talk
@@ -36,18 +33,7 @@ anyway I have to sum it up in just one big article. So let&rsquo;s get started w
 Ruby.</p>
 
 <h3>Constant definition:</h3>
-<div class="highlight"><pre class="highlight diff"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-</pre></td><td class="rouge-code"><pre>A constant in Ruby is like a variable, except that its value is supposed to
+<div class="highlight"><pre class="highlight diff"><code>A constant in Ruby is like a variable, except that its value is supposed to
 remain constant for the duration of a program. The Ruby interpreter does not
 actually enforce the constancy of constants, but it does issue a warning if a
 program changes the value of a constant. Lexically, the names of constants look
@@ -58,28 +44,20 @@ they are conventionally written using initial capital letters and camel case,
 LikeThis.
 
 The Ruby Programming Language: David Flanagan; Yukihiro Matsumoto.
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>I think it&rsquo;s clear and turns out that we&rsquo;ll see a warning if we&rsquo;ll try to change
 a constant:</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-</pre></td><td class="rouge-code"><pre><span class="no">A</span> <span class="o">=</span> <span class="s1">'a'</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="no">A</span> <span class="o">=</span> <span class="s1">'a'</span>
 <span class="no">A</span> <span class="o">=</span> <span class="s1">'b'</span>
 <span class="c1">#./a.rb:2: warning: already initialized constant A</span>
 <span class="c1">#./a.rb:1: warning: previous definition of A was here</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>The same thing for classes:</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">A</span><span class="p">;</span> <span class="k">end</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">A</span><span class="p">;</span> <span class="k">end</span>
 <span class="no">A</span> <span class="o">=</span> <span class="s1">'b'</span>
 <span class="c1">#./a.rb:2: warning: already initialized constant A</span>
 <span class="c1">#./a.rb:1: warning: previous definition of A was here</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>Since the constant <code>A</code> is just a reference for the class&rsquo; object (remember class
 is object in Ruby, right?) and we try to reassign it with new value then we see
 this warning. Ok, now we know what the constant is, moving to files requiring.</p>
@@ -93,51 +71,35 @@ different methods in order to &lsquo;concatenate&rsquo; it. Here they are: <code
 
 <p><code>Kernel#require(name)</code> loads the given name, returning <code>true</code> if successful and
 <code>false</code> if the feature is already loaded. If the filename does not resolve to an
-absolute path, it will be searched for in the directories listed in
-<code>$LOAD_PATH ($:)</code>. Any constants or globals within the loaded source file will
-be available in the calling program&rsquo;s global namespace. However, local variables
-will not be propagated to the loading environment. With this method you can load
-even native extension(<code>.so</code>, <code>.dll</code> or the others depending on current
-platform). If you don&rsquo;t specify the extension Ruby starts with <code>.rb</code> and so on.
-The absolute path of the loaded file is added to <code>$LOADED_FEATURES ($&quot;)</code>. A file
-will not be loaded again if its path already appears in <code>$&quot;</code>.
-<code>Kernel.require_relative(name)</code> is almost the same as <code>require</code> but it looks for
-a file in the current directory or directories that is relative to current.</p>
+absolute path, it will be searched for in the directories listed in <code>$LOAD_PATH</code>.
+Any constants or globals within the loaded source file will be available in the
+calling program&rsquo;s global namespace. However, local variables will not be
+propagated to the loading environment. With this method you can load even native
+extension(<code>.so</code>, <code>.dll</code> or the others depending on current platform). If you
+don&rsquo;t specify the extension Ruby starts with <code>.rb</code> and so on. The absolute path
+of the loaded file is added to <code>$LOADED_FEATURES</code>. A file will not be
+loaded again if its path already appears in <code>$LOADED_FEATURES</code>.
+<code>Kernel.require_relative(name)</code> is almost the same as <code>require</code> but it looks
+for a file in the current directory or directories that is relative to the
+current.</p>
 
 <p>Example with <code>require</code>:</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-</pre></td><td class="rouge-code"><pre><span class="c1"># a.rb</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="c1"># a.rb</span>
 <span class="c1"># module A</span>
 <span class="c1">#   C = 'constant'</span>
 <span class="c1"># end</span>
 
-<span class="n">before</span> <span class="o">=</span> <span class="vg">$"</span><span class="p">.</span><span class="nf">dup</span>
+<span class="n">before</span> <span class="o">=</span> <span class="vg">$LOADED_FEATURES</span><span class="p">.</span><span class="nf">dup</span>
 <span class="nb">require</span> <span class="s1">'a'</span>
-<span class="vg">$"</span> <span class="o">-</span> <span class="n">before</span> <span class="c1"># =&gt; ['/Users/route/Projects/dependencies/a.rb']</span>
+<span class="vg">$LOADED_FEATURES</span> <span class="o">-</span> <span class="n">before</span> <span class="c1"># =&gt; ['/Users/route/Projects/dependencies/a.rb']</span>
 
 <span class="no">A</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; 'constant'</span>
-<span class="nb">sleep</span> <span class="mi">5</span>
-<span class="c1"># Meanwhile changing constant value to 'changed'</span>
+<span class="nb">sleep</span> <span class="mi">15</span> <span class="c1"># Meanwhile changing constant value to 'changed'</span>
 
 <span class="nb">require</span> <span class="s1">'a'</span>
 
 <span class="no">A</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; 'constant'</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p><code>Kernel#load(filename, wrap=false)</code> loads and executes the Ruby program in the
 filename. If the filename does not resolve to an absolute path, the file is
 searched for in <code>$:</code>. If the optional wrap parameter is true, the loaded script
@@ -147,59 +109,29 @@ doesn&rsquo;t rely on <code>$LOADED_FEATURES</code>. Notice that <code>load</cod
 extension.</p>
 
 <p>Example with <code>load</code>:</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-</pre></td><td class="rouge-code"><pre><span class="c1"># a.rb</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="c1"># a.rb</span>
 <span class="c1"># module A</span>
 <span class="c1">#   C = 'constant'</span>
 <span class="c1"># end</span>
 
-<span class="n">before</span> <span class="o">=</span> <span class="vg">$"</span><span class="p">.</span><span class="nf">dup</span>
+<span class="n">before</span> <span class="o">=</span> <span class="vg">$LOADED_FEATURES</span><span class="p">.</span><span class="nf">dup</span>
 <span class="nb">load</span> <span class="s1">'./a.rb'</span>
-<span class="vg">$"</span> <span class="o">-</span> <span class="n">before</span> <span class="c1"># =&gt; []</span>
+<span class="vg">$LOADED_FEATURES</span> <span class="o">-</span> <span class="n">before</span> <span class="c1"># =&gt; []</span>
 
 <span class="no">A</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; 'constant'</span>
-<span class="nb">sleep</span> <span class="mi">5</span>
-<span class="c1"># Meanwhile changing constant value to 'changed'</span>
+<span class="nb">sleep</span> <span class="mi">15</span> <span class="c1"># Meanwhile changing constant value to 'changed'</span>
 
 <span class="nb">load</span> <span class="s1">'./a.rb'</span>
 
 <span class="c1"># ./a.rb:2: warning: already initialized constant A::C</span>
 <span class="c1"># ./a.rb:2: warning: previous definition of C was here</span>
 <span class="no">A</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; 'changed'</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>With warnings but the code was reloaded and we can even see the changes we&rsquo;ve
 made. Let&rsquo;s add optional parameter <code>wrap</code>:</p>
 
 <p>Example with <code>load</code> and wrap:</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-</pre></td><td class="rouge-code"><pre><span class="c1"># a.rb</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="c1"># a.rb</span>
 <span class="c1"># module A</span>
 <span class="c1">#   C = 'constant'</span>
 <span class="c1"># end</span>
@@ -210,7 +142,7 @@ made. Let&rsquo;s add optional parameter <code>wrap</code>:</p>
 
 <span class="no">A</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; uninitialized constant A (NameError)</span>
 <span class="vg">$A</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; 'constant'</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>You see that Ruby hasn&rsquo;t polluted global namespace and wrapped all the constants
 from the file to an anonymous module, but global variables still could be
 retrieved.</p>
@@ -220,57 +152,31 @@ retrieved.</p>
 accessed.</p>
 
 <p>Example 1 with <code>autoload</code>:</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-</pre></td><td class="rouge-code"><pre><span class="c1"># a.rb</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="c1"># a.rb</span>
 <span class="c1"># module A</span>
 <span class="c1">#   p 'loading'</span>
 <span class="c1"># end</span>
 
 <span class="nb">autoload</span> <span class="ss">:A</span><span class="p">,</span> <span class="s1">'a'</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>It won&rsquo;t produce anything useful, because we&rsquo;ve just declared that constant <code>A</code>
 can be found in a file but we&rsquo;ve never used it.</p>
 
 <p>Example 2 with <code>autoload</code>:</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-</pre></td><td class="rouge-code"><pre><span class="c1"># a.rb</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="c1"># a.rb</span>
 <span class="c1"># module A</span>
 <span class="c1">#   p 'loading'</span>
 <span class="c1"># end</span>
 
 <span class="nb">autoload</span> <span class="ss">:A</span><span class="p">,</span> <span class="s1">'a'</span>
 <span class="no">A</span> <span class="c1"># =&gt; Gives output 'loading'</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>In other words <code>autoload</code> makes us to load code lazily on demand decreasing time
 during the boot. There were some problems with thread safety and <code>autoload</code>,
 also there was a rumor that it would be deprecated, but I hadn&rsquo;t found any info
 what the Ruby core team came up with. But the bug was fixed and I just can say
 it works properly even with threads for now:</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-</pre></td><td class="rouge-code"><pre><span class="c1"># a.rb</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="c1"># a.rb</span>
 <span class="c1"># module A</span>
 <span class="c1">#   sleep 5</span>
 <span class="c1">#   def self.hello</span>
@@ -283,7 +189,7 @@ it works properly even with threads for now:</p>
 <span class="n">t1</span> <span class="o">=</span> <span class="no">Thread</span><span class="p">.</span><span class="nf">new</span> <span class="p">{</span> <span class="no">A</span><span class="p">.</span><span class="nf">hello</span> <span class="p">}</span>
 <span class="n">t2</span> <span class="o">=</span> <span class="no">Thread</span><span class="p">.</span><span class="nf">new</span> <span class="p">{</span> <span class="no">A</span><span class="p">.</span><span class="nf">hello</span> <span class="p">}</span>
 <span class="n">t1</span><span class="p">.</span><span class="nf">join</span><span class="p">;</span> <span class="n">t2</span><span class="p">.</span><span class="nf">join</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>I was expecting that second thread would throw an error that method <code>hello</code> is
 undefined because module <code>A</code> had been loaded by first thread but because of
 sleep threads were switched, but it worked.</p>
@@ -292,46 +198,7 @@ sleep threads were switched, but it worked.</p>
 
 <p>I find this example very comprehensive and I won&rsquo;t describe it much because the
 code tells about itself:</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-</pre></td><td class="rouge-code"><pre><span class="k">module</span> <span class="nn">Kernel</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="k">module</span> <span class="nn">Kernel</span>
   <span class="c1"># Constants defined in Kernel</span>
   <span class="no">A</span> <span class="o">=</span> <span class="no">B</span> <span class="o">=</span> <span class="no">C</span> <span class="o">=</span> <span class="no">D</span> <span class="o">=</span> <span class="no">E</span> <span class="o">=</span> <span class="no">F</span> <span class="o">=</span> <span class="s1">'defined in kernel'</span>
 <span class="k">end</span>
@@ -370,7 +237,7 @@ code tells about itself:</p>
     <span class="nb">puts</span> <span class="no">F</span>  <span class="c1"># Prints "defined in kernel"</span>
   <span class="k">end</span>
 <span class="k">end</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>So the path Ruby follows in order to resolve constant name starts with
 <code>Module.nesting</code> which of course starts with itself and then all enclosing
 constants respectively. If the constant cannot be found there, then ancestors
@@ -381,37 +248,17 @@ chain is applied.</p>
 <p>1) Nesting:</p>
 
 <p>We can define new class/module using two different ways:</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-</pre></td><td class="rouge-code"><pre><span class="k">module</span> <span class="nn">A</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="k">module</span> <span class="nn">A</span>
   <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
 <span class="k">end</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>or</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-</pre></td><td class="rouge-code"><pre><span class="k">module</span> <span class="nn">A</span><span class="p">;</span> <span class="k">end</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="k">module</span> <span class="nn">A</span><span class="p">;</span> <span class="k">end</span>
 <span class="k">module</span> <span class="nn">A::B</span><span class="p">;</span> <span class="k">end</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>Pay attention that <code>Module.nesting</code> for these two forms is different and turns
 out that your constant name resolution will be different too:</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-</pre></td><td class="rouge-code"><pre><span class="k">module</span> <span class="nn">A</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="k">module</span> <span class="nn">A</span>
   <span class="no">C</span> <span class="o">=</span> <span class="s1">'c'</span>
 <span class="k">end</span>
 
@@ -426,25 +273,12 @@ out that your constant name resolution will be different too:</p>
   <span class="no">C</span> <span class="c1"># =&gt; NameError: uninitialized constant A::B::C</span>
   <span class="no">Module</span><span class="p">.</span><span class="nf">nesting</span> <span class="c1"># =&gt; [A::B]</span>
 <span class="k">end</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>2) Inheritance:</p>
 
 <p>Remember that constants use the currently opened class or module, as determined
 by <code>class</code> and <code>module</code> statements.</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Parent</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">Parent</span>
   <span class="no">CONST</span> <span class="o">=</span> <span class="s1">'parent'</span>
 
   <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">const</span>
@@ -457,7 +291,7 @@ by <code>class</code> and <code>module</code> statements.</p>
 <span class="k">end</span>
 
 <span class="no">Child</span><span class="p">.</span><span class="nf">const</span> <span class="c1"># =&gt; parent</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>In this example method is invoked on parent class, so its class is the innermost
 one. To change things you could use <code>self::CONST</code> this way you&rsquo;re explicitly
 saying find my constant in <code>self</code> where <code>self</code> is <code>Child</code> if we call
@@ -467,21 +301,15 @@ saying find my constant in <code>self</code> where <code>self</code> is <code>Ch
 
 <p><code>Module.nesting == []</code> at the top level, and so constant lookup starts at the
 currently opened class and its ancestors which is <code>Object</code>:</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Object</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">Object</span>
   <span class="k">module</span> <span class="nn">C</span><span class="p">;</span> <span class="k">end</span>
 <span class="k">end</span>
 <span class="no">C</span> <span class="o">==</span> <span class="no">Object</span><span class="o">::</span><span class="no">C</span> <span class="c1"># =&gt; true</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>or</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-</pre></td><td class="rouge-code"><pre><span class="k">module</span> <span class="nn">C</span><span class="p">;</span> <span class="k">end</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="k">module</span> <span class="nn">C</span><span class="p">;</span> <span class="k">end</span>
 <span class="no">Object</span><span class="o">::</span><span class="no">C</span> <span class="o">==</span> <span class="no">C</span> <span class="c1"># =&gt; true</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>This in turn explains why top-level constants are available throughout your
 program. Almost all classes in Ruby inherit from <code>Object</code>, so <code>Object</code> is almost
 always included in the list of ancestors of the currently open class, and thus
@@ -489,15 +317,11 @@ its constants are almost always available. That said, if you&rsquo;ve ever used 
 <code>BasicObject</code>, and noticed that top-level constants are missing, you now know
 why. Because <code>BasicObject</code> does not subclass <code>Object</code>, all of the constants are
 not in the lookup chain:</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Foo</span> <span class="o">&lt;</span> <span class="no">BasicObject</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">Foo</span> <span class="o">&lt;</span> <span class="no">BasicObject</span>
   <span class="no">Kernel</span>
 <span class="k">end</span>
 <span class="c1"># NameError: uninitialized constant Foo::Kernel</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>For cases like this, and anywhere else you want to be explicit, Ruby allows you
 to use <code>::Kernel</code> to access <code>Object::Kernel</code>.</p>
 
@@ -508,15 +332,7 @@ determined by class and module statements. Importantly, if you pass a block into
 <code>class_eval</code>, <code>module_eval</code> or <code>instance_eval</code>, <code>define_method</code>, this won&rsquo;t
 change constant lookup. It continues to use the constant lookup at the
 point the block was defined:</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">A</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">A</span>
   <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
 <span class="k">end</span>
 
@@ -524,20 +340,12 @@ point the block was defined:</p>
   <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
   <span class="no">A</span><span class="p">.</span><span class="nf">class_eval</span> <span class="p">{</span> <span class="no">B</span> <span class="p">}</span> <span class="o">==</span> <span class="no">C</span><span class="o">::</span><span class="no">B</span>
 <span class="k">end</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>Confusingly however, if you pass a <code>String</code> to these methods, then the <code>String</code>
 is evaluated with <code>Module.nesting</code> containing just the class/module itself (for
 <code>class_eval</code> or <code>module_eval</code>) or just the singleton class of the object (for
 <code>instance_eval</code>).</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-</pre></td><td class="rouge-code"><pre><span class="k">module</span> <span class="nn">A</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="k">module</span> <span class="nn">A</span>
   <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
 <span class="k">end</span>
 
@@ -545,16 +353,7 @@ is evaluated with <code>Module.nesting</code> containing just the class/module i
   <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
   <span class="no">A</span><span class="p">.</span><span class="nf">module_eval</span><span class="p">(</span><span class="s2">"B"</span><span class="p">)</span> <span class="o">==</span> <span class="no">A</span><span class="o">::</span><span class="no">B</span>
 <span class="k">end</span>
-</pre></td></tr></tbody></table></code></pre></div><div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-</pre></td><td class="rouge-code"><pre><span class="k">module</span> <span class="nn">A</span>
+</code></pre></div><div class="highlight"><pre class="highlight ruby"><code><span class="k">module</span> <span class="nn">A</span>
   <span class="no">X</span> <span class="o">=</span> <span class="mi">1</span>
   <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
 <span class="k">end</span>
@@ -563,39 +362,27 @@ is evaluated with <code>Module.nesting</code> containing just the class/module i
   <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
   <span class="no">A</span><span class="o">::</span><span class="no">B</span><span class="p">.</span><span class="nf">module_eval</span><span class="p">(</span><span class="s2">"X"</span><span class="p">)</span> <span class="c1"># =&gt; uninitialized constant A::B::X (NameError)</span>
 <span class="k">end</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>5) Singleton class:</p>
 
 <p>If you&rsquo;re in a singleton class of a class, you don&rsquo;t get access to constants
 defined in the class itself:</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">A</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">A</span>
   <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
 <span class="k">end</span>
 <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="no">A</span>
   <span class="no">B</span> <span class="c1"># =&gt; uninitialized constant Class::B</span>
 <span class="k">end</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>This is because the ancestors of the singleton class of a class do not include
 the class itself, they start at the <code>Class</code> class.</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">A</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">A</span>
   <span class="k">module</span> <span class="nn">B</span><span class="p">;</span> <span class="k">end</span>
 <span class="k">end</span>
 <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="no">A</span>
   <span class="nb">ancestors</span> <span class="c1"># =&gt; [Class, Module, Object, Kernel, BasicObject]</span>
 <span class="k">end</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>Lastly, imagine we access a constant that isn&rsquo;t defined at all then
 <code>self.const_missing</code> is invoked on the class that needs constant or if it wasn&rsquo;t
 defined on that class it&rsquo;s invoked on its superclass — <code>Module</code>
@@ -622,12 +409,9 @@ That&rsquo;s all for Ruby moving to the more interesting part —
       </script>
     </div>
   </article>
-
           <footer>
-  Copyright © 2012-2018
-</footer>
-
-
+            Copyright © 2012-2018
+          </footer>
           <div class="yandex_metrika">
   <!-- Yandex.Metrika informer -->
   <a href="https://metrika.yandex.ru/stat/?id=25785359&amp;from=informer"

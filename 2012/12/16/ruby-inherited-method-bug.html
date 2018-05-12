@@ -3,12 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-
     <title>Ruby inherited method bug</title>
-
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
-
     <link href="/stylesheets/application.css" rel="stylesheet" /><link href="/stylesheets/highlighting.css" rel="stylesheet" />
   </head>
   <body>
@@ -16,24 +12,23 @@
       <div class="row">
         <div class="col">
           <header>
-  <a href="/">Blog</a>
-  |
-  <a href="/cv.html">Me</a>
-</header>
-
-
+            <a href="/">Write Code With Me</a>
+            |
+            <a href="/about.html">About</a>
+          </header>
             <article>
-    <h1>Ruby inherited method bug</h1>
-    <time>December 16, 2012</time>
+    <h2>Ruby inherited method bug</h2>
+    <div class="tags">
+        <a href="/tags/ruby.html">ruby</a>
+        <a href="/tags/rails.html">rails</a>
+    </div>
+    <time datetime="2012-12-16">December 16, 2012</time>
     <p>This post is about the bug I found when I was writing tests for <code>quiet_assets</code>.
 I won&rsquo;t show you all those tests, just a small piece:</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-</pre></td><td class="rouge-code"><pre><span class="no">Class</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">Rails</span><span class="o">::</span><span class="no">Application</span><span class="p">)</span> <span class="k">do</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="no">Class</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">Rails</span><span class="o">::</span><span class="no">Application</span><span class="p">)</span> <span class="k">do</span>
   <span class="n">routes</span><span class="p">.</span><span class="nf">append</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
 <span class="k">end</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>All of them were passed on my laptop, but Travis-CI showed me the odd message
 for Ruby 1.8:
 <code>undefined local variable or method &#39;routes&#39; for #&lt;Class:0xb6b9a92c&gt;</code>.
@@ -46,32 +41,15 @@ from <code>Rails::Railtie</code>. You can find <code>routes</code> definition at
 an instance method. How can it be possible to use it on the class level?
 If you take a look at the chain of <code>self.inherited</code> callbacks in all those
 classes you&rsquo;ll see that <code>Rails::Railtie</code> has module inclusion:</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-</pre></td><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">inherited</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="k">def</span> <span class="nf">inherited</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
   <span class="o">...</span>
   <span class="n">base</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="ss">:include</span><span class="p">,</span> <span class="no">Railtie</span><span class="o">::</span><span class="no">Configurable</span><span class="p">)</span>
 <span class="k">end</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p><code>Railtie::Configurable</code> has <code>method_missing</code> which does exactly our case -
 proxying our calls to instance. You see that all logic rely on <code>self.inhereted</code>
 callback. Let&rsquo;s check it:</p>
-<div class="highlight"><pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Parent</span>
+<div class="highlight"><pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">Parent</span>
   <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">inherited</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
     <span class="nb">puts</span> <span class="s1">'Inside inherited'</span>
   <span class="k">end</span>
@@ -84,13 +62,11 @@ callback. Let&rsquo;s check it:</p>
 <span class="n">app</span> <span class="o">=</span> <span class="no">Class</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">Parent</span><span class="p">)</span> <span class="k">do</span>
   <span class="nb">puts</span> <span class="s1">'We are inside class definition'</span>
 <span class="k">end</span>
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>If you run this code you&rsquo;ll see that for <code>Class.new</code> we&rsquo;ll get this:</p>
-<div class="highlight"><pre class="highlight plaintext"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-</pre></td><td class="rouge-code"><pre>We are inside class definition
+<div class="highlight"><pre class="highlight plaintext"><code>We are inside class definition
 Inside inherited
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
 <p>Ruby 1.8 cannot find <code>routes</code>, even <code>method_missing</code> just because
 <code>self.inherited</code> chain couldn&rsquo;t be invoked inside our block, it would be
 invoked after class definition. Be careful!</p>
@@ -104,12 +80,9 @@ invoked after class definition. Be careful!</p>
       </script>
     </div>
   </article>
-
           <footer>
-  Copyright © 2012-2018
-</footer>
-
-
+            Copyright © 2012-2018
+          </footer>
           <div class="yandex_metrika">
   <!-- Yandex.Metrika informer -->
   <a href="https://metrika.yandex.ru/stat/?id=25785359&amp;from=informer"

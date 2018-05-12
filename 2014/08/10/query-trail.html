@@ -3,12 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-
+    <meta name="description" content="Log which line caused a query">
     <title>Query Trail</title>
-
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
-
     <link href="/stylesheets/application.css" rel="stylesheet" /><link href="/stylesheets/highlighting.css" rel="stylesheet" />
   </head>
   <body>
@@ -16,15 +13,18 @@
       <div class="row">
         <div class="col">
           <header>
-  <a href="/">Blog</a>
-  |
-  <a href="/cv.html">Me</a>
-</header>
-
-
+            <a href="/">Write Code With Me</a>
+            |
+            <a href="/about.html">About</a>
+          </header>
             <article>
-    <h1>Query Trail</h1>
-    <time>August 10, 2014</time>
+    <h2>Query Trail</h2>
+    <div class="tags">
+        <a href="/tags/ruby.html">ruby</a>
+        <a href="/tags/rails.html">rails</a>
+        <a href="/tags/sql.html">sql</a>
+    </div>
+    <time datetime="2014-08-10">August 10, 2014</time>
     <p>Recently I switched on a project with lots of legacy code. It was on Rails 2,
 Rails 3 and now I&rsquo;ve updated it to Rails 4.1. You can&rsquo;t even imagine how much
 rubbish I got rid of. But the thing I&rsquo;d like to share with you today is
@@ -33,15 +33,7 @@ shows you the backtrace of fired queries. You have to agree that when just one
 action of your controller sends hundreds sql requests from helpers, templates
 and so forth, it&rsquo;s definitely hard to locate the place for specific query. But
 not for now:</p>
-<div class="highlight"><pre class="highlight plaintext"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-</pre></td><td class="rouge-code"><pre>User Load (0.4ms)  SELECT  `users`.* FROM `users`  WHERE `users`.`id` = 1 LIMIT 1
+<div class="highlight"><pre class="highlight plaintext"><code>User Load (0.4ms)  SELECT  `users`.* FROM `users`  WHERE `users`.`id` = 1 LIMIT 1
 Query Trail: config/initializers/warden.rb:11:in `block in &lt;top (required)&gt;'
              config/initializers/warden.rb:15:in `block in &lt;top (required)&gt;'
 Doc Load (18.2ms)  SELECT `docs`.* FROM `docs`  WHERE `docs`.`approved` = 1
@@ -49,7 +41,7 @@ Query Trail: app/views/main/_docs.html.erb:2
              app/helpers/docs_helper.rb:3:in `render_main_block'
              app/views/main/index.html.erb:13
              app/views/main/index.html.erb:9
-</pre></td></tr></tbody></table></code></pre></div>
+</code></pre></div>
     <div class="share">
       <a href="https://twitter.com/share" class="twitter-share-button" data-via="rO_Oute">Tweet</a>
       <script type="text/javascript">
@@ -59,12 +51,9 @@ Query Trail: app/views/main/_docs.html.erb:2
       </script>
     </div>
   </article>
-
           <footer>
-  Copyright © 2012-2018
-</footer>
-
-
+            Copyright © 2012-2018
+          </footer>
           <div class="yandex_metrika">
   <!-- Yandex.Metrika informer -->
   <a href="https://metrika.yandex.ru/stat/?id=25785359&amp;from=informer"

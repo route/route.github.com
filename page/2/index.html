@@ -19,63 +19,60 @@
           <div>
             <article>
               <header>
-                <h2><a href="/2018/05/11/stop-using-active-record-first.html">Stop using ActiveRecord's first method</a></h2>
-                <time datetime="2018-05-11">May 11, 2018</time>
+                <h2><a href="/2013/11/13/rails-autoloading.html">Rails autoloading</a></h2>
+                <time datetime="2013-11-13">November 13, 2013</time>
               </header>
               <div>
-                <p>If you’ve grown with Rails like me you know that everyone used and perhaps still
-use everywhere <code>first</code>. You type it without hesitation.</p>
-
-<p><img src="/images/irb.png" class="img-fluid" alt="irb"></p>
-
-<p>I know that it’s so simple that maybe it even doesn’t deserve a post but just
-stop doing that.</p>
-
-<p>There’s a much...</p>
+                <p>There is much to be said about Rails autoloading and particularly about
+<code>ActiveSupport::Dependencies</code> (<code>AS::D</code> for short). What does it do? As the title
+says it loads constants automatically and reloads your code catching changes on
+every request. Ok,...</p>
               </div>
               <footer>
-                <a href="/2018/05/11/stop-using-active-record-first.html">Read more</a>
+                <a href="/2013/11/13/rails-autoloading.html">Read more</a>
               </footer>
           </article>
           <article>
               <header>
-                <h2><a href="/2018/04/24/telegram-drama.html">Telegram drama</a></h2>
-                <time datetime="2018-04-24">April 24, 2018</time>
+                <h2><a href="/2013/11/05/ruby-loading-and-requiring-files-constant-name-resolution.html">Ruby loading and requiring files, constant name resolution</a></h2>
+                <time datetime="2013-11-05">November  5, 2013</time>
               </header>
               <div>
-                <p>In my childhood internet and network looked like a magick. In movies they showed
-something like ping output and I definitely thought that someone hacked someone
-else.</p>
-
-<p><img src="/images/hackers.png" class="img-fluid" alt="hackers"></p>
-
-<p>I’m located in Russia and I work for Chicago based startup thanks 21st century...</p>
+                <p>This article has started as my own research on a slightly different theme —
+<a href="/2013/11/13/rails-autoloading.html">Rails autoloading</a>, but I couldn’t describe
+it without saying a single word about Ruby itself. In this topic we’ll talk
+about how Ruby loads and requires modules, constant name...</p>
               </div>
               <footer>
-                <a href="/2018/04/24/telegram-drama.html">Read more</a>
+                <a href="/2013/11/05/ruby-loading-and-requiring-files-constant-name-resolution.html">Read more</a>
               </footer>
           </article>
           <article>
               <header>
-                <h2><a href="/2014/08/10/query-trail.html">Query Trail</a></h2>
-                <time datetime="2014-08-10">August 10, 2014</time>
+                <h2><a href="/2012/12/16/ruby-inherited-method-bug.html">Ruby inherited method bug</a></h2>
+                <time datetime="2012-12-16">December 16, 2012</time>
               </header>
               <div>
-                <p>Recently I switched on a project with lots of legacy code. It was on Rails 2,
-Rails 3 and now I’ve updated it to Rails 4.1. You can’t even imagine how much
-rubbish I got rid of. But the thing I’d like to share with you today is
-<a href="https://github.com/route/query_trail">QueryTrail</a>. This simple...</p>
+                <p>This post is about the bug I found when I was writing tests for <code>quiet_assets</code>.
+I won’t show you all those tests, just a small piece:</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="no">Class</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">Rails</span><span class="o">::</span><span class="no">Application</span><span class="p">)</span> <span class="k">do</span>
+  <span class="n">routes</span><span class="p">.</span><span class="nf">append</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>All of them were passed on my laptop, but Travis-CI showed...</p>
               </div>
               <footer>
-                <a href="/2014/08/10/query-trail.html">Read more</a>
+                <a href="/2012/12/16/ruby-inherited-method-bug.html">Read more</a>
               </footer>
           </article>
 
   <center>
     <p>
-      Page 1 of 3
+        <a href="/">Prev</a>
         |
-        <a href="/page/2/">Next</a>
+      Page 2 of 3
+        |
+        <a href="/page/3/">Next</a>
     </p>
   </center>
 

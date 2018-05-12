@@ -9,19 +9,18 @@ body {
 .container {
   max-width: 790px; }
   .container .row .col a {
-    color: #1a0710;
+    color: #601a3a;
     text-decoration: none;
     text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
-    border-bottom: 1px solid #cc3a7f; }
+    border-bottom: 1px solid #dd82ac; }
     .container .row .col a:hover, .container .row .col a:focus {
       border-bottom: 0px; }
   .container .row .col h1, .container .row .col h2, .container .row .col h3 {
-    color: #2e0c1c;
+    color: #741f46;
     font-weight: bold;
     font-size: 24px;
     text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
-    line-height: 28px;
-    margin-bottom: 1px; }
+    line-height: 28px; }
   .container .row .col ol {
     list-style-type: decimal; }
   .container .row .col ul {
@@ -40,22 +39,26 @@ body {
       line-height: 64px;
       font-size: 18px;
       border-bottom: 0px; }
-  .container .row .col > section article {
+  .container .row .col > div article {
     padding-bottom: 60px; }
-    .container .row .col > section article header a {
-      color: #2e0c1c;
+    .container .row .col > div article header a {
+      color: #741f46;
       font-weight: bold;
       font-size: 24px;
       text-shadow: 1px 1px rgba(0, 0, 0, 0.1); }
-    .container .row .col > section article header time {
+    .container .row .col > div article header time {
       display: block;
       line-height: 32px;
       font-size: 11px;
       color: #aaaaaa; }
-    .container .row .col > section article footer {
+    .container .row .col > div article footer {
       line-height: 32px; }
-      .container .row .col > section article footer a {
+      .container .row .col > div article footer a {
         font-size: 14px; }
+  .container .row .col > article .tags > a {
+    color: #c43577;
+    font-size: 14px;
+    border-bottom: 1px solid #d35991; }
   .container .row .col > article time {
     display: block;
     line-height: 32px;
@@ -73,6 +76,7 @@ body {
     text-align: center; }
 
 .yandex_metrika {
+  display: none;
   text-align: center; }
   .yandex_metrika a {
     text-decoration: none;

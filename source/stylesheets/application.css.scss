@@ -5,7 +5,7 @@
 $color-header: #000000;
 $color-footer: #aaaaaa;
 $color-text:   #3f3f3f;
-$color-title:  #741f46;
+$color-title:  #74ab2e;
 
 @mixin title {
   color: $color-title;
@@ -29,6 +29,10 @@ body {
   line-height: 1.5;
 }
 
+code {
+  color: lighten( #b58900, 8% );
+}
+
 .container {
   max-width: 790px;
 
@@ -49,6 +53,9 @@ body {
       h1, h2, h3 {
         @include title;
         line-height: 28px;
+      }
+      h3 {
+        font-size: 20px;
       }
 
       ol {

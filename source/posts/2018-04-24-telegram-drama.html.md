@@ -1,6 +1,6 @@
 ---
 title: Telegram drama
-tags: network
+tags: network, vpn
 description: Bypass telegram blocks in Russia
 ---
 
@@ -14,32 +14,32 @@ I'm located in Russia and I work for Chicago based startup thanks 21st century
 for remote. We have our servers on AWS and DigitalOcean. Thereon this long
 summer story ends as bloody winter is coming.
 
+### The beginning of story
 Recently media regulator Roskomnadzor started to block Telegram IP addresses
 because the latter denied giving goverment keys to decipher messages. It goes
 without saying that it's creepy but among other things Roskomnadzor blocked like
 roughly 18kk of IP addresses. It happened because Telegram uses services
 publicly provided by AWS and other big companies. Here I should say that's
 exactly the reason these companies exist lol they provide services. Roskomnadzor
-started to block these IPs and Telegram as it's an application using push
+started to block these IPs and Telegram since it's an application using push
 notifications (correct me if I'm wrong) started to use other IPs and so on and
 so on. The post is not about how secure Telegram is or why it doesn't provide
-secure E2E channels by default. It's about not giving up freedom to talk to each
-other privately.
+secure E2E encrypted channels by default. It's about freedom to talk to each
+other privately and tools you can use in order to debug network stack. As
+usually this morning I tried to connect to one of our web services and surprise
+what? It timed out.
 
-As usually this morning I tried to connect to one of our web services and
-surprise what? It timed out. ICMP traffic wasn't blocked though. Let's say a
-domain for this server for simplification is `a.com`.
+### The debugging
+ICMP traffic wasn't blocked though. Let's say a domain for this server for
+simplification is `example.com`.
 
 ```shell
-$ ping a.com
+$ ping example.com
 PING 159.89.184.10: 64 data bytes
 72 bytes from 159.89.184.10: seq=0 ttl=52 time=141.242 ms
 72 bytes from 159.89.184.10: seq=1 ttl=52 time=140.809 ms
-72 bytes from 159.89.184.10: seq=2 ttl=52 time=141.031 ms
-72 bytes from 159.89.184.10: seq=3 ttl=52 time=140.702 ms
-72 bytes from 159.89.184.10: seq=4 ttl=52 time=140.808 ms
 
-5 packets transmitted, 5 packets received, 0% packet loss
+2 packets transmitted, 2 packets received, 0% packet loss
 round-trip min/avg/max = 140.702/140.918/141.242 ms
 ```
 
@@ -61,17 +61,17 @@ sometimes and confirms time out:
 
 ```text
 14057: URL_REQUEST
-https://a.com/
+https://example.com/
 Start Time: 2018-04-24 08:07:06.009
 
 t=144674 [st=    0] +REQUEST_ALIVE  [dt=24521]
                      --> priority = "HIGHEST"
-                     --> url = "https://a.com/"
+                     --> url = "https://example.com/"
 t=144674 [st=    0]    URL_REQUEST_DELEGATE  [dt=0]
 t=144674 [st=    0]   +URL_REQUEST_START_JOB  [dt=24521]
                        --> load_flags = 4353 (MAIN_FRAME_DEPRECATED | VALIDATE_CACHE | VERIFY_EV_CERT)
                        --> method = "GET"
-                       --> url = "https://a.com/"
+                       --> url = "https://example.com/"
 t=144674 [st=    0]      URL_REQUEST_DELEGATE  [dt=0]
 t=144674 [st=    0]      HTTP_CACHE_GET_BACKEND  [dt=0]
 t=144674 [st=    0]      HTTP_CACHE_OPEN_ENTRY  [dt=0]
@@ -94,7 +94,7 @@ t=169195 [st=24521] -REQUEST_ALIVE
 Traceroute from my machine to this IP shows a few intermidiate backbone providers:
 
 ```shell
-traceroute to a.com (159.89.184.10), 30 hops max, 60 byte packets
+traceroute to example.com (159.89.184.10), 30 hops max, 60 byte packets
  1  gateway (192.168.0.1)  0.417 ms  0.484 ms  0.568 ms
  2  100.103.0.1 (100.103.0.1)  4.935 ms  4.992 ms  5.020 ms
  3  213.59.232.208 (213.59.232.208)  38.910 ms 213.59.232.204 (213.59.232.204)  5.076 ms 213.59.232.208 (213.59.232.208)  5.339 ms
@@ -136,8 +136,8 @@ BTW [bgpstream.com](https://bgpstream.com/)
 Let's monitor outgoing and incoming traffic:
 
 ```shell
-$ curl http://a.com
-curl: (7) Failed to connect to a.com port 80: Connection timed out
+$ curl http://example.com
+curl: (7) Failed to connect to example.com port 80: Connection timed out
 
 $ sudo tcpdump -nn -vvv -i enp4s0 dst 159.89.184.10 or src 159.89.184.10
 tcpdump: listening on enp4s0, link-type EN10MB (Ethernet), capture size 262144 bytes
@@ -363,7 +363,7 @@ Rostelekom convo:
 
 ```text
 Вы
-Добрый день, скажите почему у меня не открывается http://a.com/
+Добрый день, скажите почему у меня не открывается http://example.com/
 
 Вы
 Здравствуйте!
@@ -383,7 +383,7 @@ Rostelekom convo:
 Вы
 но у меня не открывается, файлы я приложил
 трейсроут, выкладки из хрома, и курл висят
-curl: (7) Failed to connect to a.com port 443: Connection timed out
+curl: (7) Failed to connect to example.com port 443: Connection timed out
 
 Игорь
 Ростелеком не ограничивает доступ к данному ресурсу. Если у Вас работает данный
@@ -440,7 +440,7 @@ DigitalOcean convo:
 *Me*
 As you likely aware in Russia they try to block Telegram yet hopelessly. I tried
 to connect to one of our servers today without luck. The url was
-http://a.com/ (159.89.184.10) and it timed out.
+http://example.com/ (159.89.184.10) and it timed out.
 I contacted my provider asking why is that and the answer was they didn't block
 it as well as RKN (https://eais.rkn.gov.ru/). Yet this IP address is available
 by ICMP and unavailable by http/https here's the log _link_
@@ -488,7 +488,7 @@ Is that enough?
 
 I'm a bit confused I know that with traceroute we can see where all packets go
 but how do we catch we http packets drop. I can connect to
-a.com ssh easily. Only http doesn't work :( Someone's
+example.com ssh easily. Only http doesn't work :( Someone's
 dropping http packets and nobody tells it's him lol :)
 
 *They*

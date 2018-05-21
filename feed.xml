@@ -171,68 +171,6 @@ machine and start browsing internet securely:&lt;/p&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content>
   </entry>
   <entry>
-    <title>How to do a https request with proxy in Golang</title>
-    <link rel="alternate" href="/2018/05/15/golang-http-request-with-proxy.html"/>
-    <id>/2018/05/15/golang-http-request-with-proxy.html</id>
-    <published>2018-05-15T00:00:00+03:00</published>
-    <updated>2018-05-15T00:00:00+03:00</updated>
-    <author>
-      <name>Dmitry Vorotilin</name>
-    </author>
-    <summary type="html">&lt;p&gt;https://github.com/golang/go/commit/b06c93e45b7b03a5d670250ff35e42d62aface82
-If you’ve grown with Rails like me you know that everyone used and perhaps still
-use everywhere &lt;code&gt;first&lt;/code&gt;. You type it without hesitation.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src="/images/irb.png" class="img-fluid" alt="irb"&gt;&lt;/p&gt;
-
-&lt;p&gt;I know that it’s so simple that maybe...&lt;/p&gt;</summary>
-    <content type="html">&lt;p&gt;https://github.com/golang/go/commit/b06c93e45b7b03a5d670250ff35e42d62aface82
-If you&amp;rsquo;ve grown with Rails like me you know that everyone used and perhaps still
-use everywhere &lt;code&gt;first&lt;/code&gt;. You type it without hesitation.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src="/images/irb.png" class="img-fluid" alt="irb"&gt;&lt;/p&gt;
-
-&lt;p&gt;I know that it&amp;rsquo;s so simple that maybe it even doesn&amp;rsquo;t deserve a post but just
-stop doing that.&lt;/p&gt;
-
-&lt;p&gt;There&amp;rsquo;s a much better method &lt;a href="https://github.com/rails/rails/commit/1379375f93c53d4c49fa8592b6117c3ade263f2e"&gt;take&lt;/a&gt;
-added long ago Apr 27, 2012 and if you say right now:&lt;/p&gt;
-
-&lt;p&gt;- I know all that!&lt;/p&gt;
-
-&lt;p&gt;then things are getting more intersting with PostgreSQL v10 at least:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight sql"&gt;&lt;code&gt;&lt;span class="k"&gt;EXPLAIN&lt;/span&gt; &lt;span class="k"&gt;ANALYZE&lt;/span&gt; &lt;span class="k"&gt;SELECT&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="k"&gt;FROM&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt; &lt;span class="k"&gt;WHERE&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;"deleted_at"&lt;/span&gt; &lt;span class="k"&gt;IS&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt; &lt;span class="k"&gt;AND&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;"user_id"&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="k"&gt;order&lt;/span&gt; &lt;span class="k"&gt;by&lt;/span&gt; &lt;span class="n"&gt;id&lt;/span&gt; &lt;span class="k"&gt;ASC&lt;/span&gt; &lt;span class="k"&gt;limit&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-                                                                    &lt;span class="n"&gt;QUERY&lt;/span&gt; &lt;span class="n"&gt;PLAN&lt;/span&gt;                                                                    
-&lt;span class="c1"&gt;--------------------------------------------------------------------------------------------------------------------------------------------------&lt;/span&gt;
- &lt;span class="k"&gt;Limit&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;26&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;91&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;327&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;actual&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;875&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;875&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-   &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;  &lt;span class="k"&gt;Index&lt;/span&gt; &lt;span class="n"&gt;Scan&lt;/span&gt; &lt;span class="k"&gt;using&lt;/span&gt; &lt;span class="n"&gt;posts_pkey&lt;/span&gt; &lt;span class="k"&gt;on&lt;/span&gt; &lt;span class="n"&gt;posts&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;2057670&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;78&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;76800&lt;/span&gt; &lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;327&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;actual&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;874&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;874&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-         &lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;deleted_at&lt;/span&gt; &lt;span class="k"&gt;IS&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;AND&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;user_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-         &lt;span class="k"&gt;Rows&lt;/span&gt; &lt;span class="n"&gt;Removed&lt;/span&gt; &lt;span class="k"&gt;by&lt;/span&gt; &lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;26826499&lt;/span&gt;
- &lt;span class="n"&gt;Planning&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;202&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt;
- &lt;span class="n"&gt;Execution&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;905&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt;
-&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Doesn&amp;rsquo;t it look creepy? According to &lt;a href="https://stackoverflow.com/questions/21385555/postgresql-query-very-slow-with-limit-1"&gt;stackoverflow&lt;/a&gt;
-it can be an issue in the planner and given that you have pretty large table not
-with 10 posts of course this query becomes drastically slower than planned. So a
-combination of two issues results in a waste of time for investigation. First of
-all it shouldn&amp;rsquo;t have happened if we used &lt;code&gt;take&lt;/code&gt;:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight sql"&gt;&lt;code&gt;&lt;span class="k"&gt;EXPLAIN&lt;/span&gt; &lt;span class="k"&gt;ANALYZE&lt;/span&gt; &lt;span class="k"&gt;SELECT&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="k"&gt;FROM&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt; &lt;span class="k"&gt;WHERE&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;"deleted_at"&lt;/span&gt; &lt;span class="k"&gt;IS&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt; &lt;span class="k"&gt;AND&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;"user_id"&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="k"&gt;limit&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-                                                     &lt;span class="n"&gt;QUERY&lt;/span&gt; &lt;span class="n"&gt;PLAN&lt;/span&gt;                                                     
-&lt;span class="c1"&gt;--------------------------------------------------------------------------------------------------------------------&lt;/span&gt;
- &lt;span class="k"&gt;Limit&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;00&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;13&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;40&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;327&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;actual&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;979&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;979&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-   &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;  &lt;span class="n"&gt;Seq&lt;/span&gt; &lt;span class="n"&gt;Scan&lt;/span&gt; &lt;span class="k"&gt;on&lt;/span&gt; &lt;span class="n"&gt;posts&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;00&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;1029108&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;93&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;76800&lt;/span&gt; &lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;327&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;actual&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;978&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;978&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-         &lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;deleted_at&lt;/span&gt; &lt;span class="k"&gt;IS&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;AND&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;user_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-         &lt;span class="k"&gt;Rows&lt;/span&gt; &lt;span class="n"&gt;Removed&lt;/span&gt; &lt;span class="k"&gt;by&lt;/span&gt; &lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;3463&lt;/span&gt;
- &lt;span class="n"&gt;Planning&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;606&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt;
- &lt;span class="n"&gt;Execution&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;047&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt;
-&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Force yourself typing &lt;code&gt;take&lt;/code&gt; instead of &lt;code&gt;first&lt;/code&gt; if you don&amp;rsquo;t care about the order
-which in most cases is the case.&lt;/p&gt;
-</content>
-  </entry>
-  <entry>
     <title>Stop using ActiveRecord's first method</title>
     <link rel="alternate" href="/2018/05/11/stop-using-active-record-first.html"/>
     <id>/2018/05/11/stop-using-active-record-first.html</id>
@@ -1225,6 +1163,398 @@ may load your code in another order.&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="http://blog.plataformatec.com.br/2012/08/eager-loading-for-greater-good/"&gt;Eager loading&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="http://urbanautomaton.com/blog/2013/08/27/rails-autoloading-hell/"&gt;Rails autoloading&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="http://tenderlovemaking.com/2012/06/18/removing-config-threadsafe.html"&gt;Removing config.threadsafe!&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+  </entry>
+  <entry>
+    <title>Ruby loading and requiring files, constant name resolution</title>
+    <link rel="alternate" href="/2013/11/05/ruby-loading-and-requiring-files-constant-name-resolution.html"/>
+    <id>/2013/11/05/ruby-loading-and-requiring-files-constant-name-resolution.html</id>
+    <published>2013-11-05T00:00:00+04:00</published>
+    <updated>2013-11-05T00:00:00+04:00</updated>
+    <author>
+      <name>Dmitry Vorotilin</name>
+    </author>
+    <summary type="html">&lt;p&gt;This article has started as my own research on a slightly different theme —
+&lt;a href="/2013/11/13/rails-autoloading.html"&gt;Rails autoloading&lt;/a&gt;, but I couldn’t describe
+it without saying a single word about Ruby itself. In this topic we’ll talk
+about how Ruby loads and requires modules, constant name...&lt;/p&gt;</summary>
+    <content type="html">&lt;p&gt;This article has started as my own research on a slightly different theme —
+&lt;a href="/2013/11/13/rails-autoloading.html"&gt;Rails autoloading&lt;/a&gt;, but I couldn&amp;rsquo;t describe
+it without saying a single word about Ruby itself. In this topic we&amp;rsquo;ll talk
+about how Ruby loads and requires modules, constant name resolution and then
+we&amp;rsquo;ll switch to &lt;a href="/2013/11/13/rails-autoloading.html"&gt;Rails autoloading&lt;/a&gt;. There&amp;rsquo;s
+more or less info about all these topics on the internet, so that sometimes I&amp;rsquo;ll
+be overlapping with it but sometimes not, I don&amp;rsquo;t claim it&amp;rsquo;s unique info but
+anyway I have to sum it up in just one big article. So let&amp;rsquo;s get started with
+Ruby.&lt;/p&gt;
+
+&lt;h3&gt;Constant definition:&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight diff"&gt;&lt;code&gt;A constant in Ruby is like a variable, except that its value is supposed to
+remain constant for the duration of a program. The Ruby interpreter does not
+actually enforce the constancy of constants, but it does issue a warning if a
+program changes the value of a constant. Lexically, the names of constants look
+like the names of local variables, except that they begin with a capital letter.
+By convention, most constants are written in all uppercase with underscores to
+separate words, LIKE_THIS. Ruby class and module names are also constants, but
+they are conventionally written using initial capital letters and camel case,
+LikeThis.
+
+The Ruby Programming Language: David Flanagan; Yukihiro Matsumoto.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;I think it&amp;rsquo;s clear and turns out that we&amp;rsquo;ll see a warning if we&amp;rsquo;ll try to change
+a constant:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'a'&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'b'&lt;/span&gt;
+&lt;span class="c1"&gt;#./a.rb:2: warning: already initialized constant A&lt;/span&gt;
+&lt;span class="c1"&gt;#./a.rb:1: warning: previous definition of A was here&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The same thing for classes:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'b'&lt;/span&gt;
+&lt;span class="c1"&gt;#./a.rb:2: warning: already initialized constant A&lt;/span&gt;
+&lt;span class="c1"&gt;#./a.rb:1: warning: previous definition of A was here&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Since the constant &lt;code&gt;A&lt;/code&gt; is just a reference for the class&amp;rsquo; object (remember class
+is object in Ruby, right?) and we try to reassign it with new value then we see
+this warning. Ok, now we know what the constant is, moving to files requiring.&lt;/p&gt;
+
+&lt;h3&gt;Loading and requiring files&lt;/h3&gt;
+
+&lt;p&gt;We cannot place all the code in just one single file, otherwise it would be too
+long and complicated for reading. Usually we put a class per file and use a few
+different methods in order to &amp;lsquo;concatenate&amp;rsquo; it. Here they are: &lt;code&gt;require&lt;/code&gt;,
+&lt;code&gt;require_relative&lt;/code&gt;, &lt;code&gt;load&lt;/code&gt;, &lt;code&gt;autoload&lt;/code&gt;. Let&amp;rsquo;s start with the first one.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;Kernel#require(name)&lt;/code&gt; loads the given name, returning &lt;code&gt;true&lt;/code&gt; if successful and
+&lt;code&gt;false&lt;/code&gt; if the feature is already loaded. If the filename does not resolve to an
+absolute path, it will be searched for in the directories listed in &lt;code&gt;$LOAD_PATH&lt;/code&gt;.
+Any constants or globals within the loaded source file will be available in the
+calling program&amp;rsquo;s global namespace. However, local variables will not be
+propagated to the loading environment. With this method you can load even native
+extension(&lt;code&gt;.so&lt;/code&gt;, &lt;code&gt;.dll&lt;/code&gt; or the others depending on current platform). If you
+don&amp;rsquo;t specify the extension Ruby starts with &lt;code&gt;.rb&lt;/code&gt; and so on. The absolute path
+of the loaded file is added to &lt;code&gt;$LOADED_FEATURES&lt;/code&gt;. A file will not be
+loaded again if its path already appears in &lt;code&gt;$LOADED_FEATURES&lt;/code&gt;.
+&lt;code&gt;Kernel.require_relative(name)&lt;/code&gt; is almost the same as &lt;code&gt;require&lt;/code&gt; but it looks
+for a file in the current directory or directories that is relative to the
+current.&lt;/p&gt;
+
+&lt;p&gt;Example with &lt;code&gt;require&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;#   C = 'constant'&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
+
+&lt;span class="n"&gt;before&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="vg"&gt;$LOADED_FEATURES&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;dup&lt;/span&gt;
+&lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s1"&gt;'a'&lt;/span&gt;
+&lt;span class="vg"&gt;$LOADED_FEATURES&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;before&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; ['/Users/route/Projects/dependencies/a.rb']&lt;/span&gt;
+
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'constant'&lt;/span&gt;
+&lt;span class="nb"&gt;sleep&lt;/span&gt; &lt;span class="mi"&gt;15&lt;/span&gt; &lt;span class="c1"&gt;# Meanwhile changing constant value to 'changed'&lt;/span&gt;
+
+&lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s1"&gt;'a'&lt;/span&gt;
+
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'constant'&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code&gt;Kernel#load(filename, wrap=false)&lt;/code&gt; loads and executes the Ruby program in the
+filename. If the filename does not resolve to an absolute path, the file is
+searched for in &lt;code&gt;$:&lt;/code&gt;. If the optional wrap parameter is true, the loaded script
+will be executed under an anonymous module, protecting the calling program&amp;rsquo;s
+global namespace. It also can load the content of file many times because it
+doesn&amp;rsquo;t rely on &lt;code&gt;$LOADED_FEATURES&lt;/code&gt;. Notice that &lt;code&gt;load&lt;/code&gt; needs a filename
+extension.&lt;/p&gt;
+
+&lt;p&gt;Example with &lt;code&gt;load&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;#   C = 'constant'&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
+
+&lt;span class="n"&gt;before&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="vg"&gt;$LOADED_FEATURES&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;dup&lt;/span&gt;
+&lt;span class="nb"&gt;load&lt;/span&gt; &lt;span class="s1"&gt;'./a.rb'&lt;/span&gt;
+&lt;span class="vg"&gt;$LOADED_FEATURES&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;before&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; []&lt;/span&gt;
+
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'constant'&lt;/span&gt;
+&lt;span class="nb"&gt;sleep&lt;/span&gt; &lt;span class="mi"&gt;15&lt;/span&gt; &lt;span class="c1"&gt;# Meanwhile changing constant value to 'changed'&lt;/span&gt;
+
+&lt;span class="nb"&gt;load&lt;/span&gt; &lt;span class="s1"&gt;'./a.rb'&lt;/span&gt;
+
+&lt;span class="c1"&gt;# ./a.rb:2: warning: already initialized constant A::C&lt;/span&gt;
+&lt;span class="c1"&gt;# ./a.rb:2: warning: previous definition of C was here&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'changed'&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;With warnings but the code was reloaded and we can even see the changes we&amp;rsquo;ve
+made. Let&amp;rsquo;s add optional parameter &lt;code&gt;wrap&lt;/code&gt;:&lt;/p&gt;
+
+&lt;p&gt;Example with &lt;code&gt;load&lt;/code&gt; and wrap:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;#   C = 'constant'&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
+&lt;span class="c1"&gt;#&lt;/span&gt;
+&lt;span class="c1"&gt;# $A = A&lt;/span&gt;
+
+&lt;span class="nb"&gt;load&lt;/span&gt; &lt;span class="s1"&gt;'./a.rb'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kp"&gt;true&lt;/span&gt;
+
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A (NameError)&lt;/span&gt;
+&lt;span class="vg"&gt;$A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'constant'&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;You see that Ruby hasn&amp;rsquo;t polluted global namespace and wrapped all the constants
+from the file to an anonymous module, but global variables still could be
+retrieved.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;Kernel#autoload(module, filename)&lt;/code&gt; registers filename to be loaded (using
+&lt;code&gt;Kernel::require&lt;/code&gt;) the first time that module (&lt;code&gt;String&lt;/code&gt; or a &lt;code&gt;Symbol&lt;/code&gt;) is
+accessed.&lt;/p&gt;
+
+&lt;p&gt;Example 1 with &lt;code&gt;autoload&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;#   p 'loading'&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
+
+&lt;span class="nb"&gt;autoload&lt;/span&gt; &lt;span class="ss"&gt;:A&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'a'&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;It won&amp;rsquo;t produce anything useful, because we&amp;rsquo;ve just declared that constant &lt;code&gt;A&lt;/code&gt;
+can be found in a file but we&amp;rsquo;ve never used it.&lt;/p&gt;
+
+&lt;p&gt;Example 2 with &lt;code&gt;autoload&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;#   p 'loading'&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
+
+&lt;span class="nb"&gt;autoload&lt;/span&gt; &lt;span class="ss"&gt;:A&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'a'&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; Gives output 'loading'&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;In other words &lt;code&gt;autoload&lt;/code&gt; makes us to load code lazily on demand decreasing time
+during the boot. There were some problems with thread safety and &lt;code&gt;autoload&lt;/code&gt;,
+also there was a rumor that it would be deprecated, but I hadn&amp;rsquo;t found any info
+what the Ruby core team came up with. But the bug was fixed and I just can say
+it works properly even with threads for now:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;#   sleep 5&lt;/span&gt;
+&lt;span class="c1"&gt;#   def self.hello&lt;/span&gt;
+&lt;span class="c1"&gt;#     'hello'&lt;/span&gt;
+&lt;span class="c1"&gt;#   end&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
+
+&lt;span class="nb"&gt;autoload&lt;/span&gt; &lt;span class="ss"&gt;:A&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'./a'&lt;/span&gt;
+
+&lt;span class="n"&gt;t1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Thread&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;hello&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="n"&gt;t2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Thread&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;hello&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="n"&gt;t1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;join&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;t2&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;join&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;I was expecting that second thread would throw an error that method &lt;code&gt;hello&lt;/code&gt; is
+undefined because module &lt;code&gt;A&lt;/code&gt; had been loaded by first thread but because of
+sleep threads were switched, but it worked.&lt;/p&gt;
+
+&lt;h3&gt;Constant resolution&lt;/h3&gt;
+
+&lt;p&gt;I find this example very comprehensive and I won&amp;rsquo;t describe it much because the
+code tells about itself:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;Kernel&lt;/span&gt;
+  &lt;span class="c1"&gt;# Constants defined in Kernel&lt;/span&gt;
+  &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;E&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;F&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'defined in kernel'&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Top-level or 'global' constants defined in Object&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;E&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'defined at top-level'&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Super&lt;/span&gt;
+  &lt;span class="c1"&gt;# Constants defined in a superclass&lt;/span&gt;
+  &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;D&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'defined in superclass'&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;Included&lt;/span&gt;
+  &lt;span class="c1"&gt;# Constants defined in an included module&lt;/span&gt;
+  &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'defined in included module'&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;Enclosing&lt;/span&gt;
+  &lt;span class="c1"&gt;# Constants defined in an enclosing module&lt;/span&gt;
+  &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'defined in enclosing module'&lt;/span&gt;
+
+  &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Local&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;Super&lt;/span&gt;
+    &lt;span class="kp"&gt;include&lt;/span&gt; &lt;span class="no"&gt;Included&lt;/span&gt;
+
+    &lt;span class="c1"&gt;# Locally defined constant&lt;/span&gt;
+    &lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'defined locally'&lt;/span&gt;
+
+    &lt;span class="c1"&gt;# The list of modules searched, in the order searched&lt;/span&gt;
+    &lt;span class="c1"&gt;# [Enclosing::Local, Enclosing, Included, Super, Object, Kernel, BasicObject]&lt;/span&gt;
+    &lt;span class="c1"&gt;# (Module.nesting + self.ancestors + Object.ancestors).uniq&lt;/span&gt;
+    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;  &lt;span class="c1"&gt;# Prints "defined locally"&lt;/span&gt;
+    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt;  &lt;span class="c1"&gt;# Prints "defined in enclosing module"&lt;/span&gt;
+    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt;  &lt;span class="c1"&gt;# Prints "defined in included module"&lt;/span&gt;
+    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="no"&gt;D&lt;/span&gt;  &lt;span class="c1"&gt;# Prints "defined in superclass"&lt;/span&gt;
+    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="no"&gt;E&lt;/span&gt;  &lt;span class="c1"&gt;# Prints "defined at top-level"&lt;/span&gt;
+    &lt;span class="nb"&gt;puts&lt;/span&gt; &lt;span class="no"&gt;F&lt;/span&gt;  &lt;span class="c1"&gt;# Prints "defined in kernel"&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;So the path Ruby follows in order to resolve constant name starts with
+&lt;code&gt;Module.nesting&lt;/code&gt; which of course starts with itself and then all enclosing
+constants respectively. If the constant cannot be found there, then ancestors
+chain is applied.&lt;/p&gt;
+
+&lt;h3&gt;Known pitfalls:&lt;/h3&gt;
+
+&lt;p&gt;1) Nesting:&lt;/p&gt;
+
+&lt;p&gt;We can define new class/module using two different ways:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;or&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A::B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Pay attention that &lt;code&gt;Module.nesting&lt;/code&gt; for these two forms is different and turns
+out that your constant name resolution will be different too:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
+  &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'c'&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;
+    &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'c'&lt;/span&gt;
+    &lt;span class="no"&gt;Module&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;nesting&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; [A::B, A]&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A::B&lt;/span&gt;
+  &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; NameError: uninitialized constant A::B::C&lt;/span&gt;
+  &lt;span class="no"&gt;Module&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;nesting&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; [A::B]&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;2) Inheritance:&lt;/p&gt;
+
+&lt;p&gt;Remember that constants use the currently opened class or module, as determined
+by &lt;code&gt;class&lt;/code&gt; and &lt;code&gt;module&lt;/code&gt; statements.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Parent&lt;/span&gt;
+  &lt;span class="no"&gt;CONST&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'parent'&lt;/span&gt;
+
+  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nc"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;const&lt;/span&gt;
+    &lt;span class="no"&gt;CONST&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Child&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;Parent&lt;/span&gt;
+  &lt;span class="no"&gt;CONST&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'child'&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="no"&gt;Child&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;const&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; parent&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;In this example method is invoked on parent class, so its class is the innermost
+one. To change things you could use &lt;code&gt;self::CONST&lt;/code&gt; this way you&amp;rsquo;re explicitly
+saying find my constant in &lt;code&gt;self&lt;/code&gt; where &lt;code&gt;self&lt;/code&gt; is &lt;code&gt;Child&lt;/code&gt; if we call
+&lt;code&gt;Child.const&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;3) Object::&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;Module.nesting == []&lt;/code&gt; at the top level, and so constant lookup starts at the
+currently opened class and its ancestors which is &lt;code&gt;Object&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Object&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;C&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; true&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;or&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;C&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; true&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This in turn explains why top-level constants are available throughout your
+program. Almost all classes in Ruby inherit from &lt;code&gt;Object&lt;/code&gt;, so &lt;code&gt;Object&lt;/code&gt; is almost
+always included in the list of ancestors of the currently open class, and thus
+its constants are almost always available. That said, if you&amp;rsquo;ve ever used a
+&lt;code&gt;BasicObject&lt;/code&gt;, and noticed that top-level constants are missing, you now know
+why. Because &lt;code&gt;BasicObject&lt;/code&gt; does not subclass &lt;code&gt;Object&lt;/code&gt;, all of the constants are
+not in the lookup chain:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Foo&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;BasicObject&lt;/span&gt;
+  &lt;span class="no"&gt;Kernel&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="c1"&gt;# NameError: uninitialized constant Foo::Kernel&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;For cases like this, and anywhere else you want to be explicit, Ruby allows you
+to use &lt;code&gt;::Kernel&lt;/code&gt; to access &lt;code&gt;Object::Kernel&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;4) &lt;code&gt;class_eval&lt;/code&gt;, &lt;code&gt;module_eval&lt;/code&gt;, &lt;code&gt;instance_eval&lt;/code&gt;, &lt;code&gt;define_method&lt;/code&gt;:&lt;/p&gt;
+
+&lt;p&gt;As mentioned above, constant lookup uses the currently opened class, as
+determined by class and module statements. Importantly, if you pass a block into
+&lt;code&gt;class_eval&lt;/code&gt;, &lt;code&gt;module_eval&lt;/code&gt; or &lt;code&gt;instance_eval&lt;/code&gt;, &lt;code&gt;define_method&lt;/code&gt;, this won&amp;rsquo;t
+change constant lookup. It continues to use the constant lookup at the
+point the block was defined:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;C&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+  &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class_eval&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="no"&gt;C&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Confusingly however, if you pass a &lt;code&gt;String&lt;/code&gt; to these methods, then the &lt;code&gt;String&lt;/code&gt;
+is evaluated with &lt;code&gt;Module.nesting&lt;/code&gt; containing just the class/module itself (for
+&lt;code&gt;class_eval&lt;/code&gt; or &lt;code&gt;module_eval&lt;/code&gt;) or just the singleton class of the object (for
+&lt;code&gt;instance_eval&lt;/code&gt;).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;C&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+  &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;module_eval&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"B"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
+  &lt;span class="no"&gt;X&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;C&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+  &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;module_eval&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"X"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A::B::X (NameError)&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;5) Singleton class:&lt;/p&gt;
+
+&lt;p&gt;If you&amp;rsquo;re in a singleton class of a class, you don&amp;rsquo;t get access to constants
+defined in the class itself:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;
+  &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant Class::B&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This is because the ancestors of the singleton class of a class do not include
+the class itself, they start at the &lt;code&gt;Class&lt;/code&gt; class.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;
+  &lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;
+  &lt;span class="nb"&gt;ancestors&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; [Class, Module, Object, Kernel, BasicObject]&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Lastly, imagine we access a constant that isn&amp;rsquo;t defined at all then
+&lt;code&gt;self.const_missing&lt;/code&gt; is invoked on the class that needs constant or if it wasn&amp;rsquo;t
+defined on that class it&amp;rsquo;s invoked on its superclass — &lt;code&gt;Module&lt;/code&gt;
+(&lt;code&gt;A.class.superclass # =&amp;gt; Module&lt;/code&gt;). It accepts just one single argument
+&lt;code&gt;const_name&lt;/code&gt; which is the constant name we&amp;rsquo;re looking for. By default this
+method simply throws an error &lt;code&gt;NameError: uninitialized constant #{const_name}&lt;/code&gt;.
+That&amp;rsquo;s all for Ruby moving to the more interesting part —
+&lt;a href="/2013/11/13/rails-autoloading.html"&gt;Rails autoloading&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3&gt;Links and used sources:&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://ruby-doc.org"&gt;Ruby-doc&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://cirw.in/blog/constant-lookup"&gt;Constant lookup&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://coderrr.wordpress.com/2008/03/11/constant-name-resolution-in-ruby/"&gt;Module.nesting and constant name resolution in Ruby&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 </content>
   </entry>

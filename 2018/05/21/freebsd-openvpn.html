@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Set up OpenVPN on FreeBSD on DigitalOcean">
+    <title>OpenVPN on FreeBSD 11.1 on DigitalOcean</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link href="/stylesheets/application.css" rel="stylesheet" /><link href="/stylesheets/highlighting.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <header>
+            <a href="/">NopeCode</a>
+            |
+            <a href="/about.html">About</a>
+          </header>
+            <article>
+    <h2>OpenVPN on FreeBSD 11.1 on DigitalOcean</h2>
+    <div class="tags">
+        <a href="/tags/network.html">network</a>
+        <a href="/tags/vpn.html">vpn</a>
+    </div>
+    <time datetime="2018-05-21">May 21, 2018</time>
+    <p>It&rsquo;s nearly impossible to <a href="https://nopecode.com/2018/04/24/telegram-drama.html">work from Russia without VPN</a>
+that I decided to set up OpenVPN on $5 droplet on DigitalOcean. There&rsquo;s a good
+<a href="https://ramsdenj.com/2016/07/25/openvpn-on-freebsd-10_3.html">article</a> about
+setting it up on FreeBSD 10.3 but it&rsquo;s a bit outdated and doesn&rsquo;t have important
+information about routing. Why FreeBSD? Because it&rsquo;s always been in my ❤️. Just
+take a look at this beauty:</p>
+<div class="highlight"><pre class="highlight shell"><code>root@vpn:~ <span class="c"># top</span>
+
+last pid:   915<span class="p">;</span>  load averages:  1.26,  0.51,  0.20
+up 0+00:01:10  17:13:10 21 processes:  1 running, 20 sleeping
+CPU:  0.4% user,  0.0% nice,  0.4% system,  0.4% interrupt, 98.8% idle
+Mem: 18M Active, 34M Inact, 48M Wired, 14M Buf, 866M Free
+Swap: 2048M Total, 2048M Free
+</code></pre></div>
+<p>But it&rsquo;s not the only thing to fall in love with BSD I think I&rsquo;ll come with a
+post about it later. Let&rsquo;s get going.</p>
+
+<h3>Install and copy configs:</h3>
+
+<p>Let&rsquo;s first change shell to sh as FreeBSD comes with csh by default and set a
+few variables:</p>
+<div class="highlight"><pre class="highlight shell"><code>root@vpn:~ <span class="c"># sh</span>
+</code></pre></div><div class="highlight"><pre class="highlight shell"><code>pkg update <span class="o">&amp;&amp;</span> pkg install openvpn
+mkdir /usr/local/etc/openvpn
+cp /usr/local/share/examples/openvpn/sample-config-files/server.conf <span class="se">\</span>
+   /usr/local/etc/openvpn/openvpn.conf
+cp <span class="nt">-r</span> /usr/local/share/easy-rsa /usr/local/etc/openvpn/easy-rsa
+<span class="nb">cd</span> /usr/local/etc/openvpn/easy-rsa
+</code></pre></div>
+<p>Set fields in the file and save:</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># vim vars</span>
+set_var EASYRSA_REQ_COUNTRY     <span class="s2">"&lt;COUNTRY&gt;"</span>
+set_var EASYRSA_REQ_PROVINCE    <span class="s2">"&lt;PROVINCE&gt;"</span>
+set_var EASYRSA_REQ_CITY        <span class="s2">"&lt;CITY&gt;"</span>
+set_var EASYRSA_REQ_ORG         <span class="s2">"&lt;ORGANIZATION&gt;"</span>
+set_var EASYRSA_REQ_EMAIL       <span class="s2">"&lt;EMAIL&gt;"</span>
+set_var EASYRSA_REQ_OU          <span class="s2">"&lt;ORGANIZATIONAL UNIT&gt;"</span>
+set_var EASYRSA_KEY_SIZE        2048
+set_var EASYRSA_CA_EXPIRE       3650
+set_var EASYRSA_CERT_EXPIRE     3650
+</code></pre></div>
+<h3>Generate server keys:</h3>
+<div class="highlight"><pre class="highlight shell"><code>./easyrsa.real init-pki
+./easyrsa.real build-ca
+./easyrsa.real build-server-full openvpn-server nopass
+./easyrsa.real gen-dh
+openvpn <span class="nt">--genkey</span> <span class="nt">--secret</span> ta.key
+</code></pre></div>
+<h3>Generate client keys:</h3>
+<div class="highlight"><pre class="highlight shell"><code>./easyrsa.real build-client-full <span class="nv">$CLIENT_NAME</span> nopass
+</code></pre></div>
+<h3>Copy server keys:</h3>
+<div class="highlight"><pre class="highlight shell"><code>mkdir /usr/local/etc/openvpn/keys
+cp pki/dh.pem <span class="se">\</span>
+   pki/ca.crt <span class="se">\</span>
+   pki/issued/openvpn-server.crt <span class="se">\</span>
+   pki/private/openvpn-server.key <span class="se">\</span>
+   ta.key <span class="se">\</span>
+   /usr/local/etc/openvpn/keys
+</code></pre></div>
+<h3>Configure client:</h3>
+
+<p>Set CLIENT_NAME to any name you&rsquo;d like to use with your OpenVPN client and don&rsquo;t
+forget to change <code>&lt;server-ip&gt;</code> in the middle of the ovpn file to your server IP.</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">CLIENT_NAME</span><span class="o">=</span><span class="s2">"&lt;client-name&gt;"</span>
+<span class="nb">cd</span> /usr/local/etc/openvpn
+touch <span class="nv">$CLIENT_NAME</span>.ovpn
+<span class="nb">cat</span> <span class="o">&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
+client
+nobind
+dev tun
+remote-cert-tls server
+
+remote &lt;server-ip&gt; 1194 udp
+
+key-direction 1
+
+redirect-gateway def1
+</code></pre></div>
+<p>Type <code>Ctrl-D</code> here and then type the rest:</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nb">printf</span> <span class="s2">"&lt;key&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
+<span class="nb">cat </span>easy-rsa/pki/private/<span class="nv">$CLIENT_NAME</span>.key <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
+<span class="nb">printf</span> <span class="s2">"&lt;/key&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
+<span class="nb">printf</span> <span class="s2">"&lt;cert&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
+sed <span class="nt">-n</span> <span class="s1">'/^-----BEGIN/,/^-----END/p'</span> easy-rsa/pki/issued/<span class="nv">$CLIENT_NAME</span>.crt <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
+<span class="nb">printf</span> <span class="s2">"&lt;/cert&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
+<span class="nb">printf</span> <span class="s2">"&lt;ca&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
+<span class="nb">cat </span>easy-rsa/pki/ca.crt <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
+<span class="nb">printf</span> <span class="s2">"&lt;/ca&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
+<span class="nb">printf</span> <span class="s2">"&lt;tls-auth&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
+<span class="nb">cat </span>easy-rsa/ta.key <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
+<span class="nb">printf</span> <span class="s2">"&lt;/tls-auth&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
+</code></pre></div>
+<h3>Configure server:</h3>
+<div class="highlight"><pre class="highlight shell"><code>touch openvpn.conf
+<span class="nb">cat</span> <span class="o">&gt;</span> openvpn.conf
+server 192.168.255.0 255.255.255.0
+
+verb 3
+
+key /usr/local/etc/openvpn/keys/openvpn-server.key  <span class="c"># This file should be kept secret</span>
+ca /usr/local/etc/openvpn/keys/ca.crt
+cert /usr/local/etc/openvpn/keys/openvpn-server.crt
+dh /usr/local/etc/openvpn/keys/dh.pem
+tls-auth /usr/local/etc/openvpn/keys/ta.key 0 <span class="c"># This file is secret</span>
+
+key-direction 0
+keepalive 10 60
+
+persist-key
+persist-tun
+
+proto udp
+port 1194
+dev tun
+
+status openvpn-status.log
+
+user nobody
+group nobody
+
+explicit-exit-notify 1
+remote-cert-tls client
+
+route 192.168.254.0 255.255.255.0
+
+push <span class="s2">"dhcp-option DNS 8.8.8.8"</span>
+push <span class="s2">"dhcp-option DNS 8.8.4.4"</span>
+</code></pre></div>
+<p>Type <code>Ctrl-D</code> here and again type the rest:</p>
+<div class="highlight"><pre class="highlight shell"><code>sysrc <span class="nv">openvpn_enable</span><span class="o">=</span><span class="s2">"YES"</span>
+sysrc <span class="nv">openvpn_if</span><span class="o">=</span><span class="s2">"tun"</span>
+sysrc <span class="nv">gateway_enable</span><span class="o">=</span><span class="s2">"YES"</span>
+sysrc <span class="nv">firewall_enable</span><span class="o">=</span><span class="s2">"YES"</span>
+sysrc <span class="nv">firewall_type</span><span class="o">=</span><span class="s2">"OPEN"</span>
+sysrc <span class="nv">natd_enable</span><span class="o">=</span><span class="s2">"YES"</span>
+sysrc <span class="nv">natd_interface</span><span class="o">=</span><span class="s2">"vtnet0"</span>
+sysrc <span class="nv">natd_flags</span><span class="o">=</span><span class="s2">""</span>
+service openvpn start
+reboot
+</code></pre></div>
+<p>After your droplet reboots you can download <code>$CLIENT_NAME.ovpn</code> to your client
+machine and start browsing internet securely:</p>
+<div class="highlight"><pre class="highlight shell"><code>scp root@&lt;server-ip&gt;:/usr/local/etc/openvpn/&lt;client-name&gt;.ovpn ./
+<span class="nb">sudo </span>openvpn &lt;client-name&gt;.ovpn
+</code></pre></div>
+    <div class="share">
+      <a href="https://twitter.com/share" class="twitter-share-button" data-via="rO_Oute">Tweet</a>
+      <script type="text/javascript">
+        //<![CDATA[
+          !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+        //]]>
+      </script>
+    </div>
+  </article>
+          <footer>
+            Copyright © 2012-2018
+          </footer>
+          <div class="yandex_metrika">
+  <!-- Yandex.Metrika informer -->
+  <a href="https://metrika.yandex.ru/stat/?id=25785359&amp;from=informer"
+  target="_blank" rel="nofollow"><img src="//bs.yandex.ru/informer/25785359/1_0_FFFFFFFF_EFEFEFFF_0_pageviews"
+  style="width:80px; height:15px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры)" /></a>
+  <!-- /Yandex.Metrika informer -->
+
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+  (function (d, w, c) {
+      (w[c] = w[c] || []).push(function() {
+          try {
+              w.yaCounter25785359 = new Ya.Metrika({id:25785359,
+                      webvisor:true,
+                      clickmap:true,
+                      trackLinks:true,
+                      accurateTrackBounce:true});
+          } catch(e) { }
+      });
+
+      var n = d.getElementsByTagName("script")[0],
+          s = d.createElement("script"),
+          f = function () { n.parentNode.insertBefore(s, n); };
+      s.type = "text/javascript";
+      s.async = true;
+      s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";
+
+      if (w.opera == "[object Opera]") {
+          d.addEventListener("DOMContentLoaded", f, false);
+      } else { f(); }
+  })(document, window, "yandex_metrika_callbacks");
+  </script>
+  <noscript><div><img src="//mc.yandex.ru/watch/25785359" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+</div>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

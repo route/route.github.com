@@ -1,3 +1,6 @@
+<p>How Other langs handle nil
+Patterns Special Case, Null object</p>
+
 <p>obj =~ other → nil click to toggle source
 Pattern Match—Overridden by descendants (notably Regexp and String) to provide meaningful pattern-match semantics.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>           static VALUE

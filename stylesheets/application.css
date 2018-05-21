@@ -6,21 +6,26 @@ body {
   font-size: 20px;
   line-height: 1.5; }
 
+code {
+  color: #dea800; }
+
 .container {
   max-width: 790px; }
   .container .row .col a {
-    color: #601a3a;
+    color: #669729;
     text-decoration: none;
     text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
-    border-bottom: 1px solid #dd82ac; }
+    border-bottom: 1px solid #d6ecb9; }
     .container .row .col a:hover, .container .row .col a:focus {
       border-bottom: 0px; }
   .container .row .col h1, .container .row .col h2, .container .row .col h3 {
-    color: #741f46;
+    color: #74ab2e;
     font-weight: bold;
     font-size: 24px;
     text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
     line-height: 28px; }
+  .container .row .col h3 {
+    font-size: 20px; }
   .container .row .col ol {
     list-style-type: decimal; }
   .container .row .col ul {
@@ -42,7 +47,7 @@ body {
   .container .row .col > div article {
     padding-bottom: 60px; }
     .container .row .col > div article header a {
-      color: #741f46;
+      color: #74ab2e;
       font-weight: bold;
       font-size: 24px;
       text-shadow: 1px 1px rgba(0, 0, 0, 0.1); }
@@ -56,9 +61,9 @@ body {
       .container .row .col > div article footer a {
         font-size: 14px; }
   .container .row .col > article .tags > a {
-    color: #c43577;
+    color: #a6d768;
     font-size: 14px;
-    border-bottom: 1px solid #d35991; }
+    border-bottom: 1px solid #bee191; }
   .container .row .col > article time {
     display: block;
     line-height: 32px;

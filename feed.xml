@@ -71,7 +71,10 @@ set_var EASYRSA_CERT_EXPIRE     3650
 openvpn &lt;span class="nt"&gt;--genkey&lt;/span&gt; &lt;span class="nt"&gt;--secret&lt;/span&gt; ta.key
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3&gt;Generate client keys:&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;./easyrsa.real build-client-full &lt;span class="nv"&gt;$CLIENT_NAME&lt;/span&gt; nopass
+
+&lt;p&gt;Set CLIENT_NAME to any name you&amp;rsquo;d like to associate your OpenVPN client with:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nv"&gt;CLIENT_NAME&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"&amp;lt;client-name&amp;gt;"&lt;/span&gt;
+./easyrsa.real build-client-full &lt;span class="nv"&gt;$CLIENT_NAME&lt;/span&gt; nopass
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3&gt;Copy server keys:&lt;/h3&gt;
 &lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;mkdir /usr/local/etc/openvpn/keys
@@ -84,10 +87,8 @@ cp pki/dh.pem &lt;span class="se"&gt;\&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3&gt;Configure client:&lt;/h3&gt;
 
-&lt;p&gt;Set CLIENT_NAME to any name you&amp;rsquo;d like to use with your OpenVPN client and don&amp;rsquo;t
-forget to change &lt;code&gt;&amp;lt;server-ip&amp;gt;&lt;/code&gt; in the middle of the ovpn file to your server IP.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nv"&gt;CLIENT_NAME&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"&amp;lt;client-name&amp;gt;"&lt;/span&gt;
-&lt;span class="nb"&gt;cd&lt;/span&gt; /usr/local/etc/openvpn
+&lt;p&gt;Change &lt;code&gt;&amp;lt;server-ip&amp;gt;&lt;/code&gt; in the middle of the ovpn file to your server IP.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; /usr/local/etc/openvpn
 touch &lt;span class="nv"&gt;$CLIENT_NAME&lt;/span&gt;.ovpn
 &lt;span class="nb"&gt;cat&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="nv"&gt;$CLIENT_NAME&lt;/span&gt;.ovpn
 client

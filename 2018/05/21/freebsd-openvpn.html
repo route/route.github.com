@@ -73,7 +73,10 @@ set_var EASYRSA_CERT_EXPIRE     3650
 openvpn <span class="nt">--genkey</span> <span class="nt">--secret</span> ta.key
 </code></pre></div>
 <h3>Generate client keys:</h3>
-<div class="highlight"><pre class="highlight shell"><code>./easyrsa.real build-client-full <span class="nv">$CLIENT_NAME</span> nopass
+
+<p>Set CLIENT_NAME to any name you&rsquo;d like to associate your OpenVPN client with:</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">CLIENT_NAME</span><span class="o">=</span><span class="s2">"&lt;client-name&gt;"</span>
+./easyrsa.real build-client-full <span class="nv">$CLIENT_NAME</span> nopass
 </code></pre></div>
 <h3>Copy server keys:</h3>
 <div class="highlight"><pre class="highlight shell"><code>mkdir /usr/local/etc/openvpn/keys
@@ -86,10 +89,8 @@ cp pki/dh.pem <span class="se">\</span>
 </code></pre></div>
 <h3>Configure client:</h3>
 
-<p>Set CLIENT_NAME to any name you&rsquo;d like to use with your OpenVPN client and don&rsquo;t
-forget to change <code>&lt;server-ip&gt;</code> in the middle of the ovpn file to your server IP.</p>
-<div class="highlight"><pre class="highlight shell"><code><span class="nv">CLIENT_NAME</span><span class="o">=</span><span class="s2">"&lt;client-name&gt;"</span>
-<span class="nb">cd</span> /usr/local/etc/openvpn
+<p>Change <code>&lt;server-ip&gt;</code> in the middle of the ovpn file to your server IP.</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nb">cd</span> /usr/local/etc/openvpn
 touch <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">cat</span> <span class="o">&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 client

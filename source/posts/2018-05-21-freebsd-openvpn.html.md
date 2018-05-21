@@ -69,7 +69,10 @@ openvpn --genkey --secret ta.key
 
 ### Generate client keys:
 
+Set CLIENT_NAME to any name you'd like to associate your OpenVPN client with:
+
 ```shell
+CLIENT_NAME="<client-name>"
 ./easyrsa.real build-client-full $CLIENT_NAME nopass
 ```
 
@@ -86,11 +89,9 @@ cp pki/dh.pem \
 ```
 
 ### Configure client:
-Set CLIENT_NAME to any name you'd like to use with your OpenVPN client and don't
-forget to change `<server-ip>` in the middle of the ovpn file to your server IP.
+ Change `<server-ip>` in the middle of the ovpn file to your server IP.
 
 ```shell
-CLIENT_NAME="<client-name>"
 cd /usr/local/etc/openvpn
 touch $CLIENT_NAME.ovpn
 cat > $CLIENT_NAME.ovpn

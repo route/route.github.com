@@ -26,8 +26,7 @@ post about it later. Let's get going.
 
 ### Install and copy configs:
 
-Let's first change shell to sh as FreeBSD comes with csh by default and set a
-few variables:
+Let's first change shell to sh as FreeBSD comes with csh by default:
 
 ```shell
 root@vpn:~ # sh
@@ -42,7 +41,7 @@ cp -r /usr/local/share/easy-rsa /usr/local/etc/openvpn/easy-rsa
 cd /usr/local/etc/openvpn/easy-rsa
 ```
 
-Set fields in the file and save:
+Set these variables in the file and save:
 
 ```shell
 # vim vars
@@ -89,7 +88,7 @@ cp pki/dh.pem \
 ```
 
 ### Configure client:
- Change `<server-ip>` in the middle of the ovpn file to your server IP.
+ Change `<server-ip>` in the middle of the ovpn file to your server IP/Domain.
 
 ```shell
 cd /usr/local/etc/openvpn

@@ -41,8 +41,7 @@ post about it later. Let&amp;rsquo;s get going.&lt;/p&gt;
 
 &lt;h3&gt;Install and copy configs:&lt;/h3&gt;
 
-&lt;p&gt;Let&amp;rsquo;s first change shell to sh as FreeBSD comes with csh by default and set a
-few variables:&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s first change shell to sh as FreeBSD comes with csh by default:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;root@vpn:~ &lt;span class="c"&gt;# sh&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;pkg update &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; pkg install openvpn
 mkdir /usr/local/etc/openvpn
@@ -51,7 +50,7 @@ cp /usr/local/share/examples/openvpn/sample-config-files/server.conf &lt;span cl
 cp &lt;span class="nt"&gt;-r&lt;/span&gt; /usr/local/share/easy-rsa /usr/local/etc/openvpn/easy-rsa
 &lt;span class="nb"&gt;cd&lt;/span&gt; /usr/local/etc/openvpn/easy-rsa
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Set fields in the file and save:&lt;/p&gt;
+&lt;p&gt;Set these variables in the file and save:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="c"&gt;# vim vars&lt;/span&gt;
 set_var EASYRSA_REQ_COUNTRY     &lt;span class="s2"&gt;"&amp;lt;COUNTRY&amp;gt;"&lt;/span&gt;
 set_var EASYRSA_REQ_PROVINCE    &lt;span class="s2"&gt;"&amp;lt;PROVINCE&amp;gt;"&lt;/span&gt;
@@ -87,7 +86,7 @@ cp pki/dh.pem &lt;span class="se"&gt;\&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3&gt;Configure client:&lt;/h3&gt;
 
-&lt;p&gt;Change &lt;code&gt;&amp;lt;server-ip&amp;gt;&lt;/code&gt; in the middle of the ovpn file to your server IP.&lt;/p&gt;
+&lt;p&gt;Change &lt;code&gt;&amp;lt;server-ip&amp;gt;&lt;/code&gt; in the middle of the ovpn file to your server IP/Domain.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; /usr/local/etc/openvpn
 touch &lt;span class="nv"&gt;$CLIENT_NAME&lt;/span&gt;.ovpn
 &lt;span class="nb"&gt;cat&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="nv"&gt;$CLIENT_NAME&lt;/span&gt;.ovpn

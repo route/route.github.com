@@ -24,7 +24,7 @@ the city, skating, playing football, doing sport and meeting new people.
 Get in touch with me: d.vorotilin [at] gmail.com
 
 ### Technical:
-* Ruby/Go/Elixir/Erlang/Rust
+* Ruby/Python/Go/Elixir/Erlang/Rust
 * Rails/Rack/Sinatra/Phoenix
 * JavaScript/CoffeeScript/TypeScript
 * Underscore.js/Backbone.js/React/Vue.js

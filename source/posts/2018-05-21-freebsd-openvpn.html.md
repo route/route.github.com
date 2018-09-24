@@ -1,28 +1,8 @@
 ---
-title: OpenVPN on FreeBSD 11.1 on DigitalOcean
+title: OpenVPN on FreeBSD 11.1
 tags: network, vpn
-description: Set up OpenVPN on FreeBSD on DigitalOcean
+description: Set up OpenVPN on FreeBSD
 ---
-
-It's nearly impossible to [work from Russia without VPN](https://nopecode.com/2018/04/24/telegram-drama.html)
-that I decided to set up OpenVPN on $5 droplet on DigitalOcean. There's a good
-[article](https://ramsdenj.com/2016/07/25/openvpn-on-freebsd-10_3.html) about
-setting it up on FreeBSD 10.3 but it's a bit outdated and doesn't have important
-information about routing. Why FreeBSD? Because it's always been in my ❤️. Just
-take a look at this beauty:
-
-```shell
-root@vpn:~ # top
-
-last pid:   915;  load averages:  1.26,  0.51,  0.20
-up 0+00:01:10  17:13:10 21 processes:  1 running, 20 sleeping
-CPU:  0.4% user,  0.0% nice,  0.4% system,  0.4% interrupt, 98.8% idle
-Mem: 18M Active, 34M Inact, 48M Wired, 14M Buf, 866M Free
-Swap: 2048M Total, 2048M Free
-```
-
-But it's not the only thing to fall in love with BSD I think I'll come with a
-post about it later. Let's get going.
 
 ### Install and copy configs:
 
@@ -177,8 +157,8 @@ service openvpn start
 reboot
 ```
 
-After your droplet reboots you can download `$CLIENT_NAME.ovpn` to your client
-machine and start browsing internet securely:
+After your server reboots you can download `$CLIENT_NAME.ovpn` to your machine
+and start browsing internet securely:
 
 ```shell
 scp root@<server-ip>:/usr/local/etc/openvpn/<client-name>.ovpn ./

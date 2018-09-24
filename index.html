@@ -18,15 +18,39 @@
           <div>
             <article>
               <header>
-                <h2><a href="/2018/05/21/freebsd-openvpn.html">OpenVPN on FreeBSD 11.1 on DigitalOcean</a></h2>
+                <h2><a href="/2018/09/24/ubuntu-openvpn.html">OpenVPN on Ubuntu 18.04</a></h2>
+                <time datetime="2018-09-24">September 24, 2018</time>
+              </header>
+              <div>
+                <h3>Install and copy configs:</h3>
+<div class="highlight"><pre class="highlight shell"><code><span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt install openvpn
+wget <span class="nt">-P</span> ~/ https://github.com/OpenVPN/easy-rsa/releases/download/v3.0.4/EasyRSA-3.0.4.tgz
+<span class="nb">tar </span>zxvf EasyRSA-3.0.4.tgz
+<span class="nb">cd </span>EasyRSA-3.0.4
+cp vars.example vars
+vim vars
+</code></pre></div>
+<p>Set these variables...</p>
+              </div>
+              <footer>
+                <a href="/2018/09/24/ubuntu-openvpn.html">Read more</a>
+              </footer>
+          </article>
+          <article>
+              <header>
+                <h2><a href="/2018/05/21/freebsd-openvpn.html">OpenVPN on FreeBSD 11.1</a></h2>
                 <time datetime="2018-05-21">May 21, 2018</time>
               </header>
               <div>
-                <p>It’s nearly impossible to <a href="https://nopecode.com/2018/04/24/telegram-drama.html">work from Russia without VPN</a>
-that I decided to set up OpenVPN on $5 droplet on DigitalOcean. There’s a good
-<a href="https://ramsdenj.com/2016/07/25/openvpn-on-freebsd-10_3.html">article</a> about
-setting it up on FreeBSD 10.3 but it’s a bit outdated and doesn’t have important
-information about routing...</p>
+                <h3>Install and copy configs:</h3>
+
+<p>Let’s first change shell to sh as FreeBSD comes with csh by default:</p>
+<div class="highlight"><pre class="highlight shell"><code>root@vpn:~ <span class="c"># sh</span>
+</code></pre></div><div class="highlight"><pre class="highlight shell"><code>pkg update <span class="o">&amp;&amp;</span> pkg install openvpn
+mkdir /usr/local/etc/openvpn
+cp /usr/local/share/examples/openvpn/sample-config-files/server.conf <span class="se">\</span>
+ ...</code></pre></div>
               </div>
               <footer>
                 <a href="/2018/05/21/freebsd-openvpn.html">Read more</a>
@@ -50,24 +74,6 @@ stop doing that.</p>
               </div>
               <footer>
                 <a href="/2018/05/11/stop-using-active-record-first.html">Read more</a>
-              </footer>
-          </article>
-          <article>
-              <header>
-                <h2><a href="/2018/04/24/telegram-drama.html">Telegram drama</a></h2>
-                <time datetime="2018-04-24">April 24, 2018</time>
-              </header>
-              <div>
-                <p>In my childhood internet and network looked like a magick. In movies they showed
-something like ping output and I definitely thought that someone hacked someone
-else.</p>
-
-<p><img src="/images/hackers.png" class="img-fluid" alt="hackers"></p>
-
-<p>I’m located in Russia and I work for Chicago based startup thanks 21st century...</p>
-              </div>
-              <footer>
-                <a href="/2018/04/24/telegram-drama.html">Read more</a>
               </footer>
           </article>
 

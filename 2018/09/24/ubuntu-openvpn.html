@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="yandex-verification" content="3bfdb691bc608cfc" />
-    <meta name="description" content="Set up OpenVPN on FreeBSD">
-    <title>OpenVPN on FreeBSD 11.1</title>
+    <meta name="description" content="Set up OpenVPN on Ubuntu">
+    <title>OpenVPN on Ubuntu 18.04</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
     <link href="/stylesheets/application.css" rel="stylesheet" /><link href="/stylesheets/highlighting.css" rel="stylesheet" />
   </head>
@@ -17,25 +17,23 @@
             <a href="/">NopeCode</a>
           </header>
             <article>
-    <h2>OpenVPN on FreeBSD 11.1</h2>
+    <h2>OpenVPN on Ubuntu 18.04</h2>
     <div class="tags">
         <a href="/tags/network.html">network</a>
         <a href="/tags/vpn.html">vpn</a>
     </div>
-    <time datetime="2018-05-21">May 21, 2018</time>
+    <time datetime="2018-09-24">September 24, 2018</time>
     <h3>Install and copy configs:</h3>
-
-<p>Let&rsquo;s first change shell to sh as FreeBSD comes with csh by default:</p>
-<div class="highlight"><pre class="highlight shell"><code>root@vpn:~ <span class="c"># sh</span>
-</code></pre></div><div class="highlight"><pre class="highlight shell"><code>pkg update <span class="o">&amp;&amp;</span> pkg install openvpn
-mkdir /usr/local/etc/openvpn
-cp /usr/local/share/examples/openvpn/sample-config-files/server.conf <span class="se">\</span>
-   /usr/local/etc/openvpn/openvpn.conf
-cp <span class="nt">-r</span> /usr/local/share/easy-rsa /usr/local/etc/openvpn/easy-rsa
-<span class="nb">cd</span> /usr/local/etc/openvpn/easy-rsa
+<div class="highlight"><pre class="highlight shell"><code><span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt install openvpn
+wget <span class="nt">-P</span> ~/ https://github.com/OpenVPN/easy-rsa/releases/download/v3.0.4/EasyRSA-3.0.4.tgz
+<span class="nb">tar </span>zxvf EasyRSA-3.0.4.tgz
+<span class="nb">cd </span>EasyRSA-3.0.4
+cp vars.example vars
+vim vars
 </code></pre></div>
 <p>Set these variables in the file and save:</p>
-<div class="highlight"><pre class="highlight shell"><code><span class="c"># vim vars</span>
+<div class="highlight"><pre class="highlight shell"><code>vim vars
 set_var EASYRSA_REQ_COUNTRY     <span class="s2">"&lt;COUNTRY&gt;"</span>
 set_var EASYRSA_REQ_PROVINCE    <span class="s2">"&lt;PROVINCE&gt;"</span>
 set_var EASYRSA_REQ_CITY        <span class="s2">"&lt;CITY&gt;"</span>
@@ -47,31 +45,30 @@ set_var EASYRSA_CA_EXPIRE       3650
 set_var EASYRSA_CERT_EXPIRE     3650
 </code></pre></div>
 <h3>Generate server keys:</h3>
-<div class="highlight"><pre class="highlight shell"><code>./easyrsa.real init-pki
-./easyrsa.real build-ca
-./easyrsa.real build-server-full openvpn-server nopass
-./easyrsa.real gen-dh
+<div class="highlight"><pre class="highlight shell"><code>./easyrsa init-pki
+./easyrsa build-ca
+./easyrsa build-server-full openvpn-server nopass
+./easyrsa gen-dh
 openvpn <span class="nt">--genkey</span> <span class="nt">--secret</span> ta.key
 </code></pre></div>
 <h3>Generate client keys:</h3>
 
 <p>Set CLIENT_NAME to any name you&rsquo;d like to associate your OpenVPN client with:</p>
-<div class="highlight"><pre class="highlight shell"><code><span class="nv">CLIENT_NAME</span><span class="o">=</span><span class="s2">"&lt;client-name&gt;"</span>
-./easyrsa.real build-client-full <span class="nv">$CLIENT_NAME</span> nopass
+<div class="highlight"><pre class="highlight shell"><code><span class="nb">export </span><span class="nv">CLIENT_NAME</span><span class="o">=</span><span class="s2">"&lt;client-name&gt;"</span>
+./easyrsa build-client-full <span class="nv">$CLIENT_NAME</span> nopass
 </code></pre></div>
 <h3>Copy server keys:</h3>
-<div class="highlight"><pre class="highlight shell"><code>mkdir /usr/local/etc/openvpn/keys
-cp pki/dh.pem <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell"><code>cp pki/dh.pem <span class="se">\</span>
    pki/ca.crt <span class="se">\</span>
    pki/issued/openvpn-server.crt <span class="se">\</span>
    pki/private/openvpn-server.key <span class="se">\</span>
    ta.key <span class="se">\</span>
-   /usr/local/etc/openvpn/keys
+   /etc/openvpn/keys
 </code></pre></div>
 <h3>Configure client:</h3>
 
-<p>Change <code>&lt;server-ip&gt;</code> in the middle of the ovpn file to your server IP/Domain.</p>
-<div class="highlight"><pre class="highlight shell"><code><span class="nb">cd</span> /usr/local/etc/openvpn
+<p>Change <code>&lt;server-ip&gt;</code> in the middle of the ovpn file to your server IP address.</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nb">cd</span> /etc/openvpn
 touch <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">cat</span> <span class="o">&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 client
@@ -87,30 +84,30 @@ redirect-gateway def1
 </code></pre></div>
 <p>Type <code>Ctrl-D</code> here and then type the rest:</p>
 <div class="highlight"><pre class="highlight shell"><code><span class="nb">printf</span> <span class="s2">"&lt;key&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
-<span class="nb">cat </span>easy-rsa/pki/private/<span class="nv">$CLIENT_NAME</span>.key <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
+<span class="nb">cat</span> ~/EasyRSA-3.0.4/pki/private/<span class="nv">$CLIENT_NAME</span>.key <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">printf</span> <span class="s2">"&lt;/key&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">printf</span> <span class="s2">"&lt;cert&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
-sed <span class="nt">-n</span> <span class="s1">'/^-----BEGIN/,/^-----END/p'</span> easy-rsa/pki/issued/<span class="nv">$CLIENT_NAME</span>.crt <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
+sed <span class="nt">-n</span> <span class="s1">'/^-----BEGIN/,/^-----END/p'</span> ~/EasyRSA-3.0.4/pki/issued/<span class="nv">$CLIENT_NAME</span>.crt <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">printf</span> <span class="s2">"&lt;/cert&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">printf</span> <span class="s2">"&lt;ca&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
-<span class="nb">cat </span>easy-rsa/pki/ca.crt <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
+<span class="nb">cat</span> ~/EasyRSA-3.0.4/pki/ca.crt <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">printf</span> <span class="s2">"&lt;/ca&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">printf</span> <span class="s2">"&lt;tls-auth&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
-<span class="nb">cat </span>easy-rsa/ta.key <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
+<span class="nb">cat</span> ~/EasyRSA-3.0.4/ta.key <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">printf</span> <span class="s2">"&lt;/tls-auth&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 </code></pre></div>
 <h3>Configure server:</h3>
-<div class="highlight"><pre class="highlight shell"><code>touch openvpn.conf
-<span class="nb">cat</span> <span class="o">&gt;</span> openvpn.conf
+<div class="highlight"><pre class="highlight shell"><code>touch server.conf
+<span class="nb">cat</span> <span class="o">&gt;</span> server.conf
 server 192.168.255.0 255.255.255.0
 
 verb 3
 
-key /usr/local/etc/openvpn/keys/openvpn-server.key  <span class="c"># This file should be kept secret</span>
-ca /usr/local/etc/openvpn/keys/ca.crt
-cert /usr/local/etc/openvpn/keys/openvpn-server.crt
-dh /usr/local/etc/openvpn/keys/dh.pem
-tls-auth /usr/local/etc/openvpn/keys/ta.key 0 <span class="c"># This file is secret</span>
+key /etc/openvpn/keys/openvpn-server.key  <span class="c"># This file should be kept secret</span>
+ca /etc/openvpn/keys/ca.crt
+cert /etc/openvpn/keys/openvpn-server.crt
+dh /etc/openvpn/keys/dh.pem
+tls-auth /etc/openvpn/keys/ta.key 0 <span class="c"># This file is secret</span>
 
 key-direction 0
 keepalive 10 60
@@ -125,7 +122,7 @@ dev tun
 status openvpn-status.log
 
 user nobody
-group nobody
+group nogroup
 
 explicit-exit-notify 1
 remote-cert-tls client
@@ -135,21 +132,29 @@ route 192.168.254.0 255.255.255.0
 push <span class="s2">"dhcp-option DNS 8.8.8.8"</span>
 push <span class="s2">"dhcp-option DNS 8.8.4.4"</span>
 </code></pre></div>
-<p>Type <code>Ctrl-D</code> here and again type the rest:</p>
-<div class="highlight"><pre class="highlight shell"><code>sysrc <span class="nv">openvpn_enable</span><span class="o">=</span><span class="s2">"YES"</span>
-sysrc <span class="nv">openvpn_if</span><span class="o">=</span><span class="s2">"tun"</span>
-sysrc <span class="nv">gateway_enable</span><span class="o">=</span><span class="s2">"YES"</span>
-sysrc <span class="nv">firewall_enable</span><span class="o">=</span><span class="s2">"YES"</span>
-sysrc <span class="nv">firewall_type</span><span class="o">=</span><span class="s2">"OPEN"</span>
-sysrc <span class="nv">natd_enable</span><span class="o">=</span><span class="s2">"YES"</span>
-sysrc <span class="nv">natd_interface</span><span class="o">=</span><span class="s2">"vtnet0"</span>
-sysrc <span class="nv">natd_flags</span><span class="o">=</span><span class="s2">""</span>
-service openvpn start
-reboot
+<p>Type <code>Ctrl-D</code> here.</p>
+
+<p>That&rsquo;s basically it, we only need to allow traffic to be NATed through the
+server. Set <code>net.ipv4.ip_forward=1</code> in this file:</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nb">sudo </span>vim /etc/sysctl.conf
 </code></pre></div>
-<p>After your server reboots you can download <code>$CLIENT_NAME.ovpn</code> to your machine
-and start browsing internet securely:</p>
-<div class="highlight"><pre class="highlight shell"><code>scp root@&lt;server-ip&gt;:/usr/local/etc/openvpn/&lt;client-name&gt;.ovpn ./
+<p>Find your default interface:</p>
+<div class="highlight"><pre class="highlight shell"><code>ip route | <span class="nb">grep </span>default
+</code></pre></div>
+<p>Output should be like: default via x.x.x.x dev <code>ens3</code> proto dhcp src x.x.x.x
+metric 100. Rememeber your interface name and put it to iptable rules below:</p>
+<div class="highlight"><pre class="highlight shell"><code>iptables <span class="nt">-t</span> nat <span class="nt">-A</span> POSTROUTING <span class="nt">-o</span> ens3 <span class="nt">-j</span> MASQUERADE
+iptables <span class="nt">-A</span> FORWARD <span class="nt">-j</span> ACCEPT
+apt-get install iptables-persistent
+</code></pre></div>
+<p>When you install iptables-persistent it will ask you to save current rules into
+file, just agree with that and then start the service:</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nb">sudo </span>systemctl start openvpn@server
+<span class="nb">sudo </span>systemctl <span class="nb">enable </span>openvpn@server
+</code></pre></div>
+<p>Now you can download <code>$CLIENT_NAME.ovpn</code> to your machine and start browsing
+internet securely:</p>
+<div class="highlight"><pre class="highlight shell"><code>scp root@&lt;server-ip&gt;:/etc/openvpn/&lt;client-name&gt;.ovpn ./
 <span class="nb">sudo </span>openvpn &lt;client-name&gt;.ovpn
 </code></pre></div>
     <div class="share">

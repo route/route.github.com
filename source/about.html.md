@@ -3,13 +3,12 @@ title: About
 ---
 
 ### About me:
-I'm [Dmitry Vorotilin](http://github.com/route) and I spend my life in front of
-a computer. It's an everyday struggle because I wanna do something useful
-outside of it but it's the only thing I can do the best and by the way it gives
-me an ability to pay bills and live happily. I'm not looking for any part time
-job because I love my current job with all my ❤️. I'm very curious about
-programming languages, debugging and bugs. I always learn something new and
-don't feel confident in any area because there's always that surprises me.
+I'm [Dmitry Vorotilin](http://github.com/route) developer with knowledge of
+several programming languages, design patterns, frameworks and many other bold
+words that I learnt while coding since 2007. I'm very curious about design and
+paradigms of different programming languages. I like debugging and investigating
+crime scenes with distressing bugs where everyone scratches their heads. I always
+learn something new because there's always something that surprises me.
 
 You can see my commits in
 such projects like [Rails](http://contributors.rubyonrails.org/contributors/dmitry-vorotilin/commits),

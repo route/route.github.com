@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="yandex-verification" content="3bfdb691bc608cfc" />
+    <meta name="description" content="Bypass telegram blocks with Mikrotik">
+    <title>Telegram drama (Part 2)</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link href="/stylesheets/application.css" rel="stylesheet" /><link href="/stylesheets/highlighting.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <header>
+            <a href="/">NopeCode</a>
+          </header>
+            <article>
+    <h2>Telegram drama (Part 2)</h2>
+    <div class="tags">
+        <a href="/tags/network.html">network</a>
+        <a href="/tags/vpn.html">vpn</a>
+    </div>
+    <time datetime="2018-11-17">November 17, 2018</time>
+    <p>I want my internet to work w/o restrictions and I don&rsquo;t want to set up tunnels
+on every signle device. In other words router should set up the tunnel and route
+traffic accordingly. My new toy is <a href="https://mikrotik.com/product/hap_ac2">Mikrotik hap ac2</a>
+and I&rsquo;m very happy with it. It supports many cool features, the speed is great
+and hardware accelearation for IPsec should speed it up even more.</p>
+
+<p>I have bought a server overseas, let&rsquo;s setup GRE tunnel between router and a
+server(<code>x.x.x.x</code> - server&rsquo;s white IP, <code>y.y.y.y</code> - router&rsquo;s white IP), the
+network IP address inside the tunnel will be <code>192.168.0.1</code> for server and
+<code>192.168.0.2</code> for router, my home network behind router is <code>192.168.88.0/24</code>:</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span><span class="nb">sudo cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt;&gt; /etc/network/interfaces
+ iface tun1 inet static
+    address 192.168.0.1
+    netmask 255.255.255.0
+    mtu 1456
+    pre-up iptunnel add tun1 mode gre local x.x.x.x remote y.y.y.y ttl 255
+    up ifconfig tun1 multicast
+    pointopoint 192.168.0.2
+    post-down iptunnel del tun1
+ up ip ro add 192.168.88.0/24 via 192.168.0.2
+</span><span class="no">EOF
+
+</span><span class="nv">$ </span><span class="nb">sudo echo</span> <span class="s2">"net.ipv4.ip_forward = 1"</span> <span class="o">&gt;&gt;</span> /etc/sysctl.conf
+<span class="nv">$ </span><span class="nb">sudo </span>sysctl <span class="nt">-p</span> <span class="c"># check if it's set properly</span>
+<span class="nv">$ </span><span class="nb">sudo </span>iptables <span class="nt">-t</span> nat <span class="nt">-A</span> POSTROUTING <span class="nt">-o</span> ens3 <span class="nt">-j</span> MASQUERADE
+<span class="nv">$ </span>ifdown tun1 <span class="o">&amp;&amp;</span> ifup tun1
+</code></pre></div>
+<p>On the router:</p>
+<div class="highlight"><pre class="highlight shell"><code>/interface gre add <span class="nv">name</span><span class="o">=</span><span class="s2">"gre-tunnel1"</span> <span class="nv">mtu</span><span class="o">=</span>auto local-address<span class="o">=</span>y.y.y.y remote-address<span class="o">=</span>x.x.x.x clamp-tcp-mss<span class="o">=</span>yes dont-fragment<span class="o">=</span>no allow-fast-path<span class="o">=</span>yes
+/ip address add <span class="nv">address</span><span class="o">=</span>192.168.0.2/24 <span class="nv">network</span><span class="o">=</span>192.168.0.0 <span class="nv">interface</span><span class="o">=</span>gre-tunnel1
+
+/ip firewall mangle
+add <span class="nv">chain</span><span class="o">=</span>forward <span class="nv">action</span><span class="o">=</span>change-mss new-mss<span class="o">=</span>clamp-to-pmtu <span class="nv">passthrough</span><span class="o">=</span>no tcp-flags<span class="o">=</span>syn <span class="nv">protocol</span><span class="o">=</span>tcp <span class="k">in</span><span class="nt">-interface</span><span class="o">=</span>gre-tunnel1 tcp-mss<span class="o">=</span>1300-65535 <span class="nv">log</span><span class="o">=</span>no log-prefix<span class="o">=</span><span class="s2">""</span>
+add <span class="nv">chain</span><span class="o">=</span>forward <span class="nv">action</span><span class="o">=</span>change-mss new-mss<span class="o">=</span>clamp-to-pmtu <span class="nv">passthrough</span><span class="o">=</span>no tcp-flags<span class="o">=</span>syn <span class="nv">protocol</span><span class="o">=</span>tcp out-interface<span class="o">=</span>gre-tunnel1 tcp-mss<span class="o">=</span>1300-65535 <span class="nv">log</span><span class="o">=</span>no log-prefix<span class="o">=</span><span class="s2">""</span>
+
+/ip route
+add <span class="nv">comment</span><span class="o">=</span>linkedin <span class="nv">distance</span><span class="o">=</span>1 dst-address<span class="o">=</span>91.225.248.0/22 <span class="nv">gateway</span><span class="o">=</span>gre-tunnel1
+add <span class="nv">comment</span><span class="o">=</span>linkedin <span class="nv">distance</span><span class="o">=</span>1 dst-address<span class="o">=</span>108.174.0.0/20 <span class="nv">gateway</span><span class="o">=</span>gre-tunnel1
+add <span class="nv">comment</span><span class="o">=</span>linkedin <span class="nv">distance</span><span class="o">=</span>1 dst-address<span class="o">=</span>185.63.144.0/22 <span class="nv">gateway</span><span class="o">=</span>gre-tunnel1
+add <span class="nv">comment</span><span class="o">=</span>rutracker <span class="nv">distance</span><span class="o">=</span>1 dst-address<span class="o">=</span>195.82.146.0/24 <span class="nv">gateway</span><span class="o">=</span>gre-tunnel1
+add <span class="nv">comment</span><span class="o">=</span>telegram <span class="nv">distance</span><span class="o">=</span>1 dst-address<span class="o">=</span>149.154.164.0/22 <span class="nv">gateway</span><span class="o">=</span>gre-tunnel1
+</code></pre></div>
+<p>You can now open all sites you added routes to; the packets for them now flow
+thru the tunnel. That&rsquo;s it.</p>
+
+    <div class="share">
+      <a href="https://twitter.com/share" class="twitter-share-button" data-via="rO_Oute">Tweet</a>
+      <script type="text/javascript">
+        //<![CDATA[
+          !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+        //]]>
+      </script>
+    </div>
+  </article>
+          <footer>
+            <a href="/about.html">Dmitry Vorotilin</a>
+            |
+            Copyright © 2012-2018
+          </footer>
+          <div class="yandex_metrika">
+  <!-- Yandex.Metrika informer -->
+  <a href="https://metrika.yandex.ru/stat/?id=25785359&amp;from=informer"
+  target="_blank" rel="nofollow"><img src="https://informer.yandex.ru/informer/25785359/1_0_FFFFFFFF_EFEFEFFF_0_pageviews"
+  style="width:80px; height:15px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры)" /></a>
+  <!-- /Yandex.Metrika informer -->
+
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript" >
+      (function (d, w, c) {
+          (w[c] = w[c] || []).push(function() {
+              try {
+                  w.yaCounter25785359 = new Ya.Metrika({
+                      id:25785359,
+                      clickmap:true,
+                      trackLinks:true,
+                      accurateTrackBounce:true,
+                      webvisor:true
+                  });
+              } catch(e) { }
+          });
+
+          var n = d.getElementsByTagName("script")[0],
+              s = d.createElement("script"),
+              f = function () { n.parentNode.insertBefore(s, n); };
+          s.type = "text/javascript";
+          s.async = true;
+          s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+          if (w.opera == "[object Opera]") {
+              d.addEventListener("DOMContentLoaded", f, false);
+          } else { f(); }
+      })(document, window, "yandex_metrika_callbacks");
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/25785359" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+</div>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

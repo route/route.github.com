@@ -4,10 +4,100 @@
   <id>http://route.github.io/</id>
   <link href="http://route.github.io/"/>
   <link href="http://route.github.io/feed.xml" rel="self"/>
-  <updated>2018-09-24T00:00:00+03:00</updated>
+  <updated>2018-11-17T00:00:00+03:00</updated>
   <author>
     <name>Dmitry Vorotilin</name>
   </author>
+  <entry>
+    <title>Telegram drama (Part 2)</title>
+    <link rel="alternate" href="/2018/11/17/telegram-drama-part-2.html"/>
+    <id>/2018/11/17/telegram-drama-part-2.html</id>
+    <published>2018-11-17T00:00:00+03:00</published>
+    <updated>2018-11-17T00:00:00+03:00</updated>
+    <author>
+      <name>Dmitry Vorotilin</name>
+    </author>
+    <summary type="html">&lt;p&gt;I want my internet to work w/o restrictions and I don’t want to set up tunnels
+on every signle device. In other words router should set up the tunnel and route
+traffic accordingly. My new toy is &lt;a href="https://mikrotik.com/product/hap_ac2"&gt;Mikrotik hap ac2&lt;/a&gt;
+and I’m very happy with it. It supports...&lt;/p&gt;</summary>
+    <content type="html">&lt;p&gt;I want my internet to work w/o restrictions and I don&amp;rsquo;t want to set up tunnels
+on every signle device. In other words router should set up the tunnel and route
+traffic accordingly. My new toy is &lt;a href="https://mikrotik.com/product/hap_ac2"&gt;Mikrotik hap ac2&lt;/a&gt;
+and I&amp;rsquo;m very happy with it. It supports many cool features, the speed is great
+and hardware accelearation for IPsec should speed it up even more.&lt;/p&gt;
+
+&lt;p&gt;I have bought a server overseas, let&amp;rsquo;s setup GRE tunnel between router and a
+server(&lt;code&gt;x.x.x.x&lt;/code&gt; - server&amp;rsquo;s white IP, &lt;code&gt;y.y.y.y&lt;/code&gt; - router&amp;rsquo;s white IP), the
+network IP address inside the tunnel will be &lt;code&gt;192.168.0.1&lt;/code&gt; for server and
+&lt;code&gt;192.168.0.2&lt;/code&gt; for router, my home network behind router is &lt;code&gt;192.168.88.0/24&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo cat&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;EOF&lt;/span&gt;&lt;span class="sh"&gt; &amp;gt;&amp;gt; /etc/network/interfaces
+ iface tun1 inet static
+    address 192.168.0.1
+    netmask 255.255.255.0
+    mtu 1456
+    pre-up iptunnel add tun1 mode gre local x.x.x.x remote y.y.y.y ttl 255
+    up ifconfig tun1 multicast
+    pointopoint 192.168.0.2
+    post-down iptunnel del tun1
+ up ip ro add 192.168.88.0/24 via 192.168.0.2
+&lt;/span&gt;&lt;span class="no"&gt;EOF
+
+&lt;/span&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo echo&lt;/span&gt; &lt;span class="s2"&gt;"net.ipv4.ip_forward = 1"&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt; /etc/sysctl.conf
+&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo &lt;/span&gt;sysctl &lt;span class="nt"&gt;-p&lt;/span&gt; &lt;span class="c"&gt;# check if it's set properly&lt;/span&gt;
+&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo &lt;/span&gt;iptables &lt;span class="nt"&gt;-t&lt;/span&gt; nat &lt;span class="nt"&gt;-A&lt;/span&gt; POSTROUTING &lt;span class="nt"&gt;-o&lt;/span&gt; ens3 &lt;span class="nt"&gt;-j&lt;/span&gt; MASQUERADE
+&lt;span class="nv"&gt;$ &lt;/span&gt;ifdown tun1 &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; ifup tun1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;On the router:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;/interface gre add &lt;span class="nv"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"gre-tunnel1"&lt;/span&gt; &lt;span class="nv"&gt;mtu&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;auto local-address&lt;span class="o"&gt;=&lt;/span&gt;y.y.y.y remote-address&lt;span class="o"&gt;=&lt;/span&gt;x.x.x.x clamp-tcp-mss&lt;span class="o"&gt;=&lt;/span&gt;yes dont-fragment&lt;span class="o"&gt;=&lt;/span&gt;no allow-fast-path&lt;span class="o"&gt;=&lt;/span&gt;yes
+/ip address add &lt;span class="nv"&gt;address&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;192.168.0.2/24 &lt;span class="nv"&gt;network&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;192.168.0.0 &lt;span class="nv"&gt;interface&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
+
+/ip firewall mangle
+add &lt;span class="nv"&gt;chain&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;forward &lt;span class="nv"&gt;action&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;change-mss new-mss&lt;span class="o"&gt;=&lt;/span&gt;clamp-to-pmtu &lt;span class="nv"&gt;passthrough&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;no tcp-flags&lt;span class="o"&gt;=&lt;/span&gt;syn &lt;span class="nv"&gt;protocol&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;tcp &lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="nt"&gt;-interface&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1 tcp-mss&lt;span class="o"&gt;=&lt;/span&gt;1300-65535 &lt;span class="nv"&gt;log&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;no log-prefix&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;""&lt;/span&gt;
+add &lt;span class="nv"&gt;chain&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;forward &lt;span class="nv"&gt;action&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;change-mss new-mss&lt;span class="o"&gt;=&lt;/span&gt;clamp-to-pmtu &lt;span class="nv"&gt;passthrough&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;no tcp-flags&lt;span class="o"&gt;=&lt;/span&gt;syn &lt;span class="nv"&gt;protocol&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;tcp out-interface&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1 tcp-mss&lt;span class="o"&gt;=&lt;/span&gt;1300-65535 &lt;span class="nv"&gt;log&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;no log-prefix&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;""&lt;/span&gt;
+
+/ip route
+add &lt;span class="nv"&gt;comment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;linkedin &lt;span class="nv"&gt;distance&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 dst-address&lt;span class="o"&gt;=&lt;/span&gt;91.225.248.0/22 &lt;span class="nv"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
+add &lt;span class="nv"&gt;comment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;linkedin &lt;span class="nv"&gt;distance&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 dst-address&lt;span class="o"&gt;=&lt;/span&gt;108.174.0.0/20 &lt;span class="nv"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
+add &lt;span class="nv"&gt;comment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;linkedin &lt;span class="nv"&gt;distance&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 dst-address&lt;span class="o"&gt;=&lt;/span&gt;185.63.144.0/22 &lt;span class="nv"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
+add &lt;span class="nv"&gt;comment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;rutracker &lt;span class="nv"&gt;distance&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 dst-address&lt;span class="o"&gt;=&lt;/span&gt;195.82.146.0/24 &lt;span class="nv"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
+add &lt;span class="nv"&gt;comment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;telegram &lt;span class="nv"&gt;distance&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 dst-address&lt;span class="o"&gt;=&lt;/span&gt;149.154.164.0/22 &lt;span class="nv"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;You can now open all sites you added routes to; the packets for them now flow
+thru the tunnel. That&amp;rsquo;s it.&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <title>Don't buy GPON</title>
+    <link rel="alternate" href="/2018/11/16/do-not-buy-gpon-ever.html"/>
+    <id>/2018/11/16/do-not-buy-gpon-ever.html</id>
+    <published>2018-11-16T00:00:00+03:00</published>
+    <updated>2018-11-16T00:00:00+03:00</updated>
+    <author>
+      <name>Dmitry Vorotilin</name>
+    </author>
+    <summary type="html">&lt;p&gt;The text below is true for Rostelekom as well as I think many other providers.
+There are many downsides of GPON you can read articles about it in the footer
+but for me it’s inability to set up my own or at least high quality router
+instead of the one...&lt;/p&gt;</summary>
+    <content type="html">&lt;p&gt;The text below is true for Rostelekom as well as I think many other providers.
+There are many downsides of GPON you can read articles about it in the footer
+but for me it&amp;rsquo;s inability to set up my own or at least high quality router
+instead of the one given by provider. You as a customer will rent a router from
+them. The router usually goes with buggy firmware, remote access for provider
+and inability to set it to the bridge mode. In other words it is a useless piece
+of trash which you will own as you redeem it during 2 years and you cannot buy
+another one and replace this shit because it simply won&amp;rsquo;t work with GPON. Also
+&lt;a href="https://habr.com/post/113086/"&gt;Rostelekom is the biggest player&lt;/a&gt; in Russia and
+has tight realtionship with goverment so I prefer stayng as far away as possible
+from them and pay my money to a smaller provider to keep it on the air.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://pierrekim.github.io/blog/2016-11-01-gpon-ftth-networks-insecurity.html"&gt;GPON FTTH networks (in)security&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://lurkmore.to/GPON"&gt;Lurkmore GPON&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+  </entry>
   <entry>
     <title>OpenVPN on Ubuntu 18.04</title>
     <link rel="alternate" href="/2018/09/24/ubuntu-openvpn.html"/>
@@ -373,74 +463,62 @@ which in most cases is the case.&lt;/p&gt;
 </content>
   </entry>
   <entry>
-    <title>Telegram drama</title>
-    <link rel="alternate" href="/2018/04/24/telegram-drama.html"/>
-    <id>/2018/04/24/telegram-drama.html</id>
+    <title>Telegram drama (Part 1)</title>
+    <link rel="alternate" href="/2018/04/24/telegram-drama-part-1.html"/>
+    <id>/2018/04/24/telegram-drama-part-1.html</id>
     <published>2018-04-24T00:00:00+03:00</published>
     <updated>2018-04-24T00:00:00+03:00</updated>
     <author>
       <name>Dmitry Vorotilin</name>
     </author>
-    <summary type="html">&lt;p&gt;In my childhood internet and network looked like a magick. In movies they showed
-something like ping output and I definitely thought that someone hacked someone
-else.&lt;/p&gt;
+    <summary type="html">&lt;p&gt;In my childhood internet and network looked like a magick. In the movies they
+showed something like ping output and I definitely thought that someone hacked
+someone else.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src="/images/hackers.png" class="img-fluid" alt="hackers"&gt;&lt;/p&gt;
 
-&lt;p&gt;I’m located in Russia and I work for Chicago based startup thanks 21st century...&lt;/p&gt;</summary>
-    <content type="html">&lt;p&gt;In my childhood internet and network looked like a magick. In movies they showed
-something like ping output and I definitely thought that someone hacked someone
-else.&lt;/p&gt;
+&lt;h3&gt;The beginning of story&lt;/h3&gt;
+
+&lt;p&gt;Recently media regulator Roskomnadzor started to block...&lt;/p&gt;</summary>
+    <content type="html">&lt;p&gt;In my childhood internet and network looked like a magick. In the movies they
+showed something like ping output and I definitely thought that someone hacked
+someone else.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src="/images/hackers.png" class="img-fluid" alt="hackers"&gt;&lt;/p&gt;
-
-&lt;p&gt;I&amp;rsquo;m located in Russia and I work for Chicago based startup thanks 21st century
-for remote. We have our servers on AWS and DigitalOcean. Thereon this long
-summer story ends as bloody winter is coming.&lt;/p&gt;
 
 &lt;h3&gt;The beginning of story&lt;/h3&gt;
 
 &lt;p&gt;Recently media regulator Roskomnadzor started to block Telegram IP addresses
 because the latter denied giving goverment keys to decipher messages. It goes
 without saying that it&amp;rsquo;s creepy but among other things Roskomnadzor blocked like
-roughly 18kk of IP addresses. It happened because Telegram uses services
-publicly provided by AWS and other big companies. Here I should say that&amp;rsquo;s
-exactly the reason these companies exist lol they provide services. Roskomnadzor
-started to block these IPs and Telegram since it&amp;rsquo;s an application using push
-notifications (correct me if I&amp;rsquo;m wrong) started to use other IPs and so on and
-so on. The post is not about how secure Telegram is or why it doesn&amp;rsquo;t provide
-secure E2E encrypted channels by default. It&amp;rsquo;s about freedom to talk to each
-other privately and tools you can use in order to debug network stack. As
-usually this morning I tried to connect to one of our web services and surprise
-what? It timed out.&lt;/p&gt;
+roughly 18m of IP addresses. It happened because Telegram used services publicly
+provided by AWS and other big companies. Here I should say that&amp;rsquo;s exactly the
+reason these companies exist lol they provide services. Roskomnadzor started to
+block these IPs and Telegram started to use other IPs and so on. The post is not
+about how secure Telegram is or why it doesn&amp;rsquo;t provide secure E2E encrypted
+channels by default. In general it&amp;rsquo;s about freedom to talk to each other, browse
+internet and live privately and by the way tools you can use to debug network.&lt;/p&gt;
 
 &lt;h3&gt;The debugging&lt;/h3&gt;
 
-&lt;p&gt;ICMP traffic wasn&amp;rsquo;t blocked though. Let&amp;rsquo;s say a domain for this server for
-simplification is &lt;code&gt;example.com&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;As usually this morning I tried to connect to one of our web services and it
+timed out. ICMP traffic wasn&amp;rsquo;t blocked though. Let&amp;rsquo;s say a domain for this
+server was &lt;code&gt;example.com&lt;/code&gt; with IP address &lt;code&gt;x.x.x.x&lt;/code&gt; and my PC had white IP
+address &lt;code&gt;y.y.y.y&lt;/code&gt;.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;ping example.com
-PING 159.89.184.10: 64 data bytes
-72 bytes from 159.89.184.10: &lt;span class="nv"&gt;seq&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;0 &lt;span class="nv"&gt;ttl&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;52 &lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;141.242 ms
-72 bytes from 159.89.184.10: &lt;span class="nv"&gt;seq&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 &lt;span class="nv"&gt;ttl&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;52 &lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;140.809 ms
+PING x.x.x.x: 64 data bytes
+72 bytes from x.x.x.x: &lt;span class="nv"&gt;seq&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;0 &lt;span class="nv"&gt;ttl&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;52 &lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;141.242 ms
+72 bytes from x.x.x.x: &lt;span class="nv"&gt;seq&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 &lt;span class="nv"&gt;ttl&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;52 &lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;140.809 ms
 
 2 packets transmitted, 2 packets received, 0% packet loss
 round-trip min/avg/max &lt;span class="o"&gt;=&lt;/span&gt; 140.702/140.918/141.242 ms
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;You would say so what? I&amp;rsquo;ll tell you that for example if I want to open torrent
-tracker &lt;a href="http://rutracker.org"&gt;rutracker.org&lt;/a&gt; (which has been blocked for years
-in Russia) ISP redirects me to its &lt;a href="http://warning.rt.ru/?id=9&amp;amp;st=0&amp;amp;dt=195.82.146.214&amp;amp;rs=http%3A%2F%2Frutracker.org%2Fforum%2Findex.php"&gt;own page&lt;/a&gt;
-showing that this address was in fact blocked by goverment. Surprisingly it&amp;rsquo;s
-not the case for &lt;code&gt;159.89.184.10&lt;/code&gt;. HTTP traffic disappears silently. So first
-thing we go to &lt;a href="https://eais.rkn.gov.ru/"&gt;eais.rkn.gov.ru&lt;/a&gt; to check if the
-address is really blocked. It says it&amp;rsquo;s all clear no blocks, nothing. Ok we go
-to ISP (hello &lt;a href="http://rt.ru"&gt;Rostelekom&lt;/a&gt;) then.&lt;/p&gt;
-
-&lt;p&gt;Below in this post I provide full conversations with ISP and DigitalOcean but
-long story short after ISP checked everything on their end they called me
-saying that they don&amp;rsquo;t block it as well as Roskomnadzor. So most likely it&amp;rsquo;s
-DigitalOcean who blocks it. As you wish guys&amp;hellip; I go to DigitalOcean and
-together we investigate it. Opening &lt;code&gt;chrome://net-internals&lt;/code&gt; is very intersting
-sometimes and confirms time out:&lt;/p&gt;
+&lt;p&gt;Ping goes smoothly but providers can block resources using different techniques
+starting from DNS spoofing and ending by DPI. If I want to open &lt;a href="http://rutracker.org"&gt;rutracker.org&lt;/a&gt;
+for example my ISP redirects me to its own &lt;a href="http://warning.rt.ru/?id=9&amp;amp;st=0&amp;amp;dt=195.82.146.214&amp;amp;rs=http%3A%2F%2Frutracker.org%2Fforum%2Findex.php"&gt;page&lt;/a&gt;
+showing that this address was in fact blocked by goverment. Though it&amp;rsquo;s not the
+case for &lt;code&gt;x.x.x.x&lt;/code&gt; where HTTP traffic disappears silently. Opening
+&lt;code&gt;chrome://net-internals&lt;/code&gt; sometimes is very intersting and confirms time out:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre class="highlight plaintext"&gt;&lt;code&gt;14057: URL_REQUEST
 https://example.com/
 Start Time: 2018-04-24 08:07:06.009
@@ -472,7 +550,7 @@ t=169195 [st=24521] -REQUEST_ALIVE
                      --&amp;gt; net_error = -118 (ERR_CONNECTION_TIMED_OUT)
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Traceroute from my machine to this IP shows a few intermidiate backbone providers:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;traceroute to example.com &lt;span class="o"&gt;(&lt;/span&gt;159.89.184.10&lt;span class="o"&gt;)&lt;/span&gt;, 30 hops max, 60 byte packets
+&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;traceroute to example.com &lt;span class="o"&gt;(&lt;/span&gt;x.x.x.x&lt;span class="o"&gt;)&lt;/span&gt;, 30 hops max, 60 byte packets
  1  gateway &lt;span class="o"&gt;(&lt;/span&gt;192.168.0.1&lt;span class="o"&gt;)&lt;/span&gt;  0.417 ms  0.484 ms  0.568 ms
  2  100.103.0.1 &lt;span class="o"&gt;(&lt;/span&gt;100.103.0.1&lt;span class="o"&gt;)&lt;/span&gt;  4.935 ms  4.992 ms  5.020 ms
  3  213.59.232.208 &lt;span class="o"&gt;(&lt;/span&gt;213.59.232.208&lt;span class="o"&gt;)&lt;/span&gt;  38.910 ms 213.59.232.204 &lt;span class="o"&gt;(&lt;/span&gt;213.59.232.204&lt;span class="o"&gt;)&lt;/span&gt;  5.076 ms 213.59.232.208 &lt;span class="o"&gt;(&lt;/span&gt;213.59.232.208&lt;span class="o"&gt;)&lt;/span&gt;  5.339 ms
@@ -490,10 +568,10 @@ t=169195 [st=24521] -REQUEST_ALIVE
 15  nyk-b3-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.140.223&lt;span class="o"&gt;)&lt;/span&gt;  163.973 ms hbg-bb1-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;80.91.249.11&lt;span class="o"&gt;)&lt;/span&gt;  177.416 ms  177.405 ms
 16  digitalocean-ic-306498-nyk-b3.c.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.45.10&lt;span class="o"&gt;)&lt;/span&gt;  145.430 ms  145.572 ms  158.371 ms
 17  &lt;span class="k"&gt;*&lt;/span&gt; &lt;span class="k"&gt;*&lt;/span&gt; &lt;span class="k"&gt;*&lt;/span&gt;
-18  159.89.184.10 &lt;span class="o"&gt;(&lt;/span&gt;159.89.184.10&lt;span class="o"&gt;)&lt;/span&gt;  154.054 ms  140.789 ms  141.688 ms
+18  x.x.x.x &lt;span class="o"&gt;(&lt;/span&gt;x.x.x.x&lt;span class="o"&gt;)&lt;/span&gt;  154.054 ms  140.789 ms  141.688 ms
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;While in reverse from the droplet there&amp;rsquo;s only one of them:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;traceroute to 95.32.215.86 &lt;span class="o"&gt;(&lt;/span&gt;95.32.215.86&lt;span class="o"&gt;)&lt;/span&gt;, 30 hops max, 60 byte packets
+&lt;p&gt;While backwards from the droplet there&amp;rsquo;s only one of them:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;traceroute to y.y.y.y &lt;span class="o"&gt;(&lt;/span&gt;y.y.y.y&lt;span class="o"&gt;)&lt;/span&gt;, 30 hops max, 60 byte packets
  1  159.89.176.253 &lt;span class="o"&gt;(&lt;/span&gt;159.89.176.253&lt;span class="o"&gt;)&lt;/span&gt;  0.290 ms  0.263 ms  0.231 ms
  2  138.197.248.28 &lt;span class="o"&gt;(&lt;/span&gt;138.197.248.28&lt;span class="o"&gt;)&lt;/span&gt;  0.478 ms  0.469 ms  0.456 ms
  3  nyk-b3-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.45.9&lt;span class="o"&gt;)&lt;/span&gt;  1.021 ms  1.058 ms  1.043 ms
@@ -503,212 +581,105 @@ t=169195 [st=24521] -REQUEST_ALIVE
  7  ffm-b1-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.141.237&lt;span class="o"&gt;)&lt;/span&gt;  93.304 ms ffm-bb3-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.123.12&lt;span class="o"&gt;)&lt;/span&gt;  101.734 ms  102.168 ms
  8  rostelecom-ic-319651-ffm-b1.c.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.151.97&lt;span class="o"&gt;)&lt;/span&gt;  156.199 ms  156.187 ms  156.198 ms
  9  213.59.212.103 &lt;span class="o"&gt;(&lt;/span&gt;213.59.212.103&lt;span class="o"&gt;)&lt;/span&gt;  138.304 ms  149.985 ms rostelecom-ic-319651-ffm-b1.c.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.151.97&lt;span class="o"&gt;)&lt;/span&gt;  158.270 ms
-10  86.215.32.95.dsl-dynamic.vsi.ru &lt;span class="o"&gt;(&lt;/span&gt;95.32.215.86&lt;span class="o"&gt;)&lt;/span&gt;  139.571 ms  139.690 ms  139.701 ms
+10  y.y.y.y &lt;span class="o"&gt;(&lt;/span&gt;y.y.y.y&lt;span class="o"&gt;)&lt;/span&gt;  139.571 ms  139.690 ms  139.701 ms
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;BGP might have an answer why the route changes. I found pretty interesting site
-BTW &lt;a href="https://bgpstream.com/"&gt;bgpstream.com&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Let&amp;rsquo;s monitor outgoing and incoming traffic:&lt;/p&gt;
+&lt;p&gt;The difference can be explained by dynamic routing. Since routes are described
+by &lt;a href="https://en.wikipedia.org/wiki/Border_Gateway_Protocol"&gt;BGP&lt;/a&gt; even a few
+sequential traceroutes can show different routes. In BGP realm the trust is
+above everything. This site &lt;a href="https://bgpstream.com/"&gt;bgpstream.com&lt;/a&gt; can be very
+interesting if you are into it. Though the route from DO is twice as shorter
+then from Rostelekom. Let&amp;rsquo;s monitor outgoing and incoming traffic for this IP on
+one window open curl and tcpdump on another:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;curl http://example.com
 curl: &lt;span class="o"&gt;(&lt;/span&gt;7&lt;span class="o"&gt;)&lt;/span&gt; Failed to connect to example.com port 80: Connection timed out
-
-&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo &lt;/span&gt;tcpdump &lt;span class="nt"&gt;-nn&lt;/span&gt; &lt;span class="nt"&gt;-vvv&lt;/span&gt; &lt;span class="nt"&gt;-i&lt;/span&gt; enp4s0 dst 159.89.184.10 or src 159.89.184.10
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo &lt;/span&gt;tcpdump &lt;span class="nt"&gt;-nn&lt;/span&gt; &lt;span class="nt"&gt;-vvv&lt;/span&gt; &lt;span class="nt"&gt;-i&lt;/span&gt; enp4s0 dst x.x.x.x or src x.x.x.x
 tcpdump: listening on enp4s0, link-type EN10MB &lt;span class="o"&gt;(&lt;/span&gt;Ethernet&lt;span class="o"&gt;)&lt;/span&gt;, capture size 262144 bytes
 23:38:18.908971 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 59563, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 60&lt;span class="o"&gt;)&lt;/span&gt;
-    192.168.0.13.41722 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 159.89.184.10.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;S], cksum 0xd52f &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 1092877667, win 29200, options &lt;span class="o"&gt;[&lt;/span&gt;mss 1460,sackOK,TS val 3908771289 ecr 0,nop,wscale 7], length 0
+    192.168.0.13.41722 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; x.x.x.x.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;S], cksum 0xd52f &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 1092877667, win 29200, options &lt;span class="o"&gt;[&lt;/span&gt;mss 1460,sackOK,TS val 3908771289 ecr 0,nop,wscale 7], length 0
 23:38:18.925014 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 58, id 1, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;none], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 40&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 192.168.0.13.41722: Flags &lt;span class="o"&gt;[&lt;/span&gt;R], cksum 0x43e5 &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 0, win 29200, length 0
+    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 192.168.0.13.41722: Flags &lt;span class="o"&gt;[&lt;/span&gt;R], cksum 0x43e5 &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 0, win 29200, length 0
 23:38:19.932815 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 59564, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 60&lt;span class="o"&gt;)&lt;/span&gt;
-    192.168.0.13.41722 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 159.89.184.10.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;S], cksum 0xd12f &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 1092877667, win 29200, options &lt;span class="o"&gt;[&lt;/span&gt;mss 1460,sackOK,TS val 3908772313 ecr 0,nop,wscale 7], length 0
+    192.168.0.13.41722 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; x.x.x.x.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;S], cksum 0xd12f &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 1092877667, win 29200, options &lt;span class="o"&gt;[&lt;/span&gt;mss 1460,sackOK,TS val 3908772313 ecr 0,nop,wscale 7], length 0
 23:38:19.948956 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 58, id 1, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;none], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 40&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 192.168.0.13.41722: Flags &lt;span class="o"&gt;[&lt;/span&gt;R], cksum 0x43e5 &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 0, win 29200, length 0
-23:38:21.948826 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 59565, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 60&lt;span class="o"&gt;)&lt;/span&gt;
-    192.168.0.13.41722 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 159.89.184.10.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;S], cksum 0xc94f &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 1092877667, win 29200, options &lt;span class="o"&gt;[&lt;/span&gt;mss 1460,sackOK,TS val 3908774329 ecr 0,nop,wscale 7], length 0
-23:38:21.965036 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 58, id 1, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;none], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 40&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 192.168.0.13.41722: Flags &lt;span class="o"&gt;[&lt;/span&gt;R], cksum 0x43e5 &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 0, win 29200, length 0
-23:38:26.044817 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 59566, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 60&lt;span class="o"&gt;)&lt;/span&gt;
-    192.168.0.13.41722 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 159.89.184.10.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;S], cksum 0xb94f &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 1092877667, win 29200, options &lt;span class="o"&gt;[&lt;/span&gt;mss 1460,sackOK,TS val 3908778425 ecr 0,nop,wscale 7], length 0
-23:38:26.061047 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 58, id 1, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;none], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 40&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 192.168.0.13.41722: Flags &lt;span class="o"&gt;[&lt;/span&gt;R], cksum 0x43e5 &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 0, win 29200, length 0
-23:38:34.236838 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 59567, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 60&lt;span class="o"&gt;)&lt;/span&gt;
-    192.168.0.13.41722 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 159.89.184.10.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;S], cksum 0x994f &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 1092877667, win 29200, options &lt;span class="o"&gt;[&lt;/span&gt;mss 1460,sackOK,TS val 3908786617 ecr 0,nop,wscale 7], length 0
-23:38:34.252685 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 58, id 1, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;none], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 40&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 192.168.0.13.41722: Flags &lt;span class="o"&gt;[&lt;/span&gt;R], cksum 0x43e5 &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 0, win 29200, length 0
-23:38:50.364856 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 59568, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 60&lt;span class="o"&gt;)&lt;/span&gt;
-    192.168.0.13.41722 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 159.89.184.10.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;S], cksum 0x5a4e &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 1092877667, win 29200, options &lt;span class="o"&gt;[&lt;/span&gt;mss 1460,sackOK,TS val 3908802746 ecr 0,nop,wscale 7], length 0
-23:38:50.381002 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 58, id 1, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;none], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 40&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 192.168.0.13.41722: Flags &lt;span class="o"&gt;[&lt;/span&gt;R], cksum 0x43e5 &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 0, win 29200, length 0
-23:39:22.620807 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 59569, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 60&lt;span class="o"&gt;)&lt;/span&gt;
-    192.168.0.13.41722 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 159.89.184.10.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;S], cksum 0xdc4d &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 1092877667, win 29200, options &lt;span class="o"&gt;[&lt;/span&gt;mss 1460,sackOK,TS val 3908835002 ecr 0,nop,wscale 7], length 0
-23:39:22.637077 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 58, id 1, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;none], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 40&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 192.168.0.13.41722: Flags &lt;span class="o"&gt;[&lt;/span&gt;R], cksum 0x43e5 &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 0, win 29200, length 0
+    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 192.168.0.13.41722: Flags &lt;span class="o"&gt;[&lt;/span&gt;R], cksum 0x43e5 &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 0, win 29200, length 0
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Goodbye 3-Way TCP Handshake which should be (SYN, SYN-ACK, ACK) and hello RST
-after SYN. You can see them as [S] and [R] flags. In other words all outgoing
-http traffic dropped in the middle. Does it mean Roskomnadzor no longer needs
-ISP to handle this crap or ISP is lying? If a girl says who blocks servers
-a man will feed her.&lt;/p&gt;
+&lt;p&gt;3-Way TCP Handshake should be (SYN, SYN-ACK, ACK). Instead we see RST packet
+right after SYN. You can see them as [S] and [R] flags. In other words all
+outgoing http traffic dropped in the middle and instead we are sent RST packet.
+Let&amp;rsquo;s send an outgoing packet from the droplet with source port 80 to home
+router on port 80:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;yes | nc &lt;span class="nt"&gt;-p&lt;/span&gt; 80 &lt;span class="nt"&gt;-t&lt;/span&gt; y.y.y.y 80
 
-&lt;p&gt;&lt;img src="https://pbs.twimg.com/media/DbhrAF_WAAAE80q.jpg" alt="The girl is no one" /&gt;&lt;/p&gt;
-
-&lt;p&gt;Let&amp;rsquo;s try it other way around. I set port mapping on my router to give an
-ability for incoming http request go behind it and reach Ngnix on my PC.&lt;/p&gt;
-
-&lt;p&gt;We ssh into the droplet and try to connect with curl:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;curl http://95.32.183.155
-&amp;lt;&lt;span class="o"&gt;!&lt;/span&gt;DOCTYPE html&amp;gt;
-&amp;lt;html&amp;gt;
-&amp;lt;head&amp;gt;
-&amp;lt;title&amp;gt;Welcome to nginx!&amp;lt;/title&amp;gt;
-&amp;lt;style&amp;gt;
-    body &lt;span class="o"&gt;{&lt;/span&gt;
-        width: 35em&lt;span class="p"&gt;;&lt;/span&gt;
-        margin: 0 auto&lt;span class="p"&gt;;&lt;/span&gt;
-        font-family: Tahoma, Verdana, Arial, sans-serif&lt;span class="p"&gt;;&lt;/span&gt;
-    &lt;span class="o"&gt;}&lt;/span&gt;
-&amp;lt;/style&amp;gt;
-&amp;lt;/head&amp;gt;
-&amp;lt;body&amp;gt;
-&amp;lt;h1&amp;gt;Welcome to nginx!&amp;lt;/h1&amp;gt;
-&amp;lt;p&amp;gt;If you see this page, the nginx web server is successfully installed and
-working. Further configuration is required.&amp;lt;/p&amp;gt;
-
-&amp;lt;p&amp;gt;For online documentation and support please refer to
-&amp;lt;a &lt;span class="nv"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"http://nginx.org/"&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;nginx.org&amp;lt;/a&amp;gt;.&amp;lt;br/&amp;gt;
-Commercial support is available at
-&amp;lt;a &lt;span class="nv"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"http://nginx.com/"&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;nginx.com&amp;lt;/a&amp;gt;.&amp;lt;/p&amp;gt;
-
-&amp;lt;p&amp;gt;&amp;lt;em&amp;gt;Thank you &lt;span class="k"&gt;for &lt;/span&gt;using nginx.&amp;lt;/em&amp;gt;&amp;lt;/p&amp;gt;
-&amp;lt;/body&amp;gt;
-&amp;lt;/html&amp;gt;
-
-&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo &lt;/span&gt;tcpdump &lt;span class="nt"&gt;-nn&lt;/span&gt; &lt;span class="nt"&gt;-vvv&lt;/span&gt; &lt;span class="nt"&gt;-i&lt;/span&gt; eth0 dst 95.32.183.155 and dst port 80 or src 95.32.183.155 and dst port 80
-05:40:20.044097 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 14142, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 60&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.55928 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 95.32.183.155.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;S], cksum 0x6e4e &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0x2b0c&lt;span class="o"&gt;)&lt;/span&gt;, seq 1395059192, win 29200, options &lt;span class="o"&gt;[&lt;/span&gt;mss 1460,sackOK,TS val 1175838406 ecr 0,nop,wscale 7], length 0
-05:40:20.196601 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 14143, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 52&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.55928 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 95.32.183.155.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], cksum 0x6e46 &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0xd836&lt;span class="o"&gt;)&lt;/span&gt;, seq 1395059193, ack 1061805333, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175838444 ecr 3637509479], length 0
-05:40:20.196784 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 14144, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 129&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.55928 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 95.32.183.155.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;P.], cksum 0x6e93 &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0x40c3&lt;span class="o"&gt;)&lt;/span&gt;, seq 0:77, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175838445 ecr 3637509479], length 77: HTTP, length: 77
-    GET / HTTP/1.1
-    Host: 95.32.183.155
-    User-Agent: curl/7.47.0
-    Accept: &lt;span class="k"&gt;*&lt;/span&gt;/&lt;span class="k"&gt;*&lt;/span&gt;
-
-05:40:20.350596 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 14145, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 52&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.55928 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 95.32.183.155.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], cksum 0x6e46 &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0xd3c1&lt;span class="o"&gt;)&lt;/span&gt;, seq 77, ack 860, win 242, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175838483 ecr 3637509632], length 0
-05:40:20.350809 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 14146, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 52&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.55928 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 95.32.183.155.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;F.], cksum 0x6e46 &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0xd3c0&lt;span class="o"&gt;)&lt;/span&gt;, seq 77, ack 860, win 242, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175838483 ecr 3637509632], length 0
-05:40:20.503792 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 14147, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 52&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.55928 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 95.32.183.155.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], cksum 0x6e46 &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0xd2ff&lt;span class="o"&gt;)&lt;/span&gt;, seq 78, ack 861, win 242, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175838521 ecr 3637509786], length 0
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;It works. Let&amp;rsquo;s send an outdoing packet from the droplet with source port 80:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;yes | nc &lt;span class="nt"&gt;-p&lt;/span&gt; 80 &lt;span class="nt"&gt;-t&lt;/span&gt; 95.32.183.155 80
-
-&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo &lt;/span&gt;tcpdump &lt;span class="nt"&gt;-nn&lt;/span&gt; &lt;span class="nt"&gt;-vvv&lt;/span&gt; &lt;span class="nt"&gt;-i&lt;/span&gt; eth0 dst 95.32.183.155 and dst port 80 or src 95.32.183.155 and dst port 80
+&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo &lt;/span&gt;tcpdump &lt;span class="nt"&gt;-nn&lt;/span&gt; &lt;span class="nt"&gt;-vvv&lt;/span&gt; &lt;span class="nt"&gt;-i&lt;/span&gt; eth0 dst y.y.y.y and dst port 80 or src y.y.y.y and dst port 80
 tcpdump: listening on eth0, link-type EN10MB &lt;span class="o"&gt;(&lt;/span&gt;Ethernet&lt;span class="o"&gt;)&lt;/span&gt;, capture size 262144 bytes
 05:39:49.968049 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 18207, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 60&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 95.32.183.155.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;S], cksum 0x6e4e &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0x16e9&lt;span class="o"&gt;)&lt;/span&gt;, seq 3260122744, win 29200, options &lt;span class="o"&gt;[&lt;/span&gt;mss 1460,sackOK,TS val 1175830887 ecr 0,nop,wscale 7], length 0
+    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; y.y.y.y.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;S], cksum 0x6e4e &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0x16e9&lt;span class="o"&gt;)&lt;/span&gt;, seq 3260122744, win 29200, options &lt;span class="o"&gt;[&lt;/span&gt;mss 1460,sackOK,TS val 1175830887 ecr 0,nop,wscale 7], length 0
 05:39:50.109076 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x28, ttl 49, id 0, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 60&lt;span class="o"&gt;)&lt;/span&gt;
-    95.32.183.155.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 159.89.184.10.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;S.], cksum 0x83e9 &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 3723973951, ack 3260122745, win 28960, options &lt;span class="o"&gt;[&lt;/span&gt;mss 1440,sackOK,TS val 3637479403 ecr 1175830887,nop,wscale 7], length 0
+    y.y.y.y.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; x.x.x.x.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;S.], cksum 0x83e9 &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 3723973951, ack 3260122745, win 28960, options &lt;span class="o"&gt;[&lt;/span&gt;mss 1440,sackOK,TS val 3637479403 ecr 1175830887,nop,wscale 7], length 0
 05:39:50.109117 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 18208, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 52&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 95.32.183.155.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], cksum 0x6e46 &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0x22b9&lt;span class="o"&gt;)&lt;/span&gt;, seq 1, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 0
+    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; y.y.y.y.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], cksum 0x6e46 &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0x22b9&lt;span class="o"&gt;)&lt;/span&gt;, seq 1, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 0
 05:39:50.109230 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 18209, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 2100&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 95.32.183.155.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;P.], cksum 0x7646 &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0xf0cc&lt;span class="o"&gt;)&lt;/span&gt;, seq 1:2049, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 2048: HTTP
+    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; y.y.y.y.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;P.], cksum 0x7646 &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0xf0cc&lt;span class="o"&gt;)&lt;/span&gt;, seq 1:2049, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 2048: HTTP
 05:39:50.109280 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 18211, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 1480&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 95.32.183.155.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], cksum 0x73da &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0x7def&lt;span class="o"&gt;)&lt;/span&gt;, seq 2049:3477, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 1428: HTTP
+    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; y.y.y.y.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], cksum 0x73da &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0x7def&lt;span class="o"&gt;)&lt;/span&gt;, seq 2049:3477, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 1428: HTTP
 05:39:50.109299 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 18212, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 1480&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 95.32.183.155.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], cksum 0x73da &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0x785b&lt;span class="o"&gt;)&lt;/span&gt;, seq 3477:4905, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 1428: HTTP
+    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; y.y.y.y.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], cksum 0x73da &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0x785b&lt;span class="o"&gt;)&lt;/span&gt;, seq 3477:4905, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 1428: HTTP
 05:39:50.109331 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 18213, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 2908&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 95.32.183.155.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], cksum 0x796e &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0xd5fd&lt;span class="o"&gt;)&lt;/span&gt;, seq 4905:7761, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 2856: HTTP
+    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; y.y.y.y.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], cksum 0x796e &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0xd5fd&lt;span class="o"&gt;)&lt;/span&gt;, seq 4905:7761, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 2856: HTTP
 05:39:50.109349 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 18215, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 1480&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 95.32.183.155.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], cksum 0x73da &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0x679f&lt;span class="o"&gt;)&lt;/span&gt;, seq 7761:9189, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 1428: HTTP
+    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; y.y.y.y.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], cksum 0x73da &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0x679f&lt;span class="o"&gt;)&lt;/span&gt;, seq 7761:9189, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 1428: HTTP
 05:39:50.109371 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 18216, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 2908&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 95.32.183.155.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], cksum 0x796e &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0xc541&lt;span class="o"&gt;)&lt;/span&gt;, seq 9189:12045, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 2856: HTTP
+    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; y.y.y.y.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], cksum 0x796e &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0xc541&lt;span class="o"&gt;)&lt;/span&gt;, seq 9189:12045, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 2856: HTTP
 05:39:50.109390 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, id 18218, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 1480&lt;span class="o"&gt;)&lt;/span&gt;
-    159.89.184.10.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 95.32.183.155.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], cksum 0x73da &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0x56e3&lt;span class="o"&gt;)&lt;/span&gt;, seq 12045:13473, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 1428: HTTP
+    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; y.y.y.y.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], cksum 0x73da &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0x56e3&lt;span class="o"&gt;)&lt;/span&gt;, seq 12045:13473, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 1428: HTTP
 05:39:50.251998 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x28, ttl 49, id 34134, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 40&lt;span class="o"&gt;)&lt;/span&gt;
-    95.32.183.155.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 159.89.184.10.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;R], cksum 0x0de9 &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 3723973952, win 0, length 0
+    y.y.y.y.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; x.x.x.x.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;R], cksum 0x0de9 &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, seq 3723973952, win 0, length 0
 05:39:50.252020 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x28, ttl 49, id 34135, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 40&lt;span class="o"&gt;)&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;TCP handshake and reset after all. Looks weird and empty on my side. Now I
-wonder if we can catch where exactly http traffic drops. With traceroute we can
-see where ICMP packets go but does that mean HTTP goes the same direction and
-where it drops? I don&amp;rsquo;t know the answer.&lt;/p&gt;
-
-&lt;p&gt;Overall I feel disappointed. It&amp;rsquo;s like Telegram opened a curtain. Internet
-started like a small local network with purpose of exchanging data for research,
-helping humankind to solve issues or at least doing something meaningful and get
-better. Instead it&amp;rsquo;s a place for intertainment controlled by goverment.&lt;/p&gt;
-
-&lt;p&gt;If you read until this point there&amp;rsquo;s a small bonus for you:
-It&amp;rsquo;s known fact that rutracker is blocked.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;curl &lt;span class="nt"&gt;-vvv&lt;/span&gt; http://rutracker.org/forum/index.php
-&lt;span class="k"&gt;*&lt;/span&gt;   Trying 195.82.146.214...
-&lt;span class="k"&gt;*&lt;/span&gt; TCP_NODELAY &lt;span class="nb"&gt;set&lt;/span&gt;
-&lt;span class="k"&gt;*&lt;/span&gt; Connected to rutracker.org &lt;span class="o"&gt;(&lt;/span&gt;195.82.146.214&lt;span class="o"&gt;)&lt;/span&gt; port 80 &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="c"&gt;#0)&lt;/span&gt;
-&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; GET /forum/index.php HTTP/1.1
-&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; Host: rutracker.org
-&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; User-Agent: curl/7.55.1
-&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; Accept: &lt;span class="k"&gt;*&lt;/span&gt;/&lt;span class="k"&gt;*&lt;/span&gt;
-&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
-&amp;lt; HTTP/1.1 302 Found
-&amp;lt; Connection: close
-&amp;lt; Content-Length: 2
-&amp;lt; Location: http://warning.rt.ru/?id&lt;span class="o"&gt;=&lt;/span&gt;9&amp;amp;st&lt;span class="o"&gt;=&lt;/span&gt;0&amp;amp;dt&lt;span class="o"&gt;=&lt;/span&gt;195.82.146.214&amp;amp;rs&lt;span class="o"&gt;=&lt;/span&gt;http%3A%2F%2Frutracker.org%2Fforum%2Findex.php
-&amp;lt;
-&lt;span class="k"&gt;*&lt;/span&gt; Closing connection 0
+&lt;p&gt;TCP handshake and reset after all but they at least exchanged a few packets.
+I wonder if we can catch where exactly http traffic drops. With traceroute we can
+see where ICMP packets go but does that mean HTTP goes the same direction?
+traceroute supports other options for example you can trace tcp SYN packets:
+&lt;code&gt;traceroute -T -O syn —port=80 -n -N 1 -q 1 x.x.x.x&lt;/code&gt;. The tool creates packets
+manually so that they are only 44 bytes long and they pass DPI see SYN-ACK:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight plaintext"&gt;&lt;code&gt;10:34:34.815998 IP (tos 0x0, ttl 19, id 61933, offset 0, flags [none], proto TCP (6), length 44)
+    y.y.y.y.58057 &amp;gt; x.x.x.x.80: Flags [S], cksum 0x61ef (correct), seq 3848879829, win 5840, options [mss 1460], length 0
+  0x0000:  4500 002c f1ed 0000 1306 9dd0 c0a8 0002  E..,............
+  0x0010:  9f59 b80a e2c9 0050 e569 3ed5 0000 0000  .Y.....P.i&amp;gt;.....
+  0x0020:  6002 16d0 61ef 0000 0204 05b4            `...a.......
+10:34:34.974844 IP (tos 0x0, ttl 51, id 0, offset 0, flags [DF], proto TCP (6), length 44)
+    x.x.x.x.80 &amp;gt; y.y.y.y.58057: Flags [S.], cksum 0x0feb (correct), seq 2544066339, ack 3848879830, win 29200, options [mss 1440], length 0
+  0x0000:  4500 002c 0000 4000 3306 2fbe 9f59 b80a  E..,..@.3./..Y..
+  0x0010:  c0a8 0002 0050 e2c9 97a3 5f23 e569 3ed6  .....P...._#.i&amp;gt;.
+  0x0020:  6012 7210 0feb 0000 0204 05a0 0000       `.r...........
+10:34:34.974909 IP (tos 0x0, ttl 64, id 61944, offset 0, flags [DF], proto TCP (6), length 40)
+    y.y.y.y.58057 &amp;gt; x.x.x.x.80: Flags [R], cksum 0x9078 (correct), seq 3848879830, win 0, length 0
+  0x0000:  4500 0028 f1f8 4000 4006 30c9 c0a8 0002  E..(..@.@.0.....
+  0x0010:  9f59 b80a e2c9 0050 e569 3ed6 0000 0000  .Y.....P.i&amp;gt;.....
+  0x0020:  5004 0000 9078 0000                      P....x..
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Run this if you have Rostelekom &lt;code&gt;(printf &amp;#39;GET /forum/index.php HTTP/1.1\r\nHost: rutracker.org\r\n\r\n&amp;#39;; sleep 1) | nc rutracker.org 80&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;and you&amp;rsquo;ll see:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;HTTP/1.1 302 Found
-Connection: close
-Content-Length: 2
-Location: http://warning.rt.ru/?id&lt;span class="o"&gt;=&lt;/span&gt;9&amp;amp;st&lt;span class="o"&gt;=&lt;/span&gt;0&amp;amp;dt&lt;span class="o"&gt;=&lt;/span&gt;195.82.146.214&amp;amp;rs&lt;span class="o"&gt;=&lt;/span&gt;http%3A%2F%2Frutracker.org%2Fforum%2Findex.php
-
-OK Accept-Encoding
-X-BB-ID: rto
-X-Frame-Options: SAMEORIGIN
-
-1f90
-&amp;lt;&lt;span class="o"&gt;!&lt;/span&gt;DOCTYPE html&amp;gt;
-&amp;lt;html &lt;span class="nv"&gt;lang&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"ru"&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
-&amp;lt;head&amp;gt;
-
-&amp;lt;meta &lt;span class="nv"&gt;charset&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"Windows-1251"&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
-&amp;lt;meta &lt;span class="nv"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"description"&lt;/span&gt; &lt;span class="nv"&gt;content&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"���������� ������������� ���������� ������. ������� ��������� ������, ������, �����, ���������.."&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
-
-&amp;lt;title&amp;gt;BitTorrent ������ RuTracker.org&amp;lt;/title&amp;gt;
-...
+&lt;p&gt;The real SYN packet from browser is 60 bytes and DPI drops it:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight plaintext"&gt;&lt;code&gt;10:33:48.537807 IP (tos 0x0, ttl 19, id 54902, offset 0, flags [none], proto TCP (6), length 60)
+    y.y.y.y.42193 &amp;gt; x.x.x.x.80: Flags [S], cksum 0xe900 (correct), seq 2785663221, win 5840, options [mss 1460,sackOK,TS val 1652926847 ecr 0,nop,wscale 2], length 0
+  0x0000:  4500 003c d676 0000 1306 b937 c0a8 0002  E..&amp;lt;.v.....7....
+  0x0010:  9f59 b80a a4d1 0050 a609 d8f5 0000 0000  .Y.....P........
+  0x0020:  a002 16d0 e900 0000 0204 05b4 0402 080a  ................
+  0x0030:  6285 a97f 0000 0000 0103 0302            b...........
+10:33:48.563619 IP (tos 0x0, ttl 8, id 1, offset 0, flags [none], proto TCP (6), length 40)
+    x.x.x.x.80 &amp;gt; y.y.y.y.42193: Flags [R], cksum 0x5ce1 (correct), seq 0, win 5840, length 0
+  0x0000:  4500 0028 0001 0000 0806 9ac1 9f59 b80a  E..(.........Y..
+  0x0010:  c0a8 0002 0050 a4d1 0000 0000 a609 d8f5  .....P..........
+  0x0020:  5004 16d0 5ce1 0000 0000 0000 0000       P...\.........
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;They intercept traffic and put 302 redirect and below goes original page.
-Is that &lt;a href="https://habr.com/post/335436/"&gt;passive DPI&lt;/a&gt;? Remove carriage
-return headers now and watch plain 200:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;printf&lt;/span&gt; &lt;span class="s1"&gt;'GET /forum/index.php HTTP/1.1\nHost: rutracker.org\n\n'&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; sleep 1&lt;span class="o"&gt;)&lt;/span&gt; | nc rutracker.org 80
+&lt;p&gt;This all suggests that provider definitely dropped packets while they said they
+didn&amp;rsquo;t to me.&lt;/p&gt;
 
-HTTP/1.1 200 OK
-Server: nginx
-Date: Wed, 25 Apr 2018 10:23:11 GMT
-Content-Type: text/html&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="nv"&gt;charset&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Windows-1251
-Transfer-Encoding: chunked
-Connection: keep-alive
-Vary: Accept-Encoding
-X-BB-ID: rto
-X-Frame-Options: SAMEORIGIN
-
-1f90
-&amp;lt;&lt;span class="o"&gt;!&lt;/span&gt;DOCTYPE html&amp;gt;
-&amp;lt;html &lt;span class="nv"&gt;lang&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"ru"&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
-&amp;lt;head&amp;gt;
-
-&amp;lt;meta &lt;span class="nv"&gt;charset&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"Windows-1251"&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
-&amp;lt;meta &lt;span class="nv"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"description"&lt;/span&gt; &lt;span class="nv"&gt;content&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"���������� ������������� ���������� ������. ������� ��������� ������, ������, �����, ���������.."&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Unfortunately the story for DO is completely different because the traffic is
-blocked somwhere in between.&lt;/p&gt;
-
-&lt;p&gt;Here I should say that the reason remains unknown and I&amp;rsquo;ll keep you posted.&lt;/p&gt;
+&lt;p&gt;Overall I feel disappointed about the road internet march nowadays. It started
+like a small network with purpose of exchanging data for research, helping
+humankind to solve issues or at least doing something meaningful.
+Instead I feel more like a resource that big company can sell and goverment can
+control limiting my view. They all either earn money or get benefit trading you
+but the thing is you don&amp;rsquo;t get anything out of it.&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="https://www.eff.org/cyberspace-independence"&gt;Cyberspace independence&lt;/a&gt;&lt;/li&gt;
@@ -717,591 +688,6 @@ blocked somwhere in between.&lt;/p&gt;
 &lt;li&gt;&lt;a href="https://dyn.com/blog/could-it-happen-in-your-countr/"&gt;Could it happen in your country&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://dyn.com/blog/vast-world-of-fraudulent-routing/"&gt;Vast world of fraudulent routing&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://dyn.com/blog/latest-isps-to-hijack/"&gt;Latest ISPs to hijack&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Rostelekom convo:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight plaintext"&gt;&lt;code&gt;Вы
-Добрый день, скажите почему у меня не открывается http://example.com/
-
-Вы
-Здравствуйте!
-Меня зовут Игорь, мне понадобится несколько минут для подготовки ответа.
-Подождите, пожалуйста.
-
-Игорь
-в листе ркн этго адреса нет
-
-Вы
-через впн из британии работает
-
-Игорь
-На данный момент доступ в интернет предоставляется в полнм объёме.
-Со стороны компании данный ресурс не блокируется.
-
-Вы
-но у меня не открывается, файлы я приложил
-трейсроут, выкладки из хрома, и курл висят
-curl: (7) Failed to connect to example.com port 443: Connection timed out
-
-Игорь
-Ростелеком не ограничивает доступ к данному ресурсу. Если у Вас работает данный
-ресурс через VPN, то ограничения не со стороны компании. Доступ к части
-интернет-ресурсов может быть ограничен по решению уполномоченных органов власти.
-Срок снятия ограничения пока не определен. Услуга интернет у Вас работает,
-воспользуетесь другими интернет-ресурсами для получения необходимой Вам
-информации.
-
-Вы
-можно тогда информацию кем ограничен доступ если не моим провайдером?
-
-Игорь
-Доступ к части интернет-ресурсов может быть ограничен по решению уполномоченных
-органов власти.
-
-Вы
-кем?
-
-Игорь
-За блокировку ресурсов отвечает Роскомнадзор.
-
-Вы
-а исполняет ее провайдер я в курсе
-если провайдер не блокирует мне нужна информация кто блокирует
-если у вас ее нет мне нужен технический или старший специалист. спасибо
-
-Игорь
-Доступ к части интернет-ресурсов может быть ограничен по решению уполномоченных
-органов власти. За блокировку ресурсов отвечает Роскомнадзор. Технические
-специалисты предоставят Вам такую же информацию.
-
-Вы
-Игорь вы технический специалист?
-
-Игорь
-Информацию по Вашему вопросу я передам специалистам. Назовите, пожалуйста,
-контактный номер телефона, как к Вам можно обращаться.
-
-Вы
-Спасибо
-...
-
-Игорь
-Доступ к ресурсу будет проверен с нашей стороны.
-По вашему обращению было создано задание № 132147087. В ближайшее время,
-Ваш вопрос будет решен. При необходимости, с Вами свяжутся по контактному
-номеру телефона. Пожалуйста, не отключайте оборудование от сети.
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;DigitalOcean convo:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight plaintext"&gt;&lt;code&gt;*Me*
-As you likely aware in Russia they try to block Telegram yet hopelessly. I tried
-to connect to one of our servers today without luck. The url was
-http://example.com/ (159.89.184.10) and it timed out.
-I contacted my provider asking why is that and the answer was they didn't block
-it as well as RKN (https://eais.rkn.gov.ru/). Yet this IP address is available
-by ICMP and unavailable by http/https here's the log _link_
-This IP is available using VPN.
-
-The conclusion was that it is DO who blocks it. May I know if this is true and
-you really block it for Russian IPs? My IP was 95.32.215.86
-
-Thanks
-
-*They*
-Thank you for your email.
-I really appreciate you taking the time to raise a case with us!
-
-We're aware of a disruption in traffic from some areas in Russia to some of our
-datacenters (AMS3, LON1, FRA1). It appears that traffic has been blocked at some
-other point in the Internet, which is beyond our control. All circuits into
-these datacenters are fully functional.
-
-In case, your IP comes to any of those datacenters, we would recommend to
-re-deploy. Again, I know this is not an ideal solution, we do apologize for the
-inconvenience caused here.
-
-*Me*
-Surprisingly it's in NYC3... Do you have an information where at least it's
-being blocked in Europe or in Russia?
-
-*They*
-Personally, we do not block any IPs and our circuits are fully working.
-
-Would you be able to run an MTR to and fro from your location and vice-versa as
-well as an MTR to the Droplet which is reachable from your end, so that we can
-review both the MTRs this side.
-
-Rest, if its blocked somewhere outside of our reach, due to the mass block of
-IPs within Russia, getting a new IP would be helpful. Rest, we'd be happy to
-review the MTR and see if there's any specific hop where it is blocked.
-
-*Me*
-Yes I already added it to the log _link_
-
-I've added a traceroute from droplet to my IP as well.
-
-Is that enough?
-
-I'm a bit confused I know that with traceroute we can see where all packets go
-but how do we catch we http packets drop. I can connect to
-example.com ssh easily. Only http doesn't work :( Someone's
-dropping http packets and nobody tells it's him lol :)
-
-*They*
-Hey there,
-Based on the information you provided, the issue does not appear to be a
-network connectivity issue (ping works and the traceroute reaches the
-destination) but an issue specifically with the HTTP request timing out,
-which is likely something occurring either within the droplet itself or within
-your local computer or network configuration.
-
-Does your web server (Apache or Nginx in most cases) show these connections in
-the access log, and if so, does the error log contain any information that might
-explain why the connections are timing out?
-
-*Me*
-I don't see anything in logs on the machine when I try to connect with curl to it
-
-*They*
-Are you able to SSH into the droplet, or connect to it in any way other than HTTP?
-This appears to be application or web server specific rather than a network
-block but this would be a good way to confirm that.
-
-*Me*
-Yes exactly I have an access by ssh but http times out.
-
-*They*
-
-Very weird. Do you have any firewall running on this Droplet that may be
-inadvertently blocking you via http and https? It looks like visiting your
-IP prompts me to log in. Do you have something like fail2ban set up, where too
-many failed login attempts would result in an IP block? Can you send me the
-output of "ufw status" and "iptables -L"?
-
-So far I'm thinking this is either a firewall issue on the Droplet,
-or some sort of weird ISP/Russian issue where they're solely blocking
-HTTP/HTTPS for your IP, but I don't know why they'd do that.
-
-*Me*
-
-Nothing:
-
-ufw status
-Status: inactive
-
-iptables -L
-Chain INPUT (policy ACCEPT)
-target prot opt source destination
-
-Chain FORWARD (policy ACCEPT)
-target prot opt source destination
-
-Chain OUTPUT (policy ACCEPT)
-target prot opt source destination
-
-http and https works for my IP I can reach many sites. Only weird issues with
-some like this one. I contacted my ISP they said they didn't block it.
-I contacted RKN they said they didn't either. Someone in the middle drops
-https packets or smth weird is going on on DO side. I have no clue either...
-
-*They*
-This would seem to suggest that there are ISP level blocks of certain IPs and
-ranges are happening. I'm located in the US and if I curl 159.89.156.100, I get
-a 200 OK response.
-
-There is unfortunately not much we can do about that, since we don't have
-control over how your ISP might manage or block traffic. I would recommend
-bringing this to the attention of your ISP and seeing if they can confirm if
-this is the case or not.
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content>
-  </entry>
-  <entry>
-    <title>Query Trail</title>
-    <link rel="alternate" href="/2014/08/10/query-trail.html"/>
-    <id>/2014/08/10/query-trail.html</id>
-    <published>2014-08-10T00:00:00+04:00</published>
-    <updated>2014-08-10T00:00:00+04:00</updated>
-    <author>
-      <name>Dmitry Vorotilin</name>
-    </author>
-    <summary type="html">&lt;p&gt;Recently I switched on a project with lots of legacy code. It was on Rails 2,
-Rails 3 and now I’ve updated it to Rails 4.1. You can’t even imagine how much
-rubbish I got rid of. But the thing I’d like to share with you today is
-&lt;a href="https://github.com/route/query_trail"&gt;QueryTrail&lt;/a&gt;. This simple...&lt;/p&gt;</summary>
-    <content type="html">&lt;p&gt;Recently I switched on a project with lots of legacy code. It was on Rails 2,
-Rails 3 and now I&amp;rsquo;ve updated it to Rails 4.1. You can&amp;rsquo;t even imagine how much
-rubbish I got rid of. But the thing I&amp;rsquo;d like to share with you today is
-&lt;a href="https://github.com/route/query_trail"&gt;QueryTrail&lt;/a&gt;. This simple but useful gem
-shows you the backtrace of fired queries. You have to agree that when just one
-action of your controller sends hundreds sql requests from helpers, templates
-and so forth, it&amp;rsquo;s definitely hard to locate the place for specific query. But
-not for now:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight plaintext"&gt;&lt;code&gt;User Load (0.4ms)  SELECT  `users`.* FROM `users`  WHERE `users`.`id` = 1 LIMIT 1
-Query Trail: config/initializers/warden.rb:11:in `block in &amp;lt;top (required)&amp;gt;'
-             config/initializers/warden.rb:15:in `block in &amp;lt;top (required)&amp;gt;'
-Doc Load (18.2ms)  SELECT `docs`.* FROM `docs`  WHERE `docs`.`approved` = 1
-Query Trail: app/views/main/_docs.html.erb:2
-             app/helpers/docs_helper.rb:3:in `render_main_block'
-             app/views/main/index.html.erb:13
-             app/views/main/index.html.erb:9
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content>
-  </entry>
-  <entry>
-    <title>Rails autoloading</title>
-    <link rel="alternate" href="/2013/11/13/rails-autoloading.html"/>
-    <id>/2013/11/13/rails-autoloading.html</id>
-    <published>2013-11-13T00:00:00+04:00</published>
-    <updated>2013-11-13T00:00:00+04:00</updated>
-    <author>
-      <name>Dmitry Vorotilin</name>
-    </author>
-    <summary type="html">&lt;p&gt;There is much to be said about Rails autoloading and particularly about
-&lt;code&gt;ActiveSupport::Dependencies&lt;/code&gt; (&lt;code&gt;AS::D&lt;/code&gt; for short). What does it do? As the title
-says it loads constants automatically and reloads your code catching changes on
-every request. Ok,...&lt;/p&gt;</summary>
-    <content type="html">&lt;p&gt;There is much to be said about Rails autoloading and particularly about
-&lt;code&gt;ActiveSupport::Dependencies&lt;/code&gt; (&lt;code&gt;AS::D&lt;/code&gt; for short). What does it do? As the title
-says it loads constants automatically and reloads your code catching changes on
-every request. Ok, why do we need it? Because it&amp;rsquo;s convenient! We don&amp;rsquo;t have to
-write &lt;code&gt;require&lt;/code&gt; in every single file and watch which constants we need and when.
-Rails loads constants and tracks what we need automatically. Also there&amp;rsquo;s no
-need to reload your server every time you&amp;rsquo;ve made a change. There are some
-pitfalls that you must know, but once you learn them everything will be ok.&lt;/p&gt;
-
-&lt;h3&gt;How it works&lt;/h3&gt;
-
-&lt;p&gt;Previously discussed method &lt;code&gt;self.const_missing(const_name)&lt;/code&gt; is the entry point
-for &lt;code&gt;AS::D&lt;/code&gt;. Consider this example:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
-&lt;span class="c1"&gt;# module A&lt;/span&gt;
-&lt;span class="c1"&gt;# end&lt;/span&gt;
-
-&lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s1"&gt;'active_support/dependencies'&lt;/span&gt;
-&lt;span class="no"&gt;ActiveSupport&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Dependencies&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;autoload_paths&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'/autoloadable'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-
-&lt;span class="no"&gt;A&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;&lt;code&gt;AS::D&lt;/code&gt; loads module &lt;code&gt;A&lt;/code&gt; automatically without any &lt;code&gt;require&lt;/code&gt;.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# Meanwhile you can add sleep here and make changes in a.rb&lt;/span&gt;
-
-&lt;span class="no"&gt;ActiveSupport&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Dependencies&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;clear&lt;/span&gt; &lt;span class="c1"&gt;# Removes A from memory&lt;/span&gt;
-
-&lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="c1"&gt;# Will load A again&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;I&amp;rsquo;ve just introduced the method Rails reloads your code with — &lt;code&gt;clear&lt;/code&gt;. Let&amp;rsquo;s
-dig dipper and see how &lt;code&gt;AS::D&lt;/code&gt; actually works. There are two different constant
-loading strategy: &lt;code&gt;:require&lt;/code&gt; and &lt;code&gt;:load&lt;/code&gt;(default). The first one means that all
-the constants won&amp;rsquo;t be reloaded, as &lt;code&gt;require&lt;/code&gt; does eventually. The last one
-means that all the constants will be removed from memory and loaded again on
-demand. What does removing constant from memory mean? There&amp;rsquo;s a method called
-&lt;code&gt;Module#remove_const(sym)&lt;/code&gt;:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-&lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;:remove_const&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'A'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A (NameError)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;But what if we remove constant for existing instance of a class:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;
-  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nc"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;value&lt;/span&gt;
-    &lt;span class="s1"&gt;'value'&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-&lt;span class="k"&gt;end&lt;/span&gt;
-
-&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;
-&lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;:remove_const&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'A'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; A&lt;/span&gt;
-&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;value&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'value'&lt;/span&gt;
-&lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A (NameError)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;That&amp;rsquo;s interesting because constant name was removed from memory but its
-instance still shows us its class and we can even call class methods on it. It
-turns out that this method only removes constant name from &lt;code&gt;Object&lt;/code&gt; but a class
-is an object and a constant is a variable referencing that object still exists
-in the memory. Ok, move on.&lt;/p&gt;
-
-&lt;p&gt;Calling &lt;code&gt;require &amp;#39;active_support/dependencies&amp;#39;&lt;/code&gt; injects a few modules into basic
-Ruby classes via &lt;code&gt;AS::D.hook!&lt;/code&gt;.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;hook!&lt;/span&gt;
-  &lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class_eval&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="kp"&gt;include&lt;/span&gt; &lt;span class="no"&gt;Loadable&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
-  &lt;span class="no"&gt;Module&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class_eval&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="kp"&gt;include&lt;/span&gt; &lt;span class="no"&gt;ModuleConstMissing&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
-  &lt;span class="no"&gt;Exception&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class_eval&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="kp"&gt;include&lt;/span&gt; &lt;span class="no"&gt;Blamable&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="k"&gt;end&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Methods injected into &lt;code&gt;Object&lt;/code&gt; overwrite methods like &lt;code&gt;load&lt;/code&gt; and &lt;code&gt;require&lt;/code&gt; in
-order to monitor new constants, that said, it depends on loading strategy.
-Another method you could already know is &lt;code&gt;require_dependency&lt;/code&gt; also injected into
-&lt;code&gt;Object&lt;/code&gt;. Methods in &lt;code&gt;Module&lt;/code&gt; define an entry point &lt;code&gt;const_missing&lt;/code&gt;. I&amp;rsquo;m going
-to show you how &lt;code&gt;AS::D&lt;/code&gt; works with this example:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
-&lt;span class="c1"&gt;# module A&lt;/span&gt;
-&lt;span class="c1"&gt;# end&lt;/span&gt;
-
-&lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s1"&gt;'active_support/dependencies'&lt;/span&gt;
-&lt;span class="no"&gt;ActiveSupport&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Dependencies&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;autoload_paths&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'/autoloadable'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-
-&lt;span class="no"&gt;A&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;ol&gt;
-&lt;li&gt;Declaring constant &lt;code&gt;A&lt;/code&gt; triggers &lt;code&gt;Module#const_missing&lt;/code&gt;, that was overwritten
-by &lt;code&gt;AS::D&lt;/code&gt; and &lt;code&gt;Dependencies.load_missing_constant(from_mod, const_name)&lt;/code&gt; is
-invoked. The first argument is &lt;code&gt;Object&lt;/code&gt; because &lt;code&gt;A == Object::A&lt;/code&gt; the second is
-&lt;code&gt;:A&lt;/code&gt;.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;load_missing_constant&lt;/code&gt; tries to find the path for this constant which by
-convention lies somewhere in one of the &lt;code&gt;autoload_paths&lt;/code&gt; by means of
-&lt;code&gt;search_for_file(&amp;#39;a&amp;#39;)&lt;/code&gt;. It just returns the first file it can find with
-&lt;code&gt;File.file?(File.join(autoload_path, &amp;#39;a.rb&amp;#39;))&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Then &lt;code&gt;require_or_load&lt;/code&gt; method is invoked, whose behavior depends on loading
-strategy. For &lt;code&gt;require&lt;/code&gt; it just requires the given file, for &lt;code&gt;load&lt;/code&gt;
-&lt;code&gt;load_file(&amp;#39;/autoloadable/a.rb&amp;#39;, &amp;#39;A&amp;#39;)&lt;/code&gt; is invoked.&lt;/li&gt;
-&lt;li&gt;Then it looks for new constants in given namespaces with:
-&lt;code&gt;new_constants_in(*parent_paths) { Kernel.load(path) }&lt;/code&gt;
-where &lt;code&gt;parent_paths&lt;/code&gt; is &lt;code&gt;[Object]&lt;/code&gt;, because we try to resolve &lt;code&gt;Object::A&lt;/code&gt; and
-&lt;code&gt;path&lt;/code&gt; is the path to file. How does it monitor it? It&amp;rsquo;s just the difference
-between the array of constants before and after. &lt;code&gt;Object.local_constants&lt;/code&gt; gives
-us all the constants inside &lt;code&gt;Object&lt;/code&gt;.&lt;/li&gt;
-&lt;li&gt;When it&amp;rsquo;s done, all newly defined constants append to &lt;code&gt;autoloaded_constants&lt;/code&gt;.
-That&amp;rsquo;s all, new constant was defined with &lt;code&gt;AS::D&lt;/code&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;&lt;code&gt;AS::D.clear&lt;/code&gt; removes constants from memory and clears all the auto-loaded
-constants inside &lt;code&gt;AS::D&lt;/code&gt;. Pay your attention to &lt;code&gt;require_dependency&lt;/code&gt;. This
-method adds all newly defined constants to &lt;code&gt;autoloaded_constants&lt;/code&gt; so that they
-will be reloaded unlike the &lt;code&gt;require&lt;/code&gt; method.&lt;/p&gt;
-
-&lt;p&gt;Another convention &lt;code&gt;AS::D&lt;/code&gt; uses is a path convention. This example
-&lt;code&gt;&amp;#39;A::B&amp;#39;.underscore # =&amp;gt; &amp;#39;a/b&amp;#39;&lt;/code&gt; simply illustrates that &lt;code&gt;::&lt;/code&gt; is treated as a &lt;code&gt;/&lt;/code&gt;,
-which gives us ability to use folders like module namespaces:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
-&lt;span class="c1"&gt;# module A&lt;/span&gt;
-&lt;span class="c1"&gt;# end&lt;/span&gt;
-
-&lt;span class="c1"&gt;# /autoloadable/a/b.rb&lt;/span&gt;
-&lt;span class="c1"&gt;# module A&lt;/span&gt;
-&lt;span class="c1"&gt;#   module B&lt;/span&gt;
-&lt;span class="c1"&gt;#     C = 'c'&lt;/span&gt;
-&lt;span class="c1"&gt;#   end&lt;/span&gt;
-&lt;span class="c1"&gt;# end&lt;/span&gt;
-
-&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="s1"&gt;'c'&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;or even so:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# /autoloadable/a/b.rb&lt;/span&gt;
-&lt;span class="c1"&gt;# module A::B&lt;/span&gt;
-&lt;span class="c1"&gt;#   C = 'c'&lt;/span&gt;
-&lt;span class="c1"&gt;# end&lt;/span&gt;
-
-&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="s1"&gt;'c'&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Although we haven&amp;rsquo;t defined module &lt;code&gt;A&lt;/code&gt;, it has been created for us automatically
-because of existing directory &lt;code&gt;a&lt;/code&gt;. It&amp;rsquo;s really convinient, because you are not
-forced to create an empty module just for namespacing purpose.&lt;/p&gt;
-
-&lt;h3&gt;Misconception&lt;/h3&gt;
-
-&lt;p&gt;Since Ruby passes only one argument to &lt;code&gt;const_missing(const_name)&lt;/code&gt; we don&amp;rsquo;t have
-an idea about the nesting, this example works as expected:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# /autoloadable/b.rb&lt;/span&gt;
-&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;
-&lt;span class="k"&gt;end&lt;/span&gt;
-
-&lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
-&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
-  &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; B&lt;/span&gt;
-&lt;span class="k"&gt;end&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;but this shows wrong results:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
-&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
-&lt;span class="k"&gt;end&lt;/span&gt;
-
-&lt;span class="c1"&gt;# /autoloadable/b.rb&lt;/span&gt;
-&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;
-&lt;span class="k"&gt;end&lt;/span&gt;
-
-&lt;span class="nb"&gt;p&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; B&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Is that right? I don&amp;rsquo;t think so. If we had used pure Ruby it would have thrown
-&lt;code&gt;NameError: uninitialized constant A::B&lt;/code&gt;, because we explicitly said we need &lt;code&gt;B&lt;/code&gt;
-inside of &lt;code&gt;A&lt;/code&gt; but not the top-level &lt;code&gt;B&lt;/code&gt;. But this is Ruby&amp;rsquo;s fault it passes so
-little info to &lt;code&gt;const_missing&lt;/code&gt; and &lt;code&gt;AS::D&lt;/code&gt; can do nothing with it.&lt;/p&gt;
-
-&lt;p&gt;Another cool case:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
-&lt;span class="c1"&gt;# module A; end&lt;/span&gt;
-
-&lt;span class="c1"&gt;# /autoloadable/namespace/a/b.rb&lt;/span&gt;
-&lt;span class="c1"&gt;# module Namespace::A::B&lt;/span&gt;
-&lt;span class="c1"&gt;#  A&lt;/span&gt;
-&lt;span class="c1"&gt;# end&lt;/span&gt;
-
-&lt;span class="no"&gt;Namespace&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; What is A inside this namespace?&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;What would you expect from this example? I think in Ruby it&amp;rsquo;s obviously
-top-level &lt;code&gt;A&lt;/code&gt;, but since &lt;code&gt;AS::D&lt;/code&gt; doesn&amp;rsquo;t know about nesting, would you expect it
-to be either &lt;code&gt;Namespace::A&lt;/code&gt; or &lt;code&gt;A&lt;/code&gt;? Neither, because it&amp;rsquo;s &lt;code&gt;NameError&lt;/code&gt;, which is
-much more confusing. It&amp;rsquo;s the last attempt of &lt;code&gt;AS::D&lt;/code&gt; to make an assumption that
-since one of our parents has this constant
-&lt;code&gt;Namespace.const_defined?(:A, false) # =&amp;gt; true&lt;/code&gt; then we&amp;rsquo;re definitely looking
-for this constant in a short form &lt;code&gt;from_mod::const_name&lt;/code&gt;, otherwise Ruby would
-return it without calling &lt;code&gt;const_missing&lt;/code&gt; and we don&amp;rsquo;t have to search it upwards
-in &lt;code&gt;from_mod&lt;/code&gt;. Why don&amp;rsquo;t we have to search it right at the top-level? May be
-because of this:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# c.rb&lt;/span&gt;
-&lt;span class="c1"&gt;# C = 'c'&lt;/span&gt;
-
-&lt;span class="c1"&gt;# a/c.rb&lt;/span&gt;
-&lt;span class="c1"&gt;# module A&lt;/span&gt;
-&lt;span class="c1"&gt;#   C = 'ac'&lt;/span&gt;
-&lt;span class="c1"&gt;# end&lt;/span&gt;
-
-&lt;span class="c1"&gt;# a/b.rb&lt;/span&gt;
-&lt;span class="c1"&gt;# module A::B&lt;/span&gt;
-&lt;span class="c1"&gt;#   C&lt;/span&gt;
-&lt;span class="c1"&gt;# end&lt;/span&gt;
-
-&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'ac'&lt;/span&gt;
-&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A::B::C&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Calling it twice gives us an error, because of the same case we&amp;rsquo;ve considered
-above. The first time &lt;code&gt;AS::D&lt;/code&gt; resolves &lt;code&gt;C&lt;/code&gt; through as usual, but the second time
-it starts checking enclosing modules and since &lt;code&gt;A&lt;/code&gt; contains &lt;code&gt;C&lt;/code&gt; then Ruby must
-have resolved it or otherwise it&amp;rsquo;s the short form and an error is thrown.
-Imagine we&amp;rsquo;ve fixed it and instead of error we start loading top level constant.
-Is it any better? Now we have two different constants calling it twice in a row,
-which is still sad. That&amp;rsquo;s why I&amp;rsquo;d prefer an error.&lt;/p&gt;
-
-&lt;h3&gt;Thread safety&lt;/h3&gt;
-
-&lt;p&gt;Let&amp;rsquo;s write our own simplified autoloading:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# autoloadable/a.rb&lt;/span&gt;
-&lt;span class="c1"&gt;# module A&lt;/span&gt;
-&lt;span class="c1"&gt;#   sleep 5&lt;/span&gt;
-&lt;span class="c1"&gt;#   def self.hello&lt;/span&gt;
-&lt;span class="c1"&gt;#     'hello'&lt;/span&gt;
-&lt;span class="c1"&gt;#   end&lt;/span&gt;
-&lt;span class="c1"&gt;# end&lt;/span&gt;
-
-&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Module&lt;/span&gt;
-  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;const_missing&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;name&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s2"&gt;"./autoloadable/&lt;/span&gt;&lt;span class="si"&gt;#{&lt;/span&gt;&lt;span class="nb"&gt;name&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;downcase&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;.rb"&lt;/span&gt;
-    &lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;const_get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;name&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-&lt;span class="k"&gt;end&lt;/span&gt;
-
-&lt;span class="n"&gt;t1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Thread&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;hello&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="n"&gt;t2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Thread&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;hello&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="n"&gt;t1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;join&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;t2&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;join&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;The result is &lt;code&gt;undefined method &amp;#39;hello&amp;#39; for A:Module (NoMethodError)&lt;/code&gt;. Why?
-Because second thread takes over when the first is awaiting sleeping. At that
-moment module &lt;code&gt;A&lt;/code&gt; is already defined but method &lt;code&gt;hello&lt;/code&gt; isn&amp;rsquo;t defined yet. It
-turns out that &lt;code&gt;AS::D&lt;/code&gt; will never be thread safe until &lt;code&gt;const_missing&lt;/code&gt; isn&amp;rsquo;t
-thread safe. That&amp;rsquo;s the reason why your production environment loads all the
-constants on initialization step. In fact, you can see different errors even
-with MRI, because it switches threads when waits for input-ouput or network. For
-instance, circular dependency arises, when the first thread waits for
-input-ouput and another thread starts resolving the same constant, which is
-already in the list of loaded.&lt;/p&gt;
-
-&lt;h3&gt;Known errors&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Toplevel constant B referenced by A::B&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Have you ever seen the &amp;lsquo;Toplevel constant B referenced by A::B&amp;rsquo;? It&amp;rsquo;s easy to
-reproduce even without &lt;code&gt;AS::D&lt;/code&gt;:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-
-&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Since &lt;code&gt;A.ancestors&lt;/code&gt; is &lt;code&gt;[A, Object, Kernel, BasicObject]&lt;/code&gt; and contains class
-&lt;code&gt;Object&lt;/code&gt; and &lt;code&gt;B&lt;/code&gt; are already defined as top level constants, Ruby shows us a
-warning that constant we&amp;rsquo;re trying to resolve inside &lt;code&gt;A&lt;/code&gt; references top level
-constant. Notice that for modules the situation is different:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-
-&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;It gives us just &amp;lsquo;uninitialized constant A::B (NameError)&amp;rsquo; because the ancestors
-chain doesn&amp;rsquo;t contain &lt;code&gt;Object&lt;/code&gt;.&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Circular dependency detected while autoloading constant&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;This is yet another &lt;code&gt;AS::D&lt;/code&gt; error that you could see:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
-&lt;span class="c1"&gt;# B&lt;/span&gt;
-&lt;span class="c1"&gt;# module A&lt;/span&gt;
-&lt;span class="c1"&gt;# end&lt;/span&gt;
-
-&lt;span class="c1"&gt;# /autoloadable/b.rb&lt;/span&gt;
-&lt;span class="c1"&gt;# A&lt;/span&gt;
-&lt;span class="c1"&gt;# module B&lt;/span&gt;
-&lt;span class="c1"&gt;# end&lt;/span&gt;
-
-&lt;span class="no"&gt;A&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;If we try to access constant &lt;code&gt;A&lt;/code&gt; we&amp;rsquo;ll see this error. &lt;code&gt;AS::D&lt;/code&gt; makes an
-assumption that this constant is defined in file &lt;code&gt;a.rb&lt;/code&gt;. When it loads this file
-it finds another undefined constant &lt;code&gt;B&lt;/code&gt; and this time faces still undefined &lt;code&gt;A&lt;/code&gt;
-while loading file &lt;code&gt;b.rb&lt;/code&gt;. This generates infinite recursion and to prevent it
-an error must be raised. This error as and many others also appears in
-multi-threaded environment.&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;A copy of &lt;code&gt;A&lt;/code&gt; has been removed from the module tree but is still active!&lt;/li&gt;
-&lt;/ul&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# /autoloadable/money.rb&lt;/span&gt;
-&lt;span class="c1"&gt;# class Money&lt;/span&gt;
-&lt;span class="c1"&gt;# end&lt;/span&gt;
-
-&lt;span class="c1"&gt;# /autoloadable/customer.rb&lt;/span&gt;
-&lt;span class="c1"&gt;# class Customer&lt;/span&gt;
-&lt;span class="c1"&gt;#   def money&lt;/span&gt;
-&lt;span class="c1"&gt;#     Money.new&lt;/span&gt;
-&lt;span class="c1"&gt;#   end&lt;/span&gt;
-&lt;span class="c1"&gt;# end&lt;/span&gt;
-
-&lt;span class="n"&gt;customer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Customer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;
-
-&lt;span class="no"&gt;ActiveSupport&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Dependencies&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;clear&lt;/span&gt;
-
-&lt;span class="n"&gt;customer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;money&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;It happens because class for &lt;code&gt;Customer&lt;/code&gt; was autoloaded, but class for &lt;code&gt;Money&lt;/code&gt;
-wasn&amp;rsquo;t because we haven&amp;rsquo;t invoked &lt;code&gt;Money.new&lt;/code&gt; before &lt;code&gt;AS::D.clear&lt;/code&gt;. Then
-&lt;code&gt;Customer&lt;/code&gt; was removed as a reference, but instance of this class is still in
-memory, and then we&amp;rsquo;re trying to resolve constant name &lt;code&gt;Money&lt;/code&gt;, but for
-&lt;code&gt;customer.class::Money&lt;/code&gt; which is different from newly loaded &lt;code&gt;Customer&lt;/code&gt;. Please
-note that saving the whole instance somewhere between sessions increases chances
-you&amp;rsquo;ll see this error.&lt;/p&gt;
-
-&lt;h3&gt;Conclusion&lt;/h3&gt;
-
-&lt;p&gt;You don&amp;rsquo;t have to care about all this stuff if you have flat hierarchy. It means
-when you don&amp;rsquo;t use namespaces and all the files have different names, but it&amp;rsquo;s
-hard if you have a lot of classes/modules. So you must have clear understanding
-of this if you don&amp;rsquo;t want to be in trouble:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;Don&amp;rsquo;t use the same name for top-level and namespaced constants.&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Be careful when you use short form declaration unless you know what you do.&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Be careful if you use short form declaration and it contains the name of the
-constant you try to resolve, use full path instead.&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Carefully work with constants in initializers, you may declare new constant
-instead of loading original.&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Try to run you application with eager loading or in production mode since it
-may load your code in another order.&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3&gt;Links and used sources:&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href="http://blog.plataformatec.com.br/2012/08/eager-loading-for-greater-good/"&gt;Eager loading&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="http://urbanautomaton.com/blog/2013/08/27/rails-autoloading-hell/"&gt;Rails autoloading&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="http://tenderlovemaking.com/2012/06/18/removing-config-threadsafe.html"&gt;Removing config.threadsafe!&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 </content>
   </entry>

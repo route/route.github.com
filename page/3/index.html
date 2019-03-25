@@ -19,36 +19,6 @@
           <div>
             <article>
               <header>
-                <h2><a href="/2014/08/10/query-trail.html">Query Trail</a></h2>
-                <time datetime="2014-08-10">August 10, 2014</time>
-              </header>
-              <div>
-                <p>Recently I switched on a project with lots of legacy code. It was on Rails 2,
-Rails 3 and now I’ve updated it to Rails 4.1. You can’t even imagine how much
-rubbish I got rid of. But the thing I’d like to share with you today is
-<a href="https://github.com/route/query_trail">QueryTrail</a>. This simple...</p>
-              </div>
-              <footer>
-                <a href="/2014/08/10/query-trail.html">Read more</a>
-              </footer>
-          </article>
-          <article>
-              <header>
-                <h2><a href="/2013/11/13/rails-autoloading.html">Rails autoloading</a></h2>
-                <time datetime="2013-11-13">November 13, 2013</time>
-              </header>
-              <div>
-                <p>There is much to be said about Rails autoloading and particularly about
-<code>ActiveSupport::Dependencies</code> (<code>AS::D</code> for short). What does it do? As the title
-says it loads constants automatically and reloads your code catching changes on
-every request. Ok,...</p>
-              </div>
-              <footer>
-                <a href="/2013/11/13/rails-autoloading.html">Read more</a>
-              </footer>
-          </article>
-          <article>
-              <header>
                 <h2><a href="/2013/11/05/ruby-loading-and-requiring-files-constant-name-resolution.html">Ruby loading and requiring files, constant name resolution</a></h2>
                 <time datetime="2013-11-05">November  5, 2013</time>
               </header>
@@ -62,14 +32,45 @@ about how Ruby loads and requires modules, constant name...</p>
                 <a href="/2013/11/05/ruby-loading-and-requiring-files-constant-name-resolution.html">Read more</a>
               </footer>
           </article>
+          <article>
+              <header>
+                <h2><a href="/2012/12/16/ruby-inherited-method-bug.html">Ruby inherited method bug</a></h2>
+                <time datetime="2012-12-16">December 16, 2012</time>
+              </header>
+              <div>
+                <p>This post is about the bug I found when I was writing tests for <code>quiet_assets</code>.
+I won’t show you all those tests, just a small piece:</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="no">Class</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">Rails</span><span class="o">::</span><span class="no">Application</span><span class="p">)</span> <span class="k">do</span>
+  <span class="n">routes</span><span class="p">.</span><span class="nf">append</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>All of them were passed on my laptop, but Travis-CI showed...</p>
+              </div>
+              <footer>
+                <a href="/2012/12/16/ruby-inherited-method-bug.html">Read more</a>
+              </footer>
+          </article>
+          <article>
+              <header>
+                <h2><a href="/2012/08/28/see-the-difference.html">See the difference</a></h2>
+                <time datetime="2012-08-28">August 28, 2012</time>
+              </header>
+              <div>
+                <p>Yesterday I faced the strange behaviour of the array wrapping in context
+of Arel. I tried to wrap something like this <code>User.arel_table[:id]</code> but
+<code>Array(User.arel_table[:id])</code> and <code>Array.wrap(User.arel_table[:id])</code>
+gave me different results. Now I’ll tell...</p>
+              </div>
+              <footer>
+                <a href="/2012/08/28/see-the-difference.html">Read more</a>
+              </footer>
+          </article>
 
   <center>
     <p>
         <a href="/page/2/">Prev</a>
         |
-      Page 3 of 4
-        |
-        <a href="/page/4/">Next</a>
+      Page 3 of 3
     </p>
   </center>
 

@@ -19,61 +19,50 @@
           <div>
             <article>
               <header>
-                <h2><a href="/2018/05/21/freebsd-openvpn.html">OpenVPN on FreeBSD 11.1</a></h2>
-                <time datetime="2018-05-21">May 21, 2018</time>
-              </header>
-              <div>
-                <h3>Install and copy configs:</h3>
-
-<p>Let’s first change shell to sh as FreeBSD comes with csh by default:</p>
-<div class="highlight"><pre class="highlight shell"><code>root@vpn:~ <span class="c"># sh</span>
-</code></pre></div><div class="highlight"><pre class="highlight shell"><code>pkg update <span class="o">&amp;&amp;</span> pkg install openvpn
-mkdir /usr/local/etc/openvpn
-cp /usr/local/share/examples/openvpn/sample-config-files/server.conf <span class="se">\</span>
- ...</code></pre></div>
-              </div>
-              <footer>
-                <a href="/2018/05/21/freebsd-openvpn.html">Read more</a>
-              </footer>
-          </article>
-          <article>
-              <header>
-                <h2><a href="/2018/05/11/stop-using-active-record-first.html">Stop using ActiveRecord's first method</a></h2>
-                <time datetime="2018-05-11">May 11, 2018</time>
+                <h2><a href="/2018/04/12/stop-using-active-record-first.html">Slow query with ActiveRecord's method first</a></h2>
+                <time datetime="2018-04-12">April 12, 2018</time>
               </header>
               <div>
                 <p>If you’ve grown with Rails like me you know that everyone used and perhaps still
-use everywhere <code>first</code>. You type it without hesitation.</p>
+uses everywhere <code>first</code> method. You just type it automatically. I know that it’s
+so simple that it doesn’t even deserve a post but you have to stop doing that.</p>
 
 <p><img src="/images/irb.png" class="img-fluid" alt="irb"></p>
 
-<p>I know that it’s so simple that maybe it even doesn’t deserve a post but just
-stop doing that.</p>
-
-<p>There’s a much...</p>
+<p>Things...</p>
               </div>
               <footer>
-                <a href="/2018/05/11/stop-using-active-record-first.html">Read more</a>
+                <a href="/2018/04/12/stop-using-active-record-first.html">Read more</a>
               </footer>
           </article>
           <article>
               <header>
-                <h2><a href="/2018/04/24/telegram-drama-part-1.html">Telegram drama (Part 1)</a></h2>
-                <time datetime="2018-04-24">April 24, 2018</time>
+                <h2><a href="/2014/08/10/query-trail.html">Query Trail</a></h2>
+                <time datetime="2014-08-10">August 10, 2014</time>
               </header>
               <div>
-                <p>In my childhood internet and network looked like a magick. In the movies they
-showed something like ping output and I definitely thought that someone hacked
-someone else.</p>
-
-<p><img src="/images/hackers.png" class="img-fluid" alt="hackers"></p>
-
-<h3>The beginning of story</h3>
-
-<p>Recently media regulator Roskomnadzor started to block...</p>
+                <p>Recently I switched on a project with lots of legacy code. It was on Rails 2,
+Rails 3 and now I’ve updated it to Rails 4.1. You can’t even imagine how much
+rubbish I got rid of. But the thing I’d like to share with you today is
+<a href="https://github.com/route/query_trail">QueryTrail</a>. This simple...</p>
               </div>
               <footer>
-                <a href="/2018/04/24/telegram-drama-part-1.html">Read more</a>
+                <a href="/2014/08/10/query-trail.html">Read more</a>
+              </footer>
+          </article>
+          <article>
+              <header>
+                <h2><a href="/2013/11/13/rails-autoloading.html">Rails autoloading</a></h2>
+                <time datetime="2013-11-13">November 13, 2013</time>
+              </header>
+              <div>
+                <p>There is much to be said about Rails autoloading and particularly about
+<code>ActiveSupport::Dependencies</code> (<code>AS::D</code> for short). What does it do? As the title
+says it loads constants automatically and reloads your code catching changes on
+every request. Ok,...</p>
+              </div>
+              <footer>
+                <a href="/2013/11/13/rails-autoloading.html">Read more</a>
               </footer>
           </article>
 
@@ -81,7 +70,7 @@ someone else.</p>
     <p>
         <a href="/">Prev</a>
         |
-      Page 2 of 4
+      Page 2 of 3
         |
         <a href="/page/3/">Next</a>
     </p>

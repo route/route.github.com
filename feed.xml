@@ -4,100 +4,10 @@
   <id>http://route.github.io/</id>
   <link href="http://route.github.io/"/>
   <link href="http://route.github.io/feed.xml" rel="self"/>
-  <updated>2018-11-17T00:00:00+03:00</updated>
+  <updated>2018-09-24T00:00:00+03:00</updated>
   <author>
     <name>Dmitry Vorotilin</name>
   </author>
-  <entry>
-    <title>Telegram drama (Part 2)</title>
-    <link rel="alternate" href="/2018/11/17/telegram-drama-part-2.html"/>
-    <id>/2018/11/17/telegram-drama-part-2.html</id>
-    <published>2018-11-17T00:00:00+03:00</published>
-    <updated>2018-11-17T00:00:00+03:00</updated>
-    <author>
-      <name>Dmitry Vorotilin</name>
-    </author>
-    <summary type="html">&lt;p&gt;I want my internet to work w/o restrictions and I don’t want to set up tunnels
-on every signle device. In other words router should set up the tunnel and route
-traffic accordingly. My new toy is &lt;a href="https://mikrotik.com/product/hap_ac2"&gt;Mikrotik hap ac2&lt;/a&gt;
-and I’m very happy with it. It supports...&lt;/p&gt;</summary>
-    <content type="html">&lt;p&gt;I want my internet to work w/o restrictions and I don&amp;rsquo;t want to set up tunnels
-on every signle device. In other words router should set up the tunnel and route
-traffic accordingly. My new toy is &lt;a href="https://mikrotik.com/product/hap_ac2"&gt;Mikrotik hap ac2&lt;/a&gt;
-and I&amp;rsquo;m very happy with it. It supports many cool features, the speed is great
-and hardware accelearation for IPsec should speed it up even more.&lt;/p&gt;
-
-&lt;p&gt;I have bought a server overseas, let&amp;rsquo;s setup GRE tunnel between router and a
-server(&lt;code&gt;x.x.x.x&lt;/code&gt; - server&amp;rsquo;s white IP, &lt;code&gt;y.y.y.y&lt;/code&gt; - router&amp;rsquo;s white IP), the
-network IP address inside the tunnel will be &lt;code&gt;192.168.0.1&lt;/code&gt; for server and
-&lt;code&gt;192.168.0.2&lt;/code&gt; for router, my home network behind router is &lt;code&gt;192.168.88.0/24&lt;/code&gt;:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo cat&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;EOF&lt;/span&gt;&lt;span class="sh"&gt; &amp;gt;&amp;gt; /etc/network/interfaces
- iface tun1 inet static
-    address 192.168.0.1
-    netmask 255.255.255.0
-    mtu 1456
-    pre-up iptunnel add tun1 mode gre local x.x.x.x remote y.y.y.y ttl 255
-    up ifconfig tun1 multicast
-    pointopoint 192.168.0.2
-    post-down iptunnel del tun1
- up ip ro add 192.168.88.0/24 via 192.168.0.2
-&lt;/span&gt;&lt;span class="no"&gt;EOF
-
-&lt;/span&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo echo&lt;/span&gt; &lt;span class="s2"&gt;"net.ipv4.ip_forward = 1"&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt; /etc/sysctl.conf
-&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo &lt;/span&gt;sysctl &lt;span class="nt"&gt;-p&lt;/span&gt; &lt;span class="c"&gt;# check if it's set properly&lt;/span&gt;
-&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo &lt;/span&gt;iptables &lt;span class="nt"&gt;-t&lt;/span&gt; nat &lt;span class="nt"&gt;-A&lt;/span&gt; POSTROUTING &lt;span class="nt"&gt;-o&lt;/span&gt; ens3 &lt;span class="nt"&gt;-j&lt;/span&gt; MASQUERADE
-&lt;span class="nv"&gt;$ &lt;/span&gt;ifdown tun1 &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; ifup tun1
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;On the router:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;/interface gre add &lt;span class="nv"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"gre-tunnel1"&lt;/span&gt; &lt;span class="nv"&gt;mtu&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;auto local-address&lt;span class="o"&gt;=&lt;/span&gt;y.y.y.y remote-address&lt;span class="o"&gt;=&lt;/span&gt;x.x.x.x clamp-tcp-mss&lt;span class="o"&gt;=&lt;/span&gt;yes dont-fragment&lt;span class="o"&gt;=&lt;/span&gt;no allow-fast-path&lt;span class="o"&gt;=&lt;/span&gt;yes
-/ip address add &lt;span class="nv"&gt;address&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;192.168.0.2/24 &lt;span class="nv"&gt;network&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;192.168.0.0 &lt;span class="nv"&gt;interface&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
-
-/ip firewall mangle
-add &lt;span class="nv"&gt;chain&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;forward &lt;span class="nv"&gt;action&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;change-mss new-mss&lt;span class="o"&gt;=&lt;/span&gt;clamp-to-pmtu &lt;span class="nv"&gt;passthrough&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;no tcp-flags&lt;span class="o"&gt;=&lt;/span&gt;syn &lt;span class="nv"&gt;protocol&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;tcp &lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="nt"&gt;-interface&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1 tcp-mss&lt;span class="o"&gt;=&lt;/span&gt;1300-65535 &lt;span class="nv"&gt;log&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;no log-prefix&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;""&lt;/span&gt;
-add &lt;span class="nv"&gt;chain&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;forward &lt;span class="nv"&gt;action&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;change-mss new-mss&lt;span class="o"&gt;=&lt;/span&gt;clamp-to-pmtu &lt;span class="nv"&gt;passthrough&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;no tcp-flags&lt;span class="o"&gt;=&lt;/span&gt;syn &lt;span class="nv"&gt;protocol&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;tcp out-interface&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1 tcp-mss&lt;span class="o"&gt;=&lt;/span&gt;1300-65535 &lt;span class="nv"&gt;log&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;no log-prefix&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;""&lt;/span&gt;
-
-/ip route
-add &lt;span class="nv"&gt;comment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;linkedin &lt;span class="nv"&gt;distance&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 dst-address&lt;span class="o"&gt;=&lt;/span&gt;91.225.248.0/22 &lt;span class="nv"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
-add &lt;span class="nv"&gt;comment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;linkedin &lt;span class="nv"&gt;distance&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 dst-address&lt;span class="o"&gt;=&lt;/span&gt;108.174.0.0/20 &lt;span class="nv"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
-add &lt;span class="nv"&gt;comment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;linkedin &lt;span class="nv"&gt;distance&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 dst-address&lt;span class="o"&gt;=&lt;/span&gt;185.63.144.0/22 &lt;span class="nv"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
-add &lt;span class="nv"&gt;comment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;rutracker &lt;span class="nv"&gt;distance&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 dst-address&lt;span class="o"&gt;=&lt;/span&gt;195.82.146.0/24 &lt;span class="nv"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
-add &lt;span class="nv"&gt;comment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;telegram &lt;span class="nv"&gt;distance&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 dst-address&lt;span class="o"&gt;=&lt;/span&gt;149.154.164.0/22 &lt;span class="nv"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;You can now open all sites you added routes to; the packets for them now flow
-thru the tunnel. That&amp;rsquo;s it.&lt;/p&gt;
-</content>
-  </entry>
-  <entry>
-    <title>Don't buy GPON</title>
-    <link rel="alternate" href="/2018/11/16/do-not-buy-gpon-ever.html"/>
-    <id>/2018/11/16/do-not-buy-gpon-ever.html</id>
-    <published>2018-11-16T00:00:00+03:00</published>
-    <updated>2018-11-16T00:00:00+03:00</updated>
-    <author>
-      <name>Dmitry Vorotilin</name>
-    </author>
-    <summary type="html">&lt;p&gt;The text below is true for Rostelekom as well as I think many other providers.
-There are many downsides of GPON you can read articles about it in the footer
-but for me it’s inability to set up my own or at least high quality router
-instead of the one...&lt;/p&gt;</summary>
-    <content type="html">&lt;p&gt;The text below is true for Rostelekom as well as I think many other providers.
-There are many downsides of GPON you can read articles about it in the footer
-but for me it&amp;rsquo;s inability to set up my own or at least high quality router
-instead of the one given by provider. You as a customer will rent a router from
-them. The router usually goes with buggy firmware, remote access for provider
-and inability to set it to the bridge mode. In other words it is a useless piece
-of trash which you will own as you redeem it during 2 years and you cannot buy
-another one and replace this shit because it simply won&amp;rsquo;t work with GPON. Also
-&lt;a href="https://habr.com/post/113086/"&gt;Rostelekom is the biggest player&lt;/a&gt; in Russia and
-has tight realtionship with goverment so I prefer stayng as far away as possible
-from them and pay my money to a smaller provider to keep it on the air.&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href="https://pierrekim.github.io/blog/2016-11-01-gpon-ftth-networks-insecurity.html"&gt;GPON FTTH networks (in)security&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="https://lurkmore.to/GPON"&gt;Lurkmore GPON&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</content>
-  </entry>
   <entry>
     <title>OpenVPN on Ubuntu 18.04</title>
     <link rel="alternate" href="/2018/09/24/ubuntu-openvpn.html"/>
@@ -400,72 +310,9 @@ and start browsing internet securely:&lt;/p&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content>
   </entry>
   <entry>
-    <title>Stop using ActiveRecord's first method</title>
-    <link rel="alternate" href="/2018/05/11/stop-using-active-record-first.html"/>
-    <id>/2018/05/11/stop-using-active-record-first.html</id>
-    <published>2018-05-11T00:00:00+03:00</published>
-    <updated>2018-05-11T00:00:00+03:00</updated>
-    <author>
-      <name>Dmitry Vorotilin</name>
-    </author>
-    <summary type="html">&lt;p&gt;If you’ve grown with Rails like me you know that everyone used and perhaps still
-use everywhere &lt;code&gt;first&lt;/code&gt;. You type it without hesitation.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src="/images/irb.png" class="img-fluid" alt="irb"&gt;&lt;/p&gt;
-
-&lt;p&gt;I know that it’s so simple that maybe it even doesn’t deserve a post but just
-stop doing that.&lt;/p&gt;
-
-&lt;p&gt;There’s a much...&lt;/p&gt;</summary>
-    <content type="html">&lt;p&gt;If you&amp;rsquo;ve grown with Rails like me you know that everyone used and perhaps still
-use everywhere &lt;code&gt;first&lt;/code&gt;. You type it without hesitation.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src="/images/irb.png" class="img-fluid" alt="irb"&gt;&lt;/p&gt;
-
-&lt;p&gt;I know that it&amp;rsquo;s so simple that maybe it even doesn&amp;rsquo;t deserve a post but just
-stop doing that.&lt;/p&gt;
-
-&lt;p&gt;There&amp;rsquo;s a much better method &lt;a href="https://github.com/rails/rails/commit/1379375f93c53d4c49fa8592b6117c3ade263f2e"&gt;take&lt;/a&gt;
-added long ago Apr 27, 2012 and if you say right now:&lt;/p&gt;
-
-&lt;p&gt;- I know all that!&lt;/p&gt;
-
-&lt;p&gt;then things are getting more intersting with PostgreSQL v10 at least:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight sql"&gt;&lt;code&gt;&lt;span class="k"&gt;EXPLAIN&lt;/span&gt; &lt;span class="k"&gt;ANALYZE&lt;/span&gt; &lt;span class="k"&gt;SELECT&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="k"&gt;FROM&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt; &lt;span class="k"&gt;WHERE&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;"deleted_at"&lt;/span&gt; &lt;span class="k"&gt;IS&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt; &lt;span class="k"&gt;AND&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;"user_id"&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="k"&gt;order&lt;/span&gt; &lt;span class="k"&gt;by&lt;/span&gt; &lt;span class="n"&gt;id&lt;/span&gt; &lt;span class="k"&gt;ASC&lt;/span&gt; &lt;span class="k"&gt;limit&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-                                                                    &lt;span class="n"&gt;QUERY&lt;/span&gt; &lt;span class="n"&gt;PLAN&lt;/span&gt;                                                                    
-&lt;span class="c1"&gt;--------------------------------------------------------------------------------------------------------------------------------------------------&lt;/span&gt;
- &lt;span class="k"&gt;Limit&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;26&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;91&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;327&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;actual&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;875&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;875&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-   &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;  &lt;span class="k"&gt;Index&lt;/span&gt; &lt;span class="n"&gt;Scan&lt;/span&gt; &lt;span class="k"&gt;using&lt;/span&gt; &lt;span class="n"&gt;posts_pkey&lt;/span&gt; &lt;span class="k"&gt;on&lt;/span&gt; &lt;span class="n"&gt;posts&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;2057670&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;78&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;76800&lt;/span&gt; &lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;327&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;actual&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;874&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;874&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-         &lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;deleted_at&lt;/span&gt; &lt;span class="k"&gt;IS&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;AND&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;user_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-         &lt;span class="k"&gt;Rows&lt;/span&gt; &lt;span class="n"&gt;Removed&lt;/span&gt; &lt;span class="k"&gt;by&lt;/span&gt; &lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;26826499&lt;/span&gt;
- &lt;span class="n"&gt;Planning&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;202&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt;
- &lt;span class="n"&gt;Execution&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;905&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt;
-&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Doesn&amp;rsquo;t it look creepy? According to &lt;a href="https://stackoverflow.com/questions/21385555/postgresql-query-very-slow-with-limit-1"&gt;stackoverflow&lt;/a&gt;
-it can be an issue in the planner and given that you have pretty large table not
-with 10 posts of course this query becomes drastically slower than planned. So a
-combination of two issues results in a waste of time for investigation. First of
-all it shouldn&amp;rsquo;t have happened if we used &lt;code&gt;take&lt;/code&gt;:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight sql"&gt;&lt;code&gt;&lt;span class="k"&gt;EXPLAIN&lt;/span&gt; &lt;span class="k"&gt;ANALYZE&lt;/span&gt; &lt;span class="k"&gt;SELECT&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="k"&gt;FROM&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt; &lt;span class="k"&gt;WHERE&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;"deleted_at"&lt;/span&gt; &lt;span class="k"&gt;IS&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt; &lt;span class="k"&gt;AND&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;"user_id"&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="k"&gt;limit&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-                                                     &lt;span class="n"&gt;QUERY&lt;/span&gt; &lt;span class="n"&gt;PLAN&lt;/span&gt;                                                     
-&lt;span class="c1"&gt;--------------------------------------------------------------------------------------------------------------------&lt;/span&gt;
- &lt;span class="k"&gt;Limit&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;00&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;13&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;40&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;327&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;actual&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;979&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;979&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-   &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;  &lt;span class="n"&gt;Seq&lt;/span&gt; &lt;span class="n"&gt;Scan&lt;/span&gt; &lt;span class="k"&gt;on&lt;/span&gt; &lt;span class="n"&gt;posts&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;00&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;1029108&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;93&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;76800&lt;/span&gt; &lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;327&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;actual&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;978&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;978&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-         &lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;deleted_at&lt;/span&gt; &lt;span class="k"&gt;IS&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;AND&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;user_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-         &lt;span class="k"&gt;Rows&lt;/span&gt; &lt;span class="n"&gt;Removed&lt;/span&gt; &lt;span class="k"&gt;by&lt;/span&gt; &lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;3463&lt;/span&gt;
- &lt;span class="n"&gt;Planning&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;606&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt;
- &lt;span class="n"&gt;Execution&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;047&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt;
-&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Force yourself typing &lt;code&gt;take&lt;/code&gt; instead of &lt;code&gt;first&lt;/code&gt; if you don&amp;rsquo;t care about the order
-which in most cases is the case.&lt;/p&gt;
-</content>
-  </entry>
-  <entry>
-    <title>Telegram drama (Part 1)</title>
-    <link rel="alternate" href="/2018/04/24/telegram-drama-part-1.html"/>
-    <id>/2018/04/24/telegram-drama-part-1.html</id>
+    <title>Telegram drama</title>
+    <link rel="alternate" href="/2018/04/24/telegram-drama.html"/>
+    <id>/2018/04/24/telegram-drama.html</id>
     <published>2018-04-24T00:00:00+03:00</published>
     <updated>2018-04-24T00:00:00+03:00</updated>
     <author>
@@ -681,6 +528,66 @@ Instead I feel more like a resource that big company can sell and goverment can
 control limiting my view. They all either earn money or get benefit trading you
 but the thing is you don&amp;rsquo;t get anything out of it.&lt;/p&gt;
 
+&lt;h3&gt;A few words about GPON&lt;/h3&gt;
+
+&lt;p&gt;The text below is true for many ISPs. There are many downsides of GPON you can
+read articles about it in the footer but for me it&amp;rsquo;s inability to set up my own
+or at least high quality router instead of the one given by provider. You as a
+customer will rent a router from them. The router usually goes with buggy
+firmware, remote access for provider and inability to set it to the bridge mode.
+In other words it is a useless piece of trash which you will own as you redeem
+it during 2 years and you cannot buy another one and replace this shit because
+it simply won&amp;rsquo;t work with GPON. Also &lt;a href="https://habr.com/post/113086/"&gt;Rostelekom is the biggest player&lt;/a&gt;
+in Russia and has tight realtionship with goverment so I prefer stayng as far
+away as possible from them and pay to a smaller provider to keep it on the air.&lt;/p&gt;
+
+&lt;h3&gt;A way to bypass restrictions&lt;/h3&gt;
+
+&lt;p&gt;I want my internet to work w/o restrictions and I don&amp;rsquo;t want to set up tunnels
+on every signle device. In other words router should set up the tunnel and route
+traffic accordingly. My new toy is &lt;a href="https://mikrotik.com/product/hap_ac2"&gt;Mikrotik hap ac2&lt;/a&gt;
+and I&amp;rsquo;m very happy with it. It supports many cool features, the speed is great
+and hardware accelearation for IPsec should speed it up even more.&lt;/p&gt;
+
+&lt;p&gt;I have bought a server overseas, let&amp;rsquo;s setup GRE tunnel between router and a
+server(&lt;code&gt;x.x.x.x&lt;/code&gt; - server&amp;rsquo;s white IP, &lt;code&gt;y.y.y.y&lt;/code&gt; - router&amp;rsquo;s white IP), the
+network IP address inside the tunnel will be &lt;code&gt;192.168.0.1&lt;/code&gt; for server and
+&lt;code&gt;192.168.0.2&lt;/code&gt; for router, my home network behind router is &lt;code&gt;192.168.88.0/24&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo cat&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;EOF&lt;/span&gt;&lt;span class="sh"&gt; &amp;gt;&amp;gt; /etc/network/interfaces
+ iface tun1 inet static
+    address 192.168.0.1
+    netmask 255.255.255.0
+    mtu 1456
+    pre-up iptunnel add tun1 mode gre local x.x.x.x remote y.y.y.y ttl 255
+    up ifconfig tun1 multicast
+    pointopoint 192.168.0.2
+    post-down iptunnel del tun1
+ up ip ro add 192.168.88.0/24 via 192.168.0.2
+&lt;/span&gt;&lt;span class="no"&gt;EOF
+
+&lt;/span&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo echo&lt;/span&gt; &lt;span class="s2"&gt;"net.ipv4.ip_forward = 1"&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt; /etc/sysctl.conf
+&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo &lt;/span&gt;sysctl &lt;span class="nt"&gt;-p&lt;/span&gt; &lt;span class="c"&gt;# check if it's set properly&lt;/span&gt;
+&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo &lt;/span&gt;iptables &lt;span class="nt"&gt;-t&lt;/span&gt; nat &lt;span class="nt"&gt;-A&lt;/span&gt; POSTROUTING &lt;span class="nt"&gt;-o&lt;/span&gt; ens3 &lt;span class="nt"&gt;-j&lt;/span&gt; MASQUERADE
+&lt;span class="nv"&gt;$ &lt;/span&gt;ifdown tun1 &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; ifup tun1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;On the router:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;/interface gre add &lt;span class="nv"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"gre-tunnel1"&lt;/span&gt; &lt;span class="nv"&gt;mtu&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;auto local-address&lt;span class="o"&gt;=&lt;/span&gt;y.y.y.y remote-address&lt;span class="o"&gt;=&lt;/span&gt;x.x.x.x clamp-tcp-mss&lt;span class="o"&gt;=&lt;/span&gt;yes dont-fragment&lt;span class="o"&gt;=&lt;/span&gt;no allow-fast-path&lt;span class="o"&gt;=&lt;/span&gt;yes
+/ip address add &lt;span class="nv"&gt;address&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;192.168.0.2/24 &lt;span class="nv"&gt;network&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;192.168.0.0 &lt;span class="nv"&gt;interface&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
+
+/ip firewall mangle
+add &lt;span class="nv"&gt;chain&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;forward &lt;span class="nv"&gt;action&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;change-mss new-mss&lt;span class="o"&gt;=&lt;/span&gt;clamp-to-pmtu &lt;span class="nv"&gt;passthrough&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;no tcp-flags&lt;span class="o"&gt;=&lt;/span&gt;syn &lt;span class="nv"&gt;protocol&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;tcp &lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="nt"&gt;-interface&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1 tcp-mss&lt;span class="o"&gt;=&lt;/span&gt;1300-65535 &lt;span class="nv"&gt;log&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;no log-prefix&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;""&lt;/span&gt;
+add &lt;span class="nv"&gt;chain&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;forward &lt;span class="nv"&gt;action&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;change-mss new-mss&lt;span class="o"&gt;=&lt;/span&gt;clamp-to-pmtu &lt;span class="nv"&gt;passthrough&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;no tcp-flags&lt;span class="o"&gt;=&lt;/span&gt;syn &lt;span class="nv"&gt;protocol&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;tcp out-interface&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1 tcp-mss&lt;span class="o"&gt;=&lt;/span&gt;1300-65535 &lt;span class="nv"&gt;log&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;no log-prefix&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;""&lt;/span&gt;
+
+/ip route
+add &lt;span class="nv"&gt;comment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;linkedin &lt;span class="nv"&gt;distance&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 dst-address&lt;span class="o"&gt;=&lt;/span&gt;91.225.248.0/22 &lt;span class="nv"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
+add &lt;span class="nv"&gt;comment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;linkedin &lt;span class="nv"&gt;distance&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 dst-address&lt;span class="o"&gt;=&lt;/span&gt;108.174.0.0/20 &lt;span class="nv"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
+add &lt;span class="nv"&gt;comment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;linkedin &lt;span class="nv"&gt;distance&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 dst-address&lt;span class="o"&gt;=&lt;/span&gt;185.63.144.0/22 &lt;span class="nv"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
+add &lt;span class="nv"&gt;comment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;rutracker &lt;span class="nv"&gt;distance&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 dst-address&lt;span class="o"&gt;=&lt;/span&gt;195.82.146.0/24 &lt;span class="nv"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
+add &lt;span class="nv"&gt;comment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;telegram &lt;span class="nv"&gt;distance&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 dst-address&lt;span class="o"&gt;=&lt;/span&gt;149.154.164.0/22 &lt;span class="nv"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;You can now open all sites you added routes to; the packets for them now flow
+thru the tunnel. That&amp;rsquo;s it.&lt;/p&gt;
+
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="https://www.eff.org/cyberspace-independence"&gt;Cyberspace independence&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="http://www.lookatme.ru/mag/magazine/russian-internet/207489-decentralization"&gt;Decentralization&lt;/a&gt;&lt;/li&gt;
@@ -688,6 +595,453 @@ but the thing is you don&amp;rsquo;t get anything out of it.&lt;/p&gt;
 &lt;li&gt;&lt;a href="https://dyn.com/blog/could-it-happen-in-your-countr/"&gt;Could it happen in your country&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://dyn.com/blog/vast-world-of-fraudulent-routing/"&gt;Vast world of fraudulent routing&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://dyn.com/blog/latest-isps-to-hijack/"&gt;Latest ISPs to hijack&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://pierrekim.github.io/blog/2016-11-01-gpon-ftth-networks-insecurity.html"&gt;GPON FTTH networks (in)security&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://lurkmore.to/GPON"&gt;Lurkmore GPON&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+  </entry>
+  <entry>
+    <title>Slow query with ActiveRecord's method first</title>
+    <link rel="alternate" href="/2018/04/12/stop-using-active-record-first.html"/>
+    <id>/2018/04/12/stop-using-active-record-first.html</id>
+    <published>2018-04-12T00:00:00+03:00</published>
+    <updated>2018-04-12T00:00:00+03:00</updated>
+    <author>
+      <name>Dmitry Vorotilin</name>
+    </author>
+    <summary type="html">&lt;p&gt;If you’ve grown with Rails like me you know that everyone used and perhaps still
+uses everywhere &lt;code&gt;first&lt;/code&gt; method. You just type it automatically. I know that it’s
+so simple that it doesn’t even deserve a post but you have to stop doing that.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="/images/irb.png" class="img-fluid" alt="irb"&gt;&lt;/p&gt;
+
+&lt;p&gt;Things...&lt;/p&gt;</summary>
+    <content type="html">&lt;p&gt;If you&amp;rsquo;ve grown with Rails like me you know that everyone used and perhaps still
+uses everywhere &lt;code&gt;first&lt;/code&gt; method. You just type it automatically. I know that it&amp;rsquo;s
+so simple that it doesn&amp;rsquo;t even deserve a post but you have to stop doing that.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="/images/irb.png" class="img-fluid" alt="irb"&gt;&lt;/p&gt;
+
+&lt;p&gt;Things are getting more intersting with PostgreSQL v10:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight sql"&gt;&lt;code&gt;&lt;span class="k"&gt;EXPLAIN&lt;/span&gt; &lt;span class="k"&gt;ANALYZE&lt;/span&gt; &lt;span class="k"&gt;SELECT&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="k"&gt;FROM&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt; &lt;span class="k"&gt;WHERE&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;"deleted_at"&lt;/span&gt; &lt;span class="k"&gt;IS&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt; &lt;span class="k"&gt;AND&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;"user_id"&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="k"&gt;order&lt;/span&gt; &lt;span class="k"&gt;by&lt;/span&gt; &lt;span class="n"&gt;id&lt;/span&gt; &lt;span class="k"&gt;ASC&lt;/span&gt; &lt;span class="k"&gt;limit&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+                                                                    &lt;span class="n"&gt;QUERY&lt;/span&gt; &lt;span class="n"&gt;PLAN&lt;/span&gt;                                                                    
+&lt;span class="c1"&gt;--------------------------------------------------------------------------------------------------------------------------------------------------&lt;/span&gt;
+ &lt;span class="k"&gt;Limit&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;26&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;91&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;327&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;actual&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;875&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;875&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+   &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;  &lt;span class="k"&gt;Index&lt;/span&gt; &lt;span class="n"&gt;Scan&lt;/span&gt; &lt;span class="k"&gt;using&lt;/span&gt; &lt;span class="n"&gt;posts_pkey&lt;/span&gt; &lt;span class="k"&gt;on&lt;/span&gt; &lt;span class="n"&gt;posts&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;2057670&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;78&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;76800&lt;/span&gt; &lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;327&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;actual&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;874&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;874&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+         &lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;deleted_at&lt;/span&gt; &lt;span class="k"&gt;IS&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;AND&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;user_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+         &lt;span class="k"&gt;Rows&lt;/span&gt; &lt;span class="n"&gt;Removed&lt;/span&gt; &lt;span class="k"&gt;by&lt;/span&gt; &lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;26826499&lt;/span&gt;
+ &lt;span class="n"&gt;Planning&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;202&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt;
+ &lt;span class="n"&gt;Execution&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;905&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Doesn&amp;rsquo;t it look creepy? According to &lt;a href="https://stackoverflow.com/questions/21385555/postgresql-query-very-slow-with-limit-1"&gt;stackoverflow&lt;/a&gt;
+it can be an issue in the planner and given that you have pretty large table
+this query becomes drastically slower than planned. So a combination of two
+issues results in a waste of time for investigation. First of all it shouldn&amp;rsquo;t
+have happened if we used &lt;code&gt;take&lt;/code&gt; method added &lt;a href="https://github.com/rails/rails/commit/1379375f93c53d4c49fa8592b6117c3ade263f2e"&gt;long ago&lt;/a&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight sql"&gt;&lt;code&gt;&lt;span class="k"&gt;EXPLAIN&lt;/span&gt; &lt;span class="k"&gt;ANALYZE&lt;/span&gt; &lt;span class="k"&gt;SELECT&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="k"&gt;FROM&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt; &lt;span class="k"&gt;WHERE&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;"deleted_at"&lt;/span&gt; &lt;span class="k"&gt;IS&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt; &lt;span class="k"&gt;AND&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;"user_id"&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="k"&gt;limit&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+                                                     &lt;span class="n"&gt;QUERY&lt;/span&gt; &lt;span class="n"&gt;PLAN&lt;/span&gt;                                                     
+&lt;span class="c1"&gt;--------------------------------------------------------------------------------------------------------------------&lt;/span&gt;
+ &lt;span class="k"&gt;Limit&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;00&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;13&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;40&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;327&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;actual&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;979&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;979&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+   &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;  &lt;span class="n"&gt;Seq&lt;/span&gt; &lt;span class="n"&gt;Scan&lt;/span&gt; &lt;span class="k"&gt;on&lt;/span&gt; &lt;span class="n"&gt;posts&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;00&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;1029108&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;93&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;76800&lt;/span&gt; &lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;327&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;actual&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;978&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;978&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+         &lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;deleted_at&lt;/span&gt; &lt;span class="k"&gt;IS&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;AND&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;user_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+         &lt;span class="k"&gt;Rows&lt;/span&gt; &lt;span class="n"&gt;Removed&lt;/span&gt; &lt;span class="k"&gt;by&lt;/span&gt; &lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;3463&lt;/span&gt;
+ &lt;span class="n"&gt;Planning&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;606&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt;
+ &lt;span class="n"&gt;Execution&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;047&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Force yourself typing &lt;code&gt;take&lt;/code&gt; instead of &lt;code&gt;first&lt;/code&gt; if you don&amp;rsquo;t care about the
+order which in most cases is true.&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <title>Query Trail</title>
+    <link rel="alternate" href="/2014/08/10/query-trail.html"/>
+    <id>/2014/08/10/query-trail.html</id>
+    <published>2014-08-10T00:00:00+04:00</published>
+    <updated>2014-08-10T00:00:00+04:00</updated>
+    <author>
+      <name>Dmitry Vorotilin</name>
+    </author>
+    <summary type="html">&lt;p&gt;Recently I switched on a project with lots of legacy code. It was on Rails 2,
+Rails 3 and now I’ve updated it to Rails 4.1. You can’t even imagine how much
+rubbish I got rid of. But the thing I’d like to share with you today is
+&lt;a href="https://github.com/route/query_trail"&gt;QueryTrail&lt;/a&gt;. This simple...&lt;/p&gt;</summary>
+    <content type="html">&lt;p&gt;Recently I switched on a project with lots of legacy code. It was on Rails 2,
+Rails 3 and now I&amp;rsquo;ve updated it to Rails 4.1. You can&amp;rsquo;t even imagine how much
+rubbish I got rid of. But the thing I&amp;rsquo;d like to share with you today is
+&lt;a href="https://github.com/route/query_trail"&gt;QueryTrail&lt;/a&gt;. This simple but useful gem
+shows you the backtrace of fired queries. You have to agree that when just one
+action of your controller sends hundreds sql requests from helpers, templates
+and so forth, it&amp;rsquo;s definitely hard to locate the place for specific query. But
+not for now:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight plaintext"&gt;&lt;code&gt;User Load (0.4ms)  SELECT  `users`.* FROM `users`  WHERE `users`.`id` = 1 LIMIT 1
+Query Trail: config/initializers/warden.rb:11:in `block in &amp;lt;top (required)&amp;gt;'
+             config/initializers/warden.rb:15:in `block in &amp;lt;top (required)&amp;gt;'
+Doc Load (18.2ms)  SELECT `docs`.* FROM `docs`  WHERE `docs`.`approved` = 1
+Query Trail: app/views/main/_docs.html.erb:2
+             app/helpers/docs_helper.rb:3:in `render_main_block'
+             app/views/main/index.html.erb:13
+             app/views/main/index.html.erb:9
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content>
+  </entry>
+  <entry>
+    <title>Rails autoloading</title>
+    <link rel="alternate" href="/2013/11/13/rails-autoloading.html"/>
+    <id>/2013/11/13/rails-autoloading.html</id>
+    <published>2013-11-13T00:00:00+04:00</published>
+    <updated>2013-11-13T00:00:00+04:00</updated>
+    <author>
+      <name>Dmitry Vorotilin</name>
+    </author>
+    <summary type="html">&lt;p&gt;There is much to be said about Rails autoloading and particularly about
+&lt;code&gt;ActiveSupport::Dependencies&lt;/code&gt; (&lt;code&gt;AS::D&lt;/code&gt; for short). What does it do? As the title
+says it loads constants automatically and reloads your code catching changes on
+every request. Ok,...&lt;/p&gt;</summary>
+    <content type="html">&lt;p&gt;There is much to be said about Rails autoloading and particularly about
+&lt;code&gt;ActiveSupport::Dependencies&lt;/code&gt; (&lt;code&gt;AS::D&lt;/code&gt; for short). What does it do? As the title
+says it loads constants automatically and reloads your code catching changes on
+every request. Ok, why do we need it? Because it&amp;rsquo;s convenient! We don&amp;rsquo;t have to
+write &lt;code&gt;require&lt;/code&gt; in every single file and watch which constants we need and when.
+Rails loads constants and tracks what we need automatically. Also there&amp;rsquo;s no
+need to reload your server every time you&amp;rsquo;ve made a change. There are some
+pitfalls that you must know, but once you learn them everything will be ok.&lt;/p&gt;
+
+&lt;h3&gt;How it works&lt;/h3&gt;
+
+&lt;p&gt;Previously discussed method &lt;code&gt;self.const_missing(const_name)&lt;/code&gt; is the entry point
+for &lt;code&gt;AS::D&lt;/code&gt;. Consider this example:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
+
+&lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s1"&gt;'active_support/dependencies'&lt;/span&gt;
+&lt;span class="no"&gt;ActiveSupport&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Dependencies&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;autoload_paths&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'/autoloadable'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+&lt;span class="no"&gt;A&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code&gt;AS::D&lt;/code&gt; loads module &lt;code&gt;A&lt;/code&gt; automatically without any &lt;code&gt;require&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# Meanwhile you can add sleep here and make changes in a.rb&lt;/span&gt;
+
+&lt;span class="no"&gt;ActiveSupport&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Dependencies&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;clear&lt;/span&gt; &lt;span class="c1"&gt;# Removes A from memory&lt;/span&gt;
+
+&lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="c1"&gt;# Will load A again&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;I&amp;rsquo;ve just introduced the method Rails reloads your code with — &lt;code&gt;clear&lt;/code&gt;. Let&amp;rsquo;s
+dig dipper and see how &lt;code&gt;AS::D&lt;/code&gt; actually works. There are two different constant
+loading strategy: &lt;code&gt;:require&lt;/code&gt; and &lt;code&gt;:load&lt;/code&gt;(default). The first one means that all
+the constants won&amp;rsquo;t be reloaded, as &lt;code&gt;require&lt;/code&gt; does eventually. The last one
+means that all the constants will be removed from memory and loaded again on
+demand. What does removing constant from memory mean? There&amp;rsquo;s a method called
+&lt;code&gt;Module#remove_const(sym)&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;:remove_const&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'A'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A (NameError)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;But what if we remove constant for existing instance of a class:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;
+  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nc"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;value&lt;/span&gt;
+    &lt;span class="s1"&gt;'value'&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;
+&lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;:remove_const&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'A'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; A&lt;/span&gt;
+&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;value&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'value'&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A (NameError)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;That&amp;rsquo;s interesting because constant name was removed from memory but its
+instance still shows us its class and we can even call class methods on it. It
+turns out that this method only removes constant name from &lt;code&gt;Object&lt;/code&gt; but a class
+is an object and a constant is a variable referencing that object still exists
+in the memory. Ok, move on.&lt;/p&gt;
+
+&lt;p&gt;Calling &lt;code&gt;require &amp;#39;active_support/dependencies&amp;#39;&lt;/code&gt; injects a few modules into basic
+Ruby classes via &lt;code&gt;AS::D.hook!&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;hook!&lt;/span&gt;
+  &lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class_eval&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="kp"&gt;include&lt;/span&gt; &lt;span class="no"&gt;Loadable&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="no"&gt;Module&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class_eval&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="kp"&gt;include&lt;/span&gt; &lt;span class="no"&gt;ModuleConstMissing&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="no"&gt;Exception&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;class_eval&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="kp"&gt;include&lt;/span&gt; &lt;span class="no"&gt;Blamable&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Methods injected into &lt;code&gt;Object&lt;/code&gt; overwrite methods like &lt;code&gt;load&lt;/code&gt; and &lt;code&gt;require&lt;/code&gt; in
+order to monitor new constants, that said, it depends on loading strategy.
+Another method you could already know is &lt;code&gt;require_dependency&lt;/code&gt; also injected into
+&lt;code&gt;Object&lt;/code&gt;. Methods in &lt;code&gt;Module&lt;/code&gt; define an entry point &lt;code&gt;const_missing&lt;/code&gt;. I&amp;rsquo;m going
+to show you how &lt;code&gt;AS::D&lt;/code&gt; works with this example:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
+
+&lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s1"&gt;'active_support/dependencies'&lt;/span&gt;
+&lt;span class="no"&gt;ActiveSupport&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Dependencies&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;autoload_paths&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'/autoloadable'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+&lt;span class="no"&gt;A&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ol&gt;
+&lt;li&gt;Declaring constant &lt;code&gt;A&lt;/code&gt; triggers &lt;code&gt;Module#const_missing&lt;/code&gt;, that was overwritten
+by &lt;code&gt;AS::D&lt;/code&gt; and &lt;code&gt;Dependencies.load_missing_constant(from_mod, const_name)&lt;/code&gt; is
+invoked. The first argument is &lt;code&gt;Object&lt;/code&gt; because &lt;code&gt;A == Object::A&lt;/code&gt; the second is
+&lt;code&gt;:A&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;load_missing_constant&lt;/code&gt; tries to find the path for this constant which by
+convention lies somewhere in one of the &lt;code&gt;autoload_paths&lt;/code&gt; by means of
+&lt;code&gt;search_for_file(&amp;#39;a&amp;#39;)&lt;/code&gt;. It just returns the first file it can find with
+&lt;code&gt;File.file?(File.join(autoload_path, &amp;#39;a.rb&amp;#39;))&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Then &lt;code&gt;require_or_load&lt;/code&gt; method is invoked, whose behavior depends on loading
+strategy. For &lt;code&gt;require&lt;/code&gt; it just requires the given file, for &lt;code&gt;load&lt;/code&gt;
+&lt;code&gt;load_file(&amp;#39;/autoloadable/a.rb&amp;#39;, &amp;#39;A&amp;#39;)&lt;/code&gt; is invoked.&lt;/li&gt;
+&lt;li&gt;Then it looks for new constants in given namespaces with:
+&lt;code&gt;new_constants_in(*parent_paths) { Kernel.load(path) }&lt;/code&gt;
+where &lt;code&gt;parent_paths&lt;/code&gt; is &lt;code&gt;[Object]&lt;/code&gt;, because we try to resolve &lt;code&gt;Object::A&lt;/code&gt; and
+&lt;code&gt;path&lt;/code&gt; is the path to file. How does it monitor it? It&amp;rsquo;s just the difference
+between the array of constants before and after. &lt;code&gt;Object.local_constants&lt;/code&gt; gives
+us all the constants inside &lt;code&gt;Object&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;When it&amp;rsquo;s done, all newly defined constants append to &lt;code&gt;autoloaded_constants&lt;/code&gt;.
+That&amp;rsquo;s all, new constant was defined with &lt;code&gt;AS::D&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;code&gt;AS::D.clear&lt;/code&gt; removes constants from memory and clears all the auto-loaded
+constants inside &lt;code&gt;AS::D&lt;/code&gt;. Pay your attention to &lt;code&gt;require_dependency&lt;/code&gt;. This
+method adds all newly defined constants to &lt;code&gt;autoloaded_constants&lt;/code&gt; so that they
+will be reloaded unlike the &lt;code&gt;require&lt;/code&gt; method.&lt;/p&gt;
+
+&lt;p&gt;Another convention &lt;code&gt;AS::D&lt;/code&gt; uses is a path convention. This example
+&lt;code&gt;&amp;#39;A::B&amp;#39;.underscore # =&amp;gt; &amp;#39;a/b&amp;#39;&lt;/code&gt; simply illustrates that &lt;code&gt;::&lt;/code&gt; is treated as a &lt;code&gt;/&lt;/code&gt;,
+which gives us ability to use folders like module namespaces:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
+
+&lt;span class="c1"&gt;# /autoloadable/a/b.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;#   module B&lt;/span&gt;
+&lt;span class="c1"&gt;#     C = 'c'&lt;/span&gt;
+&lt;span class="c1"&gt;#   end&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
+
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="s1"&gt;'c'&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;or even so:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# /autoloadable/a/b.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A::B&lt;/span&gt;
+&lt;span class="c1"&gt;#   C = 'c'&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
+
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="s1"&gt;'c'&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Although we haven&amp;rsquo;t defined module &lt;code&gt;A&lt;/code&gt;, it has been created for us automatically
+because of existing directory &lt;code&gt;a&lt;/code&gt;. It&amp;rsquo;s really convinient, because you are not
+forced to create an empty module just for namespacing purpose.&lt;/p&gt;
+
+&lt;h3&gt;Misconception&lt;/h3&gt;
+
+&lt;p&gt;Since Ruby passes only one argument to &lt;code&gt;const_missing(const_name)&lt;/code&gt; we don&amp;rsquo;t have
+an idea about the nesting, this example works as expected:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# /autoloadable/b.rb&lt;/span&gt;
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
+  &lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; B&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;but this shows wrong results:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="c1"&gt;# /autoloadable/b.rb&lt;/span&gt;
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="nb"&gt;p&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; B&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Is that right? I don&amp;rsquo;t think so. If we had used pure Ruby it would have thrown
+&lt;code&gt;NameError: uninitialized constant A::B&lt;/code&gt;, because we explicitly said we need &lt;code&gt;B&lt;/code&gt;
+inside of &lt;code&gt;A&lt;/code&gt; but not the top-level &lt;code&gt;B&lt;/code&gt;. But this is Ruby&amp;rsquo;s fault it passes so
+little info to &lt;code&gt;const_missing&lt;/code&gt; and &lt;code&gt;AS::D&lt;/code&gt; can do nothing with it.&lt;/p&gt;
+
+&lt;p&gt;Another cool case:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A; end&lt;/span&gt;
+
+&lt;span class="c1"&gt;# /autoloadable/namespace/a/b.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module Namespace::A::B&lt;/span&gt;
+&lt;span class="c1"&gt;#  A&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
+
+&lt;span class="no"&gt;Namespace&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; What is A inside this namespace?&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;What would you expect from this example? I think in Ruby it&amp;rsquo;s obviously
+top-level &lt;code&gt;A&lt;/code&gt;, but since &lt;code&gt;AS::D&lt;/code&gt; doesn&amp;rsquo;t know about nesting, would you expect it
+to be either &lt;code&gt;Namespace::A&lt;/code&gt; or &lt;code&gt;A&lt;/code&gt;? Neither, because it&amp;rsquo;s &lt;code&gt;NameError&lt;/code&gt;, which is
+much more confusing. It&amp;rsquo;s the last attempt of &lt;code&gt;AS::D&lt;/code&gt; to make an assumption that
+since one of our parents has this constant
+&lt;code&gt;Namespace.const_defined?(:A, false) # =&amp;gt; true&lt;/code&gt; then we&amp;rsquo;re definitely looking
+for this constant in a short form &lt;code&gt;from_mod::const_name&lt;/code&gt;, otherwise Ruby would
+return it without calling &lt;code&gt;const_missing&lt;/code&gt; and we don&amp;rsquo;t have to search it upwards
+in &lt;code&gt;from_mod&lt;/code&gt;. Why don&amp;rsquo;t we have to search it right at the top-level? May be
+because of this:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# c.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# C = 'c'&lt;/span&gt;
+
+&lt;span class="c1"&gt;# a/c.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;#   C = 'ac'&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
+
+&lt;span class="c1"&gt;# a/b.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A::B&lt;/span&gt;
+&lt;span class="c1"&gt;#   C&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
+
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; 'ac'&lt;/span&gt;
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; uninitialized constant A::B::C&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Calling it twice gives us an error, because of the same case we&amp;rsquo;ve considered
+above. The first time &lt;code&gt;AS::D&lt;/code&gt; resolves &lt;code&gt;C&lt;/code&gt; through as usual, but the second time
+it starts checking enclosing modules and since &lt;code&gt;A&lt;/code&gt; contains &lt;code&gt;C&lt;/code&gt; then Ruby must
+have resolved it or otherwise it&amp;rsquo;s the short form and an error is thrown.
+Imagine we&amp;rsquo;ve fixed it and instead of error we start loading top level constant.
+Is it any better? Now we have two different constants calling it twice in a row,
+which is still sad. That&amp;rsquo;s why I&amp;rsquo;d prefer an error.&lt;/p&gt;
+
+&lt;h3&gt;Thread safety&lt;/h3&gt;
+
+&lt;p&gt;Let&amp;rsquo;s write our own simplified autoloading:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# autoloadable/a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;#   sleep 5&lt;/span&gt;
+&lt;span class="c1"&gt;#   def self.hello&lt;/span&gt;
+&lt;span class="c1"&gt;#     'hello'&lt;/span&gt;
+&lt;span class="c1"&gt;#   end&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Module&lt;/span&gt;
+  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;const_missing&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;name&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s2"&gt;"./autoloadable/&lt;/span&gt;&lt;span class="si"&gt;#{&lt;/span&gt;&lt;span class="nb"&gt;name&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;downcase&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;.rb"&lt;/span&gt;
+    &lt;span class="no"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;const_get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;name&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="n"&gt;t1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Thread&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;hello&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="n"&gt;t2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Thread&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;hello&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="n"&gt;t1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;join&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;t2&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;join&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The result is &lt;code&gt;undefined method &amp;#39;hello&amp;#39; for A:Module (NoMethodError)&lt;/code&gt;. Why?
+Because second thread takes over when the first is awaiting sleeping. At that
+moment module &lt;code&gt;A&lt;/code&gt; is already defined but method &lt;code&gt;hello&lt;/code&gt; isn&amp;rsquo;t defined yet. It
+turns out that &lt;code&gt;AS::D&lt;/code&gt; will never be thread safe until &lt;code&gt;const_missing&lt;/code&gt; isn&amp;rsquo;t
+thread safe. That&amp;rsquo;s the reason why your production environment loads all the
+constants on initialization step. In fact, you can see different errors even
+with MRI, because it switches threads when waits for input-ouput or network. For
+instance, circular dependency arises, when the first thread waits for
+input-ouput and another thread starts resolving the same constant, which is
+already in the list of loaded.&lt;/p&gt;
+
+&lt;h3&gt;Known errors&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Toplevel constant B referenced by A::B&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Have you ever seen the &amp;lsquo;Toplevel constant B referenced by A::B&amp;rsquo;? It&amp;rsquo;s easy to
+reproduce even without &lt;code&gt;AS::D&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Since &lt;code&gt;A.ancestors&lt;/code&gt; is &lt;code&gt;[A, Object, Kernel, BasicObject]&lt;/code&gt; and contains class
+&lt;code&gt;Object&lt;/code&gt; and &lt;code&gt;B&lt;/code&gt; are already defined as top level constants, Ruby shows us a
+warning that constant we&amp;rsquo;re trying to resolve inside &lt;code&gt;A&lt;/code&gt; references top level
+constant. Notice that for modules the situation is different:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;B&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;A&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="no"&gt;A&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;B&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;It gives us just &amp;lsquo;uninitialized constant A::B (NameError)&amp;rsquo; because the ancestors
+chain doesn&amp;rsquo;t contain &lt;code&gt;Object&lt;/code&gt;.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Circular dependency detected while autoloading constant&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This is yet another &lt;code&gt;AS::D&lt;/code&gt; error that you could see:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# /autoloadable/a.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# B&lt;/span&gt;
+&lt;span class="c1"&gt;# module A&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
+
+&lt;span class="c1"&gt;# /autoloadable/b.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# A&lt;/span&gt;
+&lt;span class="c1"&gt;# module B&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
+
+&lt;span class="no"&gt;A&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;If we try to access constant &lt;code&gt;A&lt;/code&gt; we&amp;rsquo;ll see this error. &lt;code&gt;AS::D&lt;/code&gt; makes an
+assumption that this constant is defined in file &lt;code&gt;a.rb&lt;/code&gt;. When it loads this file
+it finds another undefined constant &lt;code&gt;B&lt;/code&gt; and this time faces still undefined &lt;code&gt;A&lt;/code&gt;
+while loading file &lt;code&gt;b.rb&lt;/code&gt;. This generates infinite recursion and to prevent it
+an error must be raised. This error as and many others also appears in
+multi-threaded environment.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;A copy of &lt;code&gt;A&lt;/code&gt; has been removed from the module tree but is still active!&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="c1"&gt;# /autoloadable/money.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# class Money&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
+
+&lt;span class="c1"&gt;# /autoloadable/customer.rb&lt;/span&gt;
+&lt;span class="c1"&gt;# class Customer&lt;/span&gt;
+&lt;span class="c1"&gt;#   def money&lt;/span&gt;
+&lt;span class="c1"&gt;#     Money.new&lt;/span&gt;
+&lt;span class="c1"&gt;#   end&lt;/span&gt;
+&lt;span class="c1"&gt;# end&lt;/span&gt;
+
+&lt;span class="n"&gt;customer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Customer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;
+
+&lt;span class="no"&gt;ActiveSupport&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Dependencies&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;clear&lt;/span&gt;
+
+&lt;span class="n"&gt;customer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;money&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;It happens because class for &lt;code&gt;Customer&lt;/code&gt; was autoloaded, but class for &lt;code&gt;Money&lt;/code&gt;
+wasn&amp;rsquo;t because we haven&amp;rsquo;t invoked &lt;code&gt;Money.new&lt;/code&gt; before &lt;code&gt;AS::D.clear&lt;/code&gt;. Then
+&lt;code&gt;Customer&lt;/code&gt; was removed as a reference, but instance of this class is still in
+memory, and then we&amp;rsquo;re trying to resolve constant name &lt;code&gt;Money&lt;/code&gt;, but for
+&lt;code&gt;customer.class::Money&lt;/code&gt; which is different from newly loaded &lt;code&gt;Customer&lt;/code&gt;. Please
+note that saving the whole instance somewhere between sessions increases chances
+you&amp;rsquo;ll see this error.&lt;/p&gt;
+
+&lt;h3&gt;Conclusion&lt;/h3&gt;
+
+&lt;p&gt;You don&amp;rsquo;t have to care about all this stuff if you have flat hierarchy. It means
+when you don&amp;rsquo;t use namespaces and all the files have different names, but it&amp;rsquo;s
+hard if you have a lot of classes/modules. So you must have clear understanding
+of this if you don&amp;rsquo;t want to be in trouble:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Don&amp;rsquo;t use the same name for top-level and namespaced constants.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Be careful when you use short form declaration unless you know what you do.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Be careful if you use short form declaration and it contains the name of the
+constant you try to resolve, use full path instead.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Carefully work with constants in initializers, you may declare new constant
+instead of loading original.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Try to run you application with eager loading or in production mode since it
+may load your code in another order.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;Links and used sources:&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://blog.plataformatec.com.br/2012/08/eager-loading-for-greater-good/"&gt;Eager loading&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://urbanautomaton.com/blog/2013/08/27/rails-autoloading-hell/"&gt;Rails autoloading&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://tenderlovemaking.com/2012/06/18/removing-config-threadsafe.html"&gt;Removing config.threadsafe!&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 </content>
   </entry>

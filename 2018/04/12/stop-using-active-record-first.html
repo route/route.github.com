@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="yandex-verification" content="3bfdb691bc608cfc" />
     <meta name="description" content="Postgresql slow query with limit 1">
-    <title>Stop using ActiveRecord's first method</title>
+    <title>Slow query with ActiveRecord's method first</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
     <link href="/stylesheets/application.css" rel="stylesheet" /><link href="/stylesheets/highlighting.css" rel="stylesheet" />
   </head>
@@ -17,27 +17,21 @@
             <a href="/">NopeCode</a>
           </header>
             <article>
-    <h2>Stop using ActiveRecord's first method</h2>
+    <h2>Slow query with ActiveRecord's method first</h2>
     <div class="tags">
+        <a href="/tags/ruby.html">ruby</a>
         <a href="/tags/rails.html">rails</a>
         <a href="/tags/activerecord.html">activerecord</a>
         <a href="/tags/sql.html">sql</a>
     </div>
-    <time datetime="2018-05-11">May 11, 2018</time>
+    <time datetime="2018-04-12">April 12, 2018</time>
     <p>If you&rsquo;ve grown with Rails like me you know that everyone used and perhaps still
-use everywhere <code>first</code>. You type it without hesitation.</p>
+uses everywhere <code>first</code> method. You just type it automatically. I know that it&rsquo;s
+so simple that it doesn&rsquo;t even deserve a post but you have to stop doing that.</p>
 
 <p><img src="/images/irb.png" class="img-fluid" alt="irb"></p>
 
-<p>I know that it&rsquo;s so simple that maybe it even doesn&rsquo;t deserve a post but just
-stop doing that.</p>
-
-<p>There&rsquo;s a much better method <a href="https://github.com/rails/rails/commit/1379375f93c53d4c49fa8592b6117c3ade263f2e">take</a>
-added long ago Apr 27, 2012 and if you say right now:</p>
-
-<p>- I know all that!</p>
-
-<p>then things are getting more intersting with PostgreSQL v10 at least:</p>
+<p>Things are getting more intersting with PostgreSQL v10:</p>
 <div class="highlight"><pre class="highlight sql"><code><span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">"posts"</span> <span class="k">WHERE</span> <span class="nv">"posts"</span><span class="p">.</span><span class="nv">"deleted_at"</span> <span class="k">IS</span> <span class="k">NULL</span> <span class="k">AND</span> <span class="nv">"posts"</span><span class="p">.</span><span class="nv">"user_id"</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">order</span> <span class="k">by</span> <span class="n">id</span> <span class="k">ASC</span> <span class="k">limit</span> <span class="mi">1</span><span class="p">;</span>
                                                                     <span class="n">QUERY</span> <span class="n">PLAN</span>                                                                    
 <span class="c1">--------------------------------------------------------------------------------------------------------------------------------------------------</span>
@@ -50,10 +44,10 @@ added long ago Apr 27, 2012 and if you say right now:</p>
 <span class="p">(</span><span class="mi">6</span> <span class="k">rows</span><span class="p">)</span>
 </code></pre></div>
 <p>Doesn&rsquo;t it look creepy? According to <a href="https://stackoverflow.com/questions/21385555/postgresql-query-very-slow-with-limit-1">stackoverflow</a>
-it can be an issue in the planner and given that you have pretty large table not
-with 10 posts of course this query becomes drastically slower than planned. So a
-combination of two issues results in a waste of time for investigation. First of
-all it shouldn&rsquo;t have happened if we used <code>take</code>:</p>
+it can be an issue in the planner and given that you have pretty large table
+this query becomes drastically slower than planned. So a combination of two
+issues results in a waste of time for investigation. First of all it shouldn&rsquo;t
+have happened if we used <code>take</code> method added <a href="https://github.com/rails/rails/commit/1379375f93c53d4c49fa8592b6117c3ade263f2e">long ago</a>:</p>
 <div class="highlight"><pre class="highlight sql"><code><span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">"posts"</span> <span class="k">WHERE</span> <span class="nv">"posts"</span><span class="p">.</span><span class="nv">"deleted_at"</span> <span class="k">IS</span> <span class="k">NULL</span> <span class="k">AND</span> <span class="nv">"posts"</span><span class="p">.</span><span class="nv">"user_id"</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">limit</span> <span class="mi">1</span><span class="p">;</span>
                                                      <span class="n">QUERY</span> <span class="n">PLAN</span>                                                     
 <span class="c1">--------------------------------------------------------------------------------------------------------------------</span>
@@ -65,8 +59,8 @@ all it shouldn&rsquo;t have happened if we used <code>take</code>:</p>
  <span class="n">Execution</span> <span class="n">time</span><span class="p">:</span> <span class="mi">2</span><span class="p">.</span><span class="mi">047</span> <span class="n">ms</span>
 <span class="p">(</span><span class="mi">6</span> <span class="k">rows</span><span class="p">)</span>
 </code></pre></div>
-<p>Force yourself typing <code>take</code> instead of <code>first</code> if you don&rsquo;t care about the order
-which in most cases is the case.</p>
+<p>Force yourself typing <code>take</code> instead of <code>first</code> if you don&rsquo;t care about the
+order which in most cases is true.</p>
 
     <div class="share">
       <a href="https://twitter.com/share" class="twitter-share-button" data-via="rO_Oute">Tweet</a>

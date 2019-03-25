@@ -1,23 +1,16 @@
 ---
-title: Stop using ActiveRecord's first method
-tags: rails, activerecord, sql
+title: Slow query with ActiveRecord's method first
+tags: ruby, rails, activerecord, sql
 description: Postgresql slow query with limit 1
 ---
 
 If you've grown with Rails like me you know that everyone used and perhaps still
-use everywhere `first`. You type it without hesitation.
+uses everywhere `first` method. You just type it automatically. I know that it's
+so simple that it doesn't even deserve a post but you have to stop doing that.
 
 <img src="/images/irb.png" class="img-fluid" alt="irb">
 
-I know that it's so simple that maybe it even doesn't deserve a post but just
-stop doing that.
-
-There's a much better method [take](https://github.com/rails/rails/commit/1379375f93c53d4c49fa8592b6117c3ade263f2e)
-added long ago Apr 27, 2012 and if you say right now:
-
-\- I know all that!
-
-then things are getting more intersting with PostgreSQL v10 at least:
+Things are getting more intersting with PostgreSQL v10:
 
 ```sql
 EXPLAIN ANALYZE SELECT * FROM "posts" WHERE "posts"."deleted_at" IS NULL AND "posts"."user_id" = 1 order by id ASC limit 1;
@@ -33,10 +26,10 @@ EXPLAIN ANALYZE SELECT * FROM "posts" WHERE "posts"."deleted_at" IS NULL AND "po
 ```
 
 Doesn't it look creepy? According to [stackoverflow](https://stackoverflow.com/questions/21385555/postgresql-query-very-slow-with-limit-1)
-it can be an issue in the planner and given that you have pretty large table not
-with 10 posts of course this query becomes drastically slower than planned. So a
-combination of two issues results in a waste of time for investigation. First of
-all it shouldn't have happened if we used `take`:
+it can be an issue in the planner and given that you have pretty large table
+this query becomes drastically slower than planned. So a combination of two
+issues results in a waste of time for investigation. First of all it shouldn't
+have happened if we used `take` method added [long ago](https://github.com/rails/rails/commit/1379375f93c53d4c49fa8592b6117c3ade263f2e):
 
 ```sql
 EXPLAIN ANALYZE SELECT * FROM "posts" WHERE "posts"."deleted_at" IS NULL AND "posts"."user_id" = 1 limit 1;
@@ -51,5 +44,5 @@ EXPLAIN ANALYZE SELECT * FROM "posts" WHERE "posts"."deleted_at" IS NULL AND "po
 (6 rows)
 ```
 
-Force yourself typing `take` instead of `first` if you don't care about the order
-which in most cases is the case.
+Force yourself typing `take` instead of `first` if you don't care about the
+order which in most cases is true.

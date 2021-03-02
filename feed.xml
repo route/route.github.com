@@ -4,27 +4,23 @@
   <id>http://route.github.io/</id>
   <link href="http://route.github.io/"/>
   <link href="http://route.github.io/feed.xml" rel="self"/>
-  <updated>2021-03-01T00:00:00+03:00</updated>
+  <updated>2021-03-02T00:00:00+03:00</updated>
   <author>
     <name>Dmitry Vorotilin</name>
   </author>
   <entry>
     <title>Hi! It's me, your flaky system test again</title>
-    <link rel="alternate" href="/2021/03/01/your-flaky-ruby-tests.html"/>
-    <id>/2021/03/01/your-flaky-ruby-tests.html</id>
-    <published>2021-03-01T00:00:00+03:00</published>
-    <updated>2021-03-01T00:00:00+03:00</updated>
+    <link rel="alternate" href="/2021/03/02/your-flaky-ruby-tests.html"/>
+    <id>/2021/03/02/your-flaky-ruby-tests.html</id>
+    <published>2021-03-02T00:00:00+03:00</published>
+    <updated>2021-03-02T00:00:00+03:00</updated>
     <author>
       <name>Dmitry Vorotilin</name>
     </author>
-    <summary type="html">&lt;h6&gt;To my grandfather, who was always curious about how things work&lt;/h6&gt;
-
-&lt;p&gt;There are many articles on how to &lt;a href="https://thoughtbot.com/blog/write-reliable-asynchronous-integration-tests-with-capybara"&gt;write reliable capybara tests&lt;/a&gt;.
+    <summary type="html">&lt;p&gt;There are many articles on how to &lt;a href="https://thoughtbot.com/blog/write-reliable-asynchronous-integration-tests-with-capybara"&gt;write reliable capybara tests&lt;/a&gt;.
 There are less articles on how to deal with your &lt;a href="https://www.mayerdan.com/ruby/2019/09/07/flaky-ruby-tests"&gt;flaky tests&lt;/a&gt;.
-There are none I’ve found on how to properly debug and really...&lt;/p&gt;</summary>
-    <content type="html">&lt;h6&gt;To my grandfather, who was always curious about how things work&lt;/h6&gt;
-
-&lt;p&gt;There are many articles on how to &lt;a href="https://thoughtbot.com/blog/write-reliable-asynchronous-integration-tests-with-capybara"&gt;write reliable capybara tests&lt;/a&gt;.
+There are none I’ve found on how to properly debug and really fight flaky tests back, this one is about it. I want you to...&lt;/p&gt;</summary>
+    <content type="html">&lt;p&gt;There are many articles on how to &lt;a href="https://thoughtbot.com/blog/write-reliable-asynchronous-integration-tests-with-capybara"&gt;write reliable capybara tests&lt;/a&gt;.
 There are less articles on how to deal with your &lt;a href="https://www.mayerdan.com/ruby/2019/09/07/flaky-ruby-tests"&gt;flaky tests&lt;/a&gt;.
 There are none I&amp;rsquo;ve found on how to properly debug and really fight flaky tests back, this one is about it. I want you to
 get comfortable with the tools I use and get along with me while we debug one of the failing specs so thus I provide a

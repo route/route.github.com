@@ -1,16 +1,38 @@
 @import url("https://fonts.googleapis.com/css?family=Raleway");
+@font-face {
+  font-family: 'Museo300';
+  font-style: normal;
+  font-weight: 300;
+  src: url("fonts/museo300-regular-webfont.eot") format("embedded-opentype"), url("fonts/museo300-regular-webfont.woff") format("woff"), url("fonts/museo300-regular-webfont.ttf") format("truetype"); }
+
 body {
   background-color: #fff;
   color: #3f3f3f;
-  font-family: 'Raleway', serif;
-  font-size: 20px;
-  line-height: 1.5; }
+  font-family: 'Museo300', 'Raleway', serif;
+  font-size: 20px; }
 
-code {
-  color: #dea800; }
+div.highlight {
+  margin: 0 20px; }
+  div.highlight pre {
+    padding: 5px;
+    font-size: 14px;
+    background-color: rgba(248, 248, 248, 0.3);
+    border: 0px solid whitesmoke;
+    border-radius: 5px; }
+    div.highlight pre.json {
+      white-space: pre-wrap;
+      white-space: -moz-pre-wrap;
+      word-wrap: break-word; }
+
+p code {
+  padding: 2px;
+  color: #dea800;
+  background-color: rgba(248, 248, 248, 0.3);
+  border: 1px solid #fffbed;
+  border-radius: 5px; }
 
 .container {
-  max-width: 790px; }
+  max-width: 900px; }
   .container .row .col a {
     color: #669729;
     text-decoration: none;
@@ -20,12 +42,24 @@ code {
       border-bottom: 0px; }
   .container .row .col h1, .container .row .col h2, .container .row .col h3 {
     color: #74ab2e;
+    font-family: 'Raleway', 'Museo300', serif;
     font-weight: bold;
     font-size: 24px;
     text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
     line-height: 28px; }
   .container .row .col h3 {
+    line-height: 35px;
     font-size: 20px; }
+  .container .row .col h4 {
+    line-height: 35px;
+    font-weight: bold;
+    font-size: 18px;
+    padding-left: 5px; }
+  .container .row .col h6 {
+    font-size: 14px;
+    color: #aaaaaa;
+    text-align: right;
+    margin-bottom: 30px; }
   .container .row .col ol {
     list-style-type: decimal; }
   .container .row .col ul {
@@ -48,6 +82,7 @@ code {
     padding-bottom: 60px; }
     .container .row .col > div article header a {
       color: #74ab2e;
+      font-family: 'Raleway', 'Museo300', serif;
       font-weight: bold;
       font-size: 24px;
       text-shadow: 1px 1px rgba(0, 0, 0, 0.1); }
@@ -70,10 +105,8 @@ code {
     font-size: 11px;
     color: #aaaaaa; }
   .container .row .col > article p {
-    padding-bottom: 10px; }
-  .container .row .col > article .share {
-    padding-top: 50px;
-    text-align: center; }
+    line-height: 1.75em;
+    padding: 0 20px 10px 20px; }
   .container .row .col > footer {
     color: #aaaaaa;
     font-size: 11px;

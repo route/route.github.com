@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="/images/favicon.ico">
     <meta name="yandex-verification" content="3bfdb691bc608cfc" />
     <title>Ruby loading and requiring files, constant name resolution</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
@@ -32,7 +33,7 @@ anyway I have to sum it up in just one big article. So let&rsquo;s get started w
 Ruby.</p>
 
 <h3>Constant definition:</h3>
-<div class="highlight"><pre class="highlight diff"><code>A constant in Ruby is like a variable, except that its value is supposed to
+<div class="highlight"><pre class="highlight diff"><code><span class="p">A constant in Ruby is like a variable, except that its value is supposed to
 remain constant for the duration of a program. The Ruby interpreter does not
 actually enforce the constancy of constants, but it does issue a warning if a
 program changes the value of a constant. Lexically, the names of constants look
@@ -41,7 +42,7 @@ By convention, most constants are written in all uppercase with underscores to
 separate words, LIKE_THIS. Ruby class and module names are also constants, but
 they are conventionally written using initial capital letters and camel case,
 LikeThis.
-
+</span>
 The Ruby Programming Language: David Flanagan; Yukihiro Matsumoto.
 </code></pre></div>
 <p>I think it&rsquo;s clear and turns out that we&rsquo;ll see a warning if we&rsquo;ll try to change
@@ -399,19 +400,11 @@ That&rsquo;s all for Ruby moving to the more interesting part —
 <li><a href="http://coderrr.wordpress.com/2008/03/11/constant-name-resolution-in-ruby/">Module.nesting and constant name resolution in Ruby</a></li>
 </ul>
 
-    <div class="share">
-      <a href="https://twitter.com/share" class="twitter-share-button" data-via="rO_Oute">Tweet</a>
-      <script type="text/javascript">
-        //<![CDATA[
-          !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
-        //]]>
-      </script>
-    </div>
   </article>
           <footer>
             <a href="/about.html">Dmitry Vorotilin</a>
             |
-            Copyright © 2012-2018
+            Copyright © 2012-2021
           </footer>
           <div class="yandex_metrika">
   <!-- Yandex.Metrika informer -->

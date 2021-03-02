@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="/images/favicon.ico">
     <meta name="yandex-verification" content="3bfdb691bc608cfc" />
     <meta name="description" content="Set up OpenVPN on FreeBSD">
     <title>OpenVPN on FreeBSD 11.1</title>
@@ -27,11 +28,11 @@
 
 <p>Let&rsquo;s first change shell to sh as FreeBSD comes with csh by default:</p>
 <div class="highlight"><pre class="highlight shell"><code>root@vpn:~ <span class="c"># sh</span>
-</code></pre></div><div class="highlight"><pre class="highlight shell"><code>pkg update <span class="o">&amp;&amp;</span> pkg install openvpn
-mkdir /usr/local/etc/openvpn
-cp /usr/local/share/examples/openvpn/sample-config-files/server.conf <span class="se">\</span>
+</code></pre></div><div class="highlight"><pre class="highlight shell"><code>pkg update <span class="o">&amp;&amp;</span> pkg <span class="nb">install </span>openvpn
+<span class="nb">mkdir</span> /usr/local/etc/openvpn
+<span class="nb">cp</span> /usr/local/share/examples/openvpn/sample-config-files/server.conf <span class="se">\</span>
    /usr/local/etc/openvpn/openvpn.conf
-cp <span class="nt">-r</span> /usr/local/share/easy-rsa /usr/local/etc/openvpn/easy-rsa
+<span class="nb">cp</span> <span class="nt">-r</span> /usr/local/share/easy-rsa /usr/local/etc/openvpn/easy-rsa
 <span class="nb">cd</span> /usr/local/etc/openvpn/easy-rsa
 </code></pre></div>
 <p>Set these variables in the file and save:</p>
@@ -60,8 +61,8 @@ openvpn <span class="nt">--genkey</span> <span class="nt">--secret</span> ta.key
 ./easyrsa.real build-client-full <span class="nv">$CLIENT_NAME</span> nopass
 </code></pre></div>
 <h3>Copy server keys:</h3>
-<div class="highlight"><pre class="highlight shell"><code>mkdir /usr/local/etc/openvpn/keys
-cp pki/dh.pem <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell"><code><span class="nb">mkdir</span> /usr/local/etc/openvpn/keys
+<span class="nb">cp </span>pki/dh.pem <span class="se">\</span>
    pki/ca.crt <span class="se">\</span>
    pki/issued/openvpn-server.crt <span class="se">\</span>
    pki/private/openvpn-server.key <span class="se">\</span>
@@ -72,7 +73,7 @@ cp pki/dh.pem <span class="se">\</span>
 
 <p>Change <code>&lt;server-ip&gt;</code> in the middle of the ovpn file to your server IP/Domain.</p>
 <div class="highlight"><pre class="highlight shell"><code><span class="nb">cd</span> /usr/local/etc/openvpn
-touch <span class="nv">$CLIENT_NAME</span>.ovpn
+<span class="nb">touch</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">cat</span> <span class="o">&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 client
 nobind
@@ -90,7 +91,7 @@ redirect-gateway def1
 <span class="nb">cat </span>easy-rsa/pki/private/<span class="nv">$CLIENT_NAME</span>.key <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">printf</span> <span class="s2">"&lt;/key&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">printf</span> <span class="s2">"&lt;cert&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
-sed <span class="nt">-n</span> <span class="s1">'/^-----BEGIN/,/^-----END/p'</span> easy-rsa/pki/issued/<span class="nv">$CLIENT_NAME</span>.crt <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
+<span class="nb">sed</span> <span class="nt">-n</span> <span class="s1">'/^-----BEGIN/,/^-----END/p'</span> easy-rsa/pki/issued/<span class="nv">$CLIENT_NAME</span>.crt <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">printf</span> <span class="s2">"&lt;/cert&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">printf</span> <span class="s2">"&lt;ca&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">cat </span>easy-rsa/pki/ca.crt <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
@@ -100,7 +101,7 @@ sed <span class="nt">-n</span> <span class="s1">'/^-----BEGIN/,/^-----END/p'</sp
 <span class="nb">printf</span> <span class="s2">"&lt;/tls-auth&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 </code></pre></div>
 <h3>Configure server:</h3>
-<div class="highlight"><pre class="highlight shell"><code>touch openvpn.conf
+<div class="highlight"><pre class="highlight shell"><code><span class="nb">touch </span>openvpn.conf
 <span class="nb">cat</span> <span class="o">&gt;</span> openvpn.conf
 server 192.168.255.0 255.255.255.0
 
@@ -152,19 +153,11 @@ and start browsing internet securely:</p>
 <div class="highlight"><pre class="highlight shell"><code>scp root@&lt;server-ip&gt;:/usr/local/etc/openvpn/&lt;client-name&gt;.ovpn ./
 <span class="nb">sudo </span>openvpn &lt;client-name&gt;.ovpn
 </code></pre></div>
-    <div class="share">
-      <a href="https://twitter.com/share" class="twitter-share-button" data-via="rO_Oute">Tweet</a>
-      <script type="text/javascript">
-        //<![CDATA[
-          !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
-        //]]>
-      </script>
-    </div>
   </article>
           <footer>
             <a href="/about.html">Dmitry Vorotilin</a>
             |
-            Copyright © 2012-2018
+            Copyright © 2012-2021
           </footer>
           <div class="yandex_metrika">
   <!-- Yandex.Metrika informer -->

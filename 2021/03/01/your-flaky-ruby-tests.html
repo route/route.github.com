@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="/images/favicon.ico">
+    <meta name="yandex-verification" content="3bfdb691bc608cfc" />
+    <title>Hi! It's me, your flaky system test again</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link href="/stylesheets/application.css" rel="stylesheet" /><link href="/stylesheets/highlighting.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <header>
+            <a href="/">NopeCode</a>
+          </header>
+            <article>
+    <h2>Hi! It's me, your flaky system test again</h2>
+    <div class="tags">
+        <a href="/tags/ruby.html">ruby</a>
+        <a href="/tags/rails.html">rails</a>
+        <a href="/tags/capybara.html">capybara</a>
+        <a href="/tags/cuprite.html">cuprite</a>
+        <a href="/tags/ferrum.html">ferrum</a>
+    </div>
+    <time datetime="2021-03-01">March  1, 2021</time>
+    <h6>To my grandfather, who was always curious about how things work</h6>
+
+<p>There are many articles on how to <a href="https://thoughtbot.com/blog/write-reliable-asynchronous-integration-tests-with-capybara">write reliable capybara tests</a>.
+There are less articles on how to deal with your <a href="https://www.mayerdan.com/ruby/2019/09/07/flaky-ruby-tests">flaky tests</a>.
+There are none I&rsquo;ve found on how to properly debug and really fight flaky tests back, this one is about it. I want you to
+get comfortable with the tools I use and get along with me while we debug one of the failing specs so thus I provide a
+single runnable file but for your rails application the setup is obvious: <a href="https://evilmartians.com/chronicles/system-of-a-test-setting-up-end-to-end-rails-testing">System of a test: Proper browser testing in Ruby on Rails</a></p>
+
+<h3>What we have?</h3>
+<div class="highlight"><pre class="highlight ruby"><code><span class="nb">require</span> <span class="s2">"bundler/inline"</span>
+
+<span class="n">gemfile</span> <span class="k">do</span>
+  <span class="n">source</span> <span class="s2">"https://rubygems.org"</span>
+
+  <span class="n">gem</span> <span class="s2">"puma"</span>
+  <span class="n">gem</span> <span class="s2">"rspec"</span>
+  <span class="n">gem</span> <span class="s2">"capybara"</span>
+  <span class="n">gem</span> <span class="s2">"cuprite"</span>
+  <span class="n">gem</span> <span class="s2">"ferrum"</span>
+<span class="k">end</span>
+
+<span class="nb">require</span> <span class="s2">"rspec/autorun"</span>
+<span class="nb">require</span> <span class="s2">"capybara/rspec"</span>
+<span class="nb">require</span> <span class="s2">"capybara/cuprite"</span>
+
+<span class="no">Capybara</span><span class="p">.</span><span class="nf">app</span> <span class="o">=</span> <span class="nb">proc</span> <span class="p">{</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="p">{},</span> <span class="no">File</span><span class="p">.</span><span class="nf">open</span><span class="p">(</span><span class="s2">"index.html"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)]</span> <span class="p">}</span>
+<span class="no">Capybara</span><span class="p">.</span><span class="nf">default_driver</span> <span class="o">=</span> <span class="ss">:cuprite</span>
+<span class="no">Capybara</span><span class="p">.</span><span class="nf">register_driver</span> <span class="ss">:cuprite</span> <span class="k">do</span> <span class="o">|</span><span class="n">app</span><span class="o">|</span>
+  <span class="no">Capybara</span><span class="o">::</span><span class="no">Cuprite</span><span class="o">::</span><span class="no">Driver</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">describe</span> <span class="s2">"flaky spec"</span><span class="p">,</span> <span class="ss">type: :feature</span> <span class="k">do</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:email</span><span class="p">)</span> <span class="p">{</span> <span class="s2">"email@example.com"</span> <span class="p">}</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:first_name</span><span class="p">)</span> <span class="p">{</span> <span class="s2">"Firstname"</span> <span class="p">}</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:last_name</span><span class="p">)</span> <span class="p">{</span> <span class="s2">"Lastname"</span> <span class="p">}</span>
+
+  <span class="n">it</span> <span class="s2">"submits form successfully"</span> <span class="k">do</span>
+    <span class="n">visit</span> <span class="s2">"/"</span>
+
+    <span class="n">fill_in</span> <span class="s2">"email"</span><span class="p">,</span> <span class="ss">with: </span><span class="n">email</span>
+    <span class="n">click_button</span><span class="p">(</span><span class="s2">"Next"</span><span class="p">)</span>
+
+    <span class="n">fill_in</span> <span class="s2">"first-name"</span><span class="p">,</span> <span class="ss">with: </span><span class="n">first_name</span>
+    <span class="n">fill_in</span> <span class="s2">"last-name"</span><span class="p">,</span> <span class="ss">with: </span><span class="n">last_name</span>
+    <span class="n">click_button</span><span class="p">(</span><span class="s2">"Finish"</span><span class="p">)</span>
+
+    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">).</span><span class="nf">to</span> <span class="n">have_text</span><span class="p">(</span><span class="s2">"Successfully sent"</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>and our simplified html markup:</p>
+<div class="highlight"><pre class="highlight html"><code><span class="cp">&lt;!doctype html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;style&gt;</span>
+      <span class="nt">body</span> <span class="nt">form</span> <span class="o">*</span> <span class="p">{</span> <span class="nl">display</span><span class="p">:</span> <span class="nb">block</span><span class="p">;</span> <span class="nl">margin</span><span class="p">:</span> <span class="m">10px</span> <span class="m">0</span><span class="p">;</span> <span class="p">}</span>
+      <span class="nf">#hint</span><span class="o">,</span> <span class="nc">.step</span> <span class="p">{</span> <span class="nl">display</span><span class="p">:</span> <span class="nb">none</span><span class="p">;</span> <span class="p">}</span>
+      <span class="nc">.active</span> <span class="p">{</span> <span class="nl">display</span><span class="p">:</span> <span class="nb">block</span><span class="p">;</span> <span class="p">}</span>
+    <span class="nt">&lt;/style&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;form&gt;</span>
+      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"step active"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">"email"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"hint"</span><span class="nt">&gt;</span>Please add here your email<span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;button</span> <span class="na">class=</span><span class="s">"btn"</span><span class="nt">&gt;</span>Next<span class="nt">&lt;/button&gt;</span>
+      <span class="nt">&lt;/div&gt;</span>
+      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"step"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">"first-name"</span> <span class="na">type=</span><span class="s">"text"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">"last-name"</span> <span class="na">type=</span><span class="s">"text"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;button</span> <span class="na">class=</span><span class="s">"btn"</span><span class="nt">&gt;</span>Finish<span class="nt">&lt;/button&gt;</span>
+      <span class="nt">&lt;/div&gt;</span>
+      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"step"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;p&gt;</span>Successfully sent<span class="nt">&lt;/p&gt;</span>
+      <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/form&gt;</span>
+    <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span><span class="nt">&gt;</span>
+      <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">"</span><span class="s2">hint</span><span class="dl">"</span><span class="p">).</span><span class="nx">style</span><span class="p">.</span><span class="nx">display</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">block</span><span class="dl">"</span><span class="p">;</span>
+      <span class="p">},</span> <span class="mi">55</span><span class="p">)</span>
+
+      <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+
+        <span class="nx">parent</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">parentElement</span><span class="p">;</span>
+        <span class="nx">parent</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="dl">"</span><span class="s2">active</span><span class="dl">"</span><span class="p">);</span>
+        <span class="nx">parent</span><span class="p">.</span><span class="nx">nextElementSibling</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="dl">"</span><span class="s2">active</span><span class="dl">"</span><span class="p">);</span>
+      <span class="p">});</span>
+    <span class="nt">&lt;/script&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div>
+<p>Save it as <code>flaky_spec.rb</code> and <code>index.html</code> respectively. Run with <code>ruby flaky_spec.rb</code>. In our test we have a multi-step
+form, where you fill in an email, click &ldquo;Next&rdquo; and then finish the form with first and last name. A bit of vanilla JS is
+to hide second step fields and activate when we need them. We also show some kind of a hint under the first input with a
+bit of delay. The test works just fine, why wouldn&rsquo;t it? We use waiting matchers, no AJAX, no styles, single page and
+just a handful of JS and yet very very rare it fails:</p>
+<div class="highlight"><pre class="highlight shell"><code>Failures:
+
+  1<span class="o">)</span> flaky spec submits form successfully
+     Failure/Error: fill_in <span class="s2">"first-name"</span>, with: first_name
+
+     Capybara::ElementNotFound:
+       Unable to find visible field <span class="s2">"first-name"</span> that is not disabled
+     <span class="c"># flaky_spec:34:in `block (2 levels) in &lt;main&gt;'</span>
+</code></pre></div>
+<p>The error shows that after we fill an email and click &ldquo;Next&rdquo; capybara cannot find any visible input for <code>first-name</code>.
+So obviously the issue happens after we click on the &ldquo;Next&rdquo; button. You might guess that <code>fill_in</code> cannot find input
+because it doesn&rsquo;t have waiting capabilities but it does. Why in the hell test fails? After a couple of hours playing
+around with such kind of a test developers usually give up and start using <code>rspec-retry</code>, but we are going to hunt it
+down.</p>
+
+<h3>What do we do?</h3>
+
+<h4>Headful mode + slowmo option</h4>
+
+<p>To start debugging system tests means that we need to see what&rsquo;s going on in the browser. First of all we can run test
+in a headful mode and see it with our own eyes:</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="no">Capybara</span><span class="p">.</span><span class="nf">default_driver</span> <span class="o">=</span> <span class="ss">:cuprite</span>
+<span class="no">Capybara</span><span class="p">.</span><span class="nf">register_driver</span> <span class="ss">:cuprite</span> <span class="k">do</span> <span class="o">|</span><span class="n">app</span><span class="o">|</span>
+  <span class="no">Capybara</span><span class="o">::</span><span class="no">Cuprite</span><span class="o">::</span><span class="no">Driver</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="p">{</span>
+    <span class="ss">headless:  </span><span class="no">ENV</span><span class="p">[</span><span class="s2">"HEADLESS"</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">"false"</span><span class="p">,</span>
+    <span class="ss">slowmo: </span><span class="p">(</span><span class="no">ENV</span><span class="p">.</span><span class="nf">fetch</span><span class="p">(</span><span class="s2">"SLOWMO"</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span> <span class="k">if</span> <span class="no">ENV</span><span class="p">[</span><span class="s2">"HEADLESS"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"false"</span><span class="p">)</span>
+  <span class="p">})</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>Run with <code>HEADLESS=false ruby flaky_spec.rb</code> and see it passing. We also add <code>:slowmo</code> option with delay set to <code>0.2</code>
+without it everything happens way fast and we can barely see what&rsquo;s going on. Experiment with <code>:slowmo</code> option making
+the test not too slow and not too fast. Unfortunately this doesn&rsquo;t help us to spot an issue, because test is always
+passing but it&rsquo;s a good technique for starters.</p>
+
+<h4>Inspector</h4>
+
+<p>Another useful trick we can try is to put <code>page.driver.debug</code> statement to the test to make it pause and open the
+browser for us to debug, first let&rsquo;s add inspector option to the driver:</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="no">Capybara</span><span class="p">.</span><span class="nf">default_driver</span> <span class="o">=</span> <span class="ss">:cuprite</span>
+<span class="no">Capybara</span><span class="p">.</span><span class="nf">register_driver</span> <span class="ss">:cuprite</span> <span class="k">do</span> <span class="o">|</span><span class="n">app</span><span class="o">|</span>
+  <span class="no">Capybara</span><span class="o">::</span><span class="no">Cuprite</span><span class="o">::</span><span class="no">Driver</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="p">{</span>
+    <span class="ss">inspector: </span><span class="no">ENV</span><span class="p">[</span><span class="s2">"INSPECTOR"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"true"</span>
+  <span class="p">})</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>then:</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="n">fill_in</span> <span class="s2">"email"</span><span class="p">,</span> <span class="ss">with: </span><span class="n">email</span>
+<span class="n">click_button</span><span class="p">(</span><span class="s2">"Next"</span><span class="p">)</span>
+
+<span class="n">page</span><span class="p">.</span><span class="nf">driver</span><span class="p">.</span><span class="nf">debug</span>
+</code></pre></div>
+<p>and run it with <code>INSPECTOR=true ruby flaky_spec.rb</code>. We will see in the console that test is paused:</p>
+<div class="highlight"><pre class="highlight shell"><code>Cuprite execution paused. Press enter <span class="o">(</span>or run <span class="s1">'kill -CONT 1098635'</span><span class="o">)</span> to <span class="k">continue</span><span class="nb">.</span>
+Opening <span class="k">in </span>existing browser session.
+</code></pre></div>
+<p>and Chrome window is ready and showing us inspectable pages:</p>
+
+<p><img src="/images/inspectable_pages.png" class="img-fluid" alt="inspectable pages">
+<img src="/images/inspectable_content.png" class="img-fluid" alt="inspectable content"></p>
+
+<p>You can also call <code>page.driver.debug(binding)</code> and besides opening the browser Cuprite starts pry or irb console where
+you can execute some statements in the test&rsquo;s context. If you are lucky enough, this debugging technique can show you
+that capybara cannot find <code>first-name</code> input because page is still showing the first step and for some reason hasn&rsquo;t
+switch to the second. We came a little closer to the clue, but it&rsquo;s not enough.</p>
+
+<h4>Logger option</h4>
+
+<p>Using logger we can see all the messages our Ruby process exchanges with Chrome. Cuprite uses CDP protocol to control
+Chrome. When your test starts running Cuprite spawns Chrome which listens to the messages through a websocket. Turning
+logger on just shows in the console all the messages both processes exchange. Run <code>CUPRITE_DEBUG=true ruby flaky_spec.rb</code>
+and you&rsquo;ll see a lot of output in your console. Now it&rsquo;s time to makes some sense out of it. The command we send to
+Chrome starts with ▶ and shows the direction of the message:</p>
+<div class="highlight"><pre class="highlight shell"><code>▶ 0.32 <span class="o">{</span><span class="s2">"method"</span>:<span class="s2">"Page.navigate"</span>,<span class="s2">"params"</span>:<span class="o">{</span><span class="s2">"url"</span>:<span class="s2">"http://127.0.0.1:46551/listings"</span><span class="o">}</span>,<span class="s2">"id"</span>:1014<span class="o">}</span>
+</code></pre></div>
+<p>the answer we get back:</p>
+<div class="highlight"><pre class="highlight shell"><code>◀ 1.30 <span class="o">{</span><span class="s2">"id"</span>:1014,<span class="s2">"result"</span>:<span class="o">{</span><span class="s2">"frameId"</span>:<span class="s2">"3EBE..."</span>,<span class="s2">"loaderId"</span>:<span class="s2">"A97..."</span><span class="o">}}</span>
+</code></pre></div>
+<p>Digits you see after the direction sign is elapsed time and the message is just a simple JSON. Note matching ids, you
+provide a unique numeric id with the message and Chrome has the same id for the response. You pass the command you&rsquo;d like
+Chrome to invoke in <code>method</code> with params in <code>params</code>. The whole list of commands for CDP protocol is <a href="https://chromedevtools.github.io/devtools-protocol/">here</a>.
+Let&rsquo;s work on the terminology. First of all I would be ashamed to steal pictures and actually I&rsquo;m ashamed, but this one
+is exactly how it is in Puppeteer except that I replaced this wording with Cuprite.</p>
+
+<p><img src="/images/cuprite_schema.png" class="img-fluid" alt="cuprite schema"></p>
+
+<p>If you want to create a new page and make it go to example.com you first have to create new browser context:</p>
+<div class="highlight"><pre class="highlight json"><code><span class="p">{</span><span class="nl">"method"</span><span class="p">:</span><span class="s2">"Target.createBrowserContext"</span><span class="p">,</span><span class="nl">"params"</span><span class="p">:{},</span><span class="nl">"id"</span><span class="p">:</span><span class="mi">2</span><span class="p">}</span><span class="w">
+
+</span><span class="p">{</span><span class="nl">"id"</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="nl">"result"</span><span class="p">:{</span><span class="nl">"browserContextId"</span><span class="p">:</span><span class="s2">"9A688D2E33EB21D8FE5144A1481C2BF8"</span><span class="p">}}</span><span class="w">
+</span></code></pre></div>
+<p>Context has an id and resembles an incognito session, you can create many pages in the same context and than just
+dispose it with all the pages at once in the end. Create a page in the context:</p>
+<div class="highlight"><pre class="highlight json"><code><span class="p">{</span><span class="nl">"method"</span><span class="p">:</span><span class="s2">"Target.createTarget"</span><span class="p">,</span><span class="nl">"params"</span><span class="p">:{</span><span class="nl">"browserContextId"</span><span class="p">:</span><span class="s2">"9A688D2E33EB21D8FE5144A1481C2BF8"</span><span class="p">,</span><span class="nl">"url"</span><span class="p">:</span><span class="s2">"about:blank"</span><span class="p">},</span><span class="nl">"id"</span><span class="p">:</span><span class="mi">3</span><span class="p">}</span><span class="w">
+
+</span><span class="p">{</span><span class="nl">"id"</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span><span class="nl">"result"</span><span class="p">:{</span><span class="nl">"targetId"</span><span class="p">:</span><span class="s2">"F135A71EEF7D8A39547AB4C5BB3C9942"</span><span class="p">}}</span><span class="w">
+</span></code></pre></div>
+<p>Yes page is called a target in CDP terminology. Note that we pass <code>browserContextId</code> and a url. Chrome sends us back
+<code>targetId</code>. Now page is created and it&rsquo;s time to subscribe to interesting events we&rsquo;d like to be notified of. It can be DOM or CSS,
+there are many of them. I think I should mention <code>Runtime</code> as it&rsquo;s important:</p>
+<div class="highlight"><pre class="highlight json"><code><span class="p">{</span><span class="nl">"method"</span><span class="p">:</span><span class="s2">"Runtime.enable"</span><span class="p">,</span><span class="nl">"params"</span><span class="p">:{},</span><span class="nl">"id"</span><span class="p">:</span><span class="mi">1002</span><span class="p">}</span><span class="w">
+
+</span><span class="p">{</span><span class="nl">"method"</span><span class="p">:</span><span class="s2">"Runtime.executionContextCreated"</span><span class="p">,</span><span class="nl">"params"</span><span class="p">:{</span><span class="nl">"context"</span><span class="p">:{</span><span class="nl">"id"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="nl">"origin"</span><span class="p">:</span><span class="s2">"://"</span><span class="p">,</span><span class="nl">"name"</span><span class="p">:</span><span class="s2">""</span><span class="p">,</span><span class="nl">"auxData"</span><span class="p">:{</span><span class="nl">"isDefault"</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="nl">"type"</span><span class="p">:</span><span class="s2">"default"</span><span class="p">,</span><span class="nl">"frameId"</span><span class="p">:</span><span class="s2">"F135A71EEF7D8A39547AB4C5BB3C9942"</span><span class="p">}}}}</span><span class="w">
+
+</span><span class="p">{</span><span class="nl">"id"</span><span class="p">:</span><span class="mi">1002</span><span class="p">,</span><span class="nl">"result"</span><span class="p">:{}}</span><span class="w">
+</span></code></pre></div>
+<p>It&rsquo;s another context, but this time it&rsquo;s related to JS world, this is the context where all the JS is executed for this
+page. Each page has a main frame and each frame has it&rsquo;s own execution context. Now we can tell the page to navigate
+to the given url:</p>
+<div class="highlight"><pre class="highlight json"><code><span class="p">{</span><span class="nl">"method"</span><span class="p">:</span><span class="s2">"Page.navigate"</span><span class="p">,</span><span class="nl">"params"</span><span class="p">:{</span><span class="nl">"url"</span><span class="p">:</span><span class="s2">"http://127.0.0.1:36555/"</span><span class="p">},</span><span class="nl">"id"</span><span class="p">:</span><span class="mi">1014</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>As we are executing test the url obviously shows us loopback interface where capybara is running our application with
+puma. After this call there are some network events and messages regarding page state, and we move to the point where
+capybara starts filling the email and in order to do that it has to find such node first:</p>
+<div class="highlight"><pre class="highlight json"><code><span class="p">{</span><span class="nl">"method"</span><span class="p">:</span><span class="s2">"Runtime.callFunctionOn"</span><span class="p">,</span><span class="nl">"params"</span><span class="p">:{</span><span class="nl">"executionContextId"</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="nl">"functionDeclaration"</span><span class="p">:</span><span class="s2">"function() { return _cuprite.find(arguments[0], arguments[1]) }"</span><span class="p">,</span><span class="nl">"arguments"</span><span class="p">:[{</span><span class="nl">"value"</span><span class="p">:</span><span class="s2">"xpath"</span><span class="p">},{</span><span class="nl">"value"</span><span class="p">:</span><span class="s2">"./descendant::*[self::input | self::textarea][not(((((((./@type = 'submit') or (./@type = 'image')) or (./@type = 'radio')) or (./@type = 'checkbox')) or (./@type = 'hidden')) or (./@type = 'file')))][((((./@id = 'email') or (./@name = 'email')) or (./@placeholder = 'email')) or (./@id = //label[(normalize-space(string(.)) = 'email')]/@for))] | .//label[(normalize-space(string(.)) = 'email')]//./descendant::*[self::input | self::textarea][not(((((((./@type = 'submit') or (./@type = 'image')) or (./@type = 'radio')) or (./@type = 'checkbox')) or (./@type = 'hidden')) or (./@type = 'file')))]"</span><span class="p">}]},</span><span class="nl">"id"</span><span class="p">:</span><span class="mi">1014</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>Finding a node means executing a JS function in the execution context for the main frame, capybara passes a long
+argument - xpath for email input. In return we get <code>Runtime.RemoteObjectId</code> which can be converted to the <code>nodeId</code> which
+can be used to work with such node, in our case we want to set input&rsquo;s value:</p>
+<div class="highlight"><pre class="highlight json"><code><span class="p">{</span><span class="nl">"method"</span><span class="p">:</span><span class="s2">"Runtime.callFunctionOn"</span><span class="p">,</span><span class="nl">"params"</span><span class="p">:{</span><span class="nl">"executionContextId"</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="nl">"functionDeclaration"</span><span class="p">:</span><span class="s2">"function() { return _cuprite.set(arguments[0], arguments[1]) }"</span><span class="p">,</span><span class="nl">"arguments"</span><span class="p">:[{</span><span class="nl">"objectId"</span><span class="p">:</span><span class="s2">"-8351792869791064162.2.7"</span><span class="p">},{</span><span class="nl">"value"</span><span class="p">:</span><span class="s2">"email@example.com"</span><span class="p">}]},</span><span class="nl">"id"</span><span class="p">:</span><span class="mi">1026</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>After that we have to find &ldquo;Next&rdquo; button and click it in order to activate next step, so capybara once again finds node
+by xpath and this time we need to get coordinates of such node because we have to send click there, so we get content
+quads, calculate the coordinates and fire the click:</p>
+<div class="highlight"><pre class="highlight json"><code><span class="p">{</span><span class="nl">"method"</span><span class="p">:</span><span class="s2">"DOM.getContentQuads"</span><span class="p">,</span><span class="nl">"params"</span><span class="p">:{</span><span class="nl">"nodeId"</span><span class="p">:</span><span class="mi">16</span><span class="p">},</span><span class="nl">"id"</span><span class="p">:</span><span class="mi">1038</span><span class="p">}</span><span class="w">
+</span><span class="p">{</span><span class="nl">"id"</span><span class="p">:</span><span class="mi">1038</span><span class="p">,</span><span class="nl">"result"</span><span class="p">:{</span><span class="nl">"quads"</span><span class="p">:[[</span><span class="mi">8</span><span class="p">,</span><span class="mi">41</span><span class="p">,</span><span class="mf">51.40625</span><span class="p">,</span><span class="mi">41</span><span class="p">,</span><span class="mf">51.40625</span><span class="p">,</span><span class="mi">62</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">62</span><span class="p">]]}}</span><span class="w">
+
+</span><span class="p">{</span><span class="nl">"method"</span><span class="p">:</span><span class="s2">"Input.dispatchMouseEvent"</span><span class="p">,</span><span class="nl">"params"</span><span class="p">:{</span><span class="nl">"type"</span><span class="p">:</span><span class="s2">"mouseMoved"</span><span class="p">,</span><span class="nl">"x"</span><span class="p">:</span><span class="mi">29</span><span class="p">,</span><span class="nl">"y"</span><span class="p">:</span><span class="mi">51</span><span class="p">},</span><span class="nl">"id"</span><span class="p">:</span><span class="mi">1044</span><span class="p">}</span><span class="w">
+
+</span><span class="p">{</span><span class="nl">"method"</span><span class="p">:</span><span class="s2">"Input.dispatchMouseEvent"</span><span class="p">,</span><span class="nl">"params"</span><span class="p">:{</span><span class="nl">"x"</span><span class="p">:</span><span class="mf">29.703125</span><span class="p">,</span><span class="nl">"y"</span><span class="p">:</span><span class="mi">51</span><span class="p">,</span><span class="nl">"type"</span><span class="p">:</span><span class="s2">"mousePressed"</span><span class="p">,</span><span class="nl">"button"</span><span class="p">:</span><span class="s2">"left"</span><span class="p">,</span><span class="nl">"clickCount"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="nl">"modifiers"</span><span class="p">:</span><span class="mi">0</span><span class="p">},</span><span class="nl">"id"</span><span class="p">:</span><span class="mi">1045</span><span class="p">}</span><span class="w">
+
+</span><span class="p">{</span><span class="nl">"method"</span><span class="p">:</span><span class="s2">"Input.dispatchMouseEvent"</span><span class="p">,</span><span class="nl">"params"</span><span class="p">:{</span><span class="nl">"x"</span><span class="p">:</span><span class="mf">29.703125</span><span class="p">,</span><span class="nl">"y"</span><span class="p">:</span><span class="mi">51</span><span class="p">,</span><span class="nl">"type"</span><span class="p">:</span><span class="s2">"mouseReleased"</span><span class="p">,</span><span class="nl">"button"</span><span class="p">:</span><span class="s2">"left"</span><span class="p">,</span><span class="nl">"clickCount"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="nl">"modifiers"</span><span class="p">:</span><span class="mi">0</span><span class="p">},</span><span class="nl">"id"</span><span class="p">:</span><span class="mi">1046</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>Notice that we first have to scroll this element into the view, then move mouse and only then click. After that we start
+to look for the next xpath for <code>first-name</code>. Depending on if test passed or not you will either see capybara found input
+or tries to find it until give up. So what does it give us? We can clearly see that click happened and if you are an
+eagle eye you may have noticed:</p>
+<div class="highlight"><pre class="highlight json"><code><span class="p">{</span><span class="nl">"method"</span><span class="p">:</span><span class="s2">"DOM.attributeModified"</span><span class="p">,</span><span class="nl">"params"</span><span class="p">:{</span><span class="nl">"nodeId"</span><span class="p">:</span><span class="mi">14</span><span class="p">,</span><span class="nl">"name"</span><span class="p">:</span><span class="s2">"class"</span><span class="p">,</span><span class="nl">"value"</span><span class="p">:</span><span class="s2">"hint"</span><span class="p">}}</span><span class="w">
+</span></code></pre></div>
+<p>right between mouse pressed and released. So when we fire the click JS kicks in and our hint appears with <code>display: block</code>
+which moves our button down. It&rsquo;s invented example, but instead of such JS it can be AJAX, styles invalidation, image
+loading or many other things that are happeneing when page is still loading. Do you think about such things while writing
+the test? Can you remember a real case when you misclicked on the link because some content appeared? It happens for me
+quite often. So why your test can&rsquo;t?</p>
+
+<h3>How to fix it?</h3>
+
+<ul>
+<li><p>The answer depends on your application usually. If it&rsquo;s AJAX you have to replace content properly, if it&rsquo;s styles try to
+make height static if you can or it will make your end users nervous as well. Always think about asynchronous nature
+of the webpage while writing your system tests.</p></li>
+<li><p>If you cannot solve issue directly, try to replace <code>click</code> with <code>trigger(:click)</code>. There is huge difference between
+them as for the latter we don&rsquo;t need coordinates, but there&rsquo;s also downside as your element can be not clickable at all,
+obscured by the others and you won&rsquo;t catch it in the tests.</p></li>
+<li><p>Cuprite also comes with lot&rsquo;s of configurable settings. It actually has node movement protection, but it&rsquo;s set to a
+very bare minimum because we don&rsquo;t want to slow down your tests: <code>FERRUM_NODE_MOVING_WAIT=0.01</code> and <code>FERRUM_NODE_MOVING_ATTEMPTS=50</code>.
+We try to get coordinates of your node a few times with little delay and if it&rsquo;s moving we do max number of attempts
+until give up and raise <code>NodeIsMovingError</code>. You can increase this env variable and check if it makes your build more
+stable.</p></li>
+</ul>
+
+<h3>Bonus</h3>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">BROWSER_PATH</span><span class="o">=</span>/path/to/chrome <span class="c"># Path to Chrome binary</span>
+<span class="nv">CUPRITE_DEBUG</span><span class="o">=</span><span class="nb">true</span> <span class="c"># Turn on debug mode and show logs in the console same as FERRUM_DEBUG=true</span>
+FERRUM_DEFAULT_TIMEOUT <span class="o">=</span> 5 <span class="c"># How long wait for an answer from Chrome</span>
+FERRUM_PROCESS_TIMEOUT <span class="o">=</span> 10 <span class="c"># How long wait for Chrome process to start</span>
+FERRUM_NODE_MOVING_WAIT <span class="o">=</span> 0.01 <span class="c"># For how long wait before trying to get coordinates again</span>
+FERRUM_NODE_MOVING_ATTEMPTS <span class="o">=</span> 50 <span class="c"># How many attempts to do until give up since node is moving</span>
+FERRUM_CLICK_WAIT <span class="o">=</span> 0.1 <span class="c"># How long wait for frame to start loading after click</span>
+<span class="nv">CUPRITE_TRIGGER_CLICK_WAIT</span><span class="o">=</span>0.1 <span class="c"># How long wait for frame to start loading after trigger</span>
+<span class="nv">CUPRITE_MODAL_WAIT</span><span class="o">=</span>0.05  <span class="c"># How long wait for modal dialog</span>
+<span class="nv">FERRUM_NEW_WINDOW_WAIT</span><span class="o">=</span>0.3 <span class="c"># How long wait for a new window</span>
+</code></pre></div>
+  </article>
+          <footer>
+            <a href="/about.html">Dmitry Vorotilin</a>
+            |
+            Copyright © 2012-2021
+          </footer>
+          <div class="yandex_metrika">
+  <!-- Yandex.Metrika informer -->
+  <a href="https://metrika.yandex.ru/stat/?id=25785359&amp;from=informer"
+  target="_blank" rel="nofollow"><img src="https://informer.yandex.ru/informer/25785359/1_0_FFFFFFFF_EFEFEFFF_0_pageviews"
+  style="width:80px; height:15px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры)" /></a>
+  <!-- /Yandex.Metrika informer -->
+
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript" >
+      (function (d, w, c) {
+          (w[c] = w[c] || []).push(function() {
+              try {
+                  w.yaCounter25785359 = new Ya.Metrika({
+                      id:25785359,
+                      clickmap:true,
+                      trackLinks:true,
+                      accurateTrackBounce:true,
+                      webvisor:true
+                  });
+              } catch(e) { }
+          });
+
+          var n = d.getElementsByTagName("script")[0],
+              s = d.createElement("script"),
+              f = function () { n.parentNode.insertBefore(s, n); };
+          s.type = "text/javascript";
+          s.async = true;
+          s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+          if (w.opera == "[object Opera]") {
+              d.addEventListener("DOMContentLoaded", f, false);
+          } else { f(); }
+      })(document, window, "yandex_metrika_callbacks");
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/25785359" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+</div>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

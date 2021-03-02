@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="/images/favicon.ico">
     <meta name="yandex-verification" content="3bfdb691bc608cfc" />
     <meta name="description" content="Hi I'm Dmitry Vorotilin and this is my blog about programming. I mostly write about Ruby, SQL and OS but ain't limited to that.">
     <title>NopeCode</title>
@@ -18,6 +19,21 @@
           </header>
           <div>
             <article>
+              <header>
+                <h2><a href="/2013/11/13/rails-autoloading.html">Rails autoloading</a></h2>
+                <time datetime="2013-11-13">November 13, 2013</time>
+              </header>
+              <div>
+                <p>There is much to be said about Rails autoloading and particularly about
+<code>ActiveSupport::Dependencies</code> (<code>AS::D</code> for short). What does it do? As the title
+says it loads constants automatically and reloads your code catching changes on
+every request. Ok,...</p>
+              </div>
+              <footer>
+                <a href="/2013/11/13/rails-autoloading.html">Read more</a>
+              </footer>
+          </article>
+          <article>
               <header>
                 <h2><a href="/2013/11/05/ruby-loading-and-requiring-files-constant-name-resolution.html">Ruby loading and requiring files, constant name resolution</a></h2>
                 <time datetime="2013-11-05">November  5, 2013</time>
@@ -50,27 +66,14 @@ I won’t show you all those tests, just a small piece:</p>
                 <a href="/2012/12/16/ruby-inherited-method-bug.html">Read more</a>
               </footer>
           </article>
-          <article>
-              <header>
-                <h2><a href="/2012/08/28/see-the-difference.html">See the difference</a></h2>
-                <time datetime="2012-08-28">August 28, 2012</time>
-              </header>
-              <div>
-                <p>Yesterday I faced the strange behaviour of the array wrapping in context
-of Arel. I tried to wrap something like this <code>User.arel_table[:id]</code> but
-<code>Array(User.arel_table[:id])</code> and <code>Array.wrap(User.arel_table[:id])</code>
-gave me different results. Now I’ll tell...</p>
-              </div>
-              <footer>
-                <a href="/2012/08/28/see-the-difference.html">Read more</a>
-              </footer>
-          </article>
 
   <center>
     <p>
         <a href="/page/2/">Prev</a>
         |
-      Page 3 of 3
+      Page 3 of 4
+        |
+        <a href="/page/4/">Next</a>
     </p>
   </center>
 
@@ -78,7 +81,7 @@ gave me different results. Now I’ll tell...</p>
           <footer>
             <a href="/about.html">Dmitry Vorotilin</a>
             |
-            Copyright © 2012-2018
+            Copyright © 2012-2021
           </footer>
           <div class="yandex_metrika">
   <!-- Yandex.Metrika informer -->

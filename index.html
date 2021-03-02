@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="/images/favicon.ico">
     <meta name="yandex-verification" content="3bfdb691bc608cfc" />
     <meta name="description" content="Hi I'm Dmitry Vorotilin and this is my blog about programming. I mostly write about Ruby, SQL and OS but ain't limited to that.">
     <title>NopeCode</title>
@@ -19,17 +20,33 @@
           <div>
             <article>
               <header>
+                <h2><a href="/2021/03/01/your-flaky-ruby-tests.html">Hi! It's me, your flaky system test again</a></h2>
+                <time datetime="2021-03-01">March  1, 2021</time>
+              </header>
+              <div>
+                <h6>To my grandfather, who was always curious about how things work</h6>
+
+<p>There are many articles on how to <a href="https://thoughtbot.com/blog/write-reliable-asynchronous-integration-tests-with-capybara">write reliable capybara tests</a>.
+There are less articles on how to deal with your <a href="https://www.mayerdan.com/ruby/2019/09/07/flaky-ruby-tests">flaky tests</a>.
+There are none I’ve found on how to properly debug and really...</p>
+              </div>
+              <footer>
+                <a href="/2021/03/01/your-flaky-ruby-tests.html">Read more</a>
+              </footer>
+          </article>
+          <article>
+              <header>
                 <h2><a href="/2018/09/24/ubuntu-openvpn.html">OpenVPN on Ubuntu 18.04</a></h2>
                 <time datetime="2018-09-24">September 24, 2018</time>
               </header>
               <div>
                 <h3>Install and copy configs:</h3>
 <div class="highlight"><pre class="highlight shell"><code><span class="nb">sudo </span>apt update
-<span class="nb">sudo </span>apt install openvpn
+<span class="nb">sudo </span>apt <span class="nb">install </span>openvpn
 wget <span class="nt">-P</span> ~/ https://github.com/OpenVPN/easy-rsa/releases/download/v3.0.4/EasyRSA-3.0.4.tgz
 <span class="nb">tar </span>zxvf EasyRSA-3.0.4.tgz
 <span class="nb">cd </span>EasyRSA-3.0.4
-cp vars.example vars
+<span class="nb">cp </span>vars.example vars
 vim vars
 </code></pre></div>
 <p>Set these variables...</p>
@@ -48,39 +65,19 @@ vim vars
 
 <p>Let’s first change shell to sh as FreeBSD comes with csh by default:</p>
 <div class="highlight"><pre class="highlight shell"><code>root@vpn:~ <span class="c"># sh</span>
-</code></pre></div><div class="highlight"><pre class="highlight shell"><code>pkg update <span class="o">&amp;&amp;</span> pkg install openvpn
-mkdir /usr/local/etc/openvpn
-cp /usr/local/share/examples/openvpn/sample-config-files/server.conf <span class="se">\</span>
+</code></pre></div><div class="highlight"><pre class="highlight shell"><code>pkg update <span class="o">&amp;&amp;</span> pkg <span class="nb">install </span>openvpn
+<span class="nb">mkdir</span> /usr/local/etc/openvpn
+<span class="nb">cp</span> /usr/local/share/examples/openvpn/sample-config-files/server.conf <span class="se">\</span>
  ...</code></pre></div>
               </div>
               <footer>
                 <a href="/2018/05/21/freebsd-openvpn.html">Read more</a>
               </footer>
           </article>
-          <article>
-              <header>
-                <h2><a href="/2018/04/24/telegram-drama.html">Telegram drama</a></h2>
-                <time datetime="2018-04-24">April 24, 2018</time>
-              </header>
-              <div>
-                <p>In my childhood internet and network looked like a magick. In the movies they
-showed something like ping output and I definitely thought that someone hacked
-someone else.</p>
-
-<p><img src="/images/hackers.png" class="img-fluid" alt="hackers"></p>
-
-<h3>The beginning of story</h3>
-
-<p>Recently media regulator Roskomnadzor started to block...</p>
-              </div>
-              <footer>
-                <a href="/2018/04/24/telegram-drama.html">Read more</a>
-              </footer>
-          </article>
 
   <center>
     <p>
-      Page 1 of 3
+      Page 1 of 4
         |
         <a href="/page/2/">Next</a>
     </p>
@@ -90,7 +87,7 @@ someone else.</p>
           <footer>
             <a href="/about.html">Dmitry Vorotilin</a>
             |
-            Copyright © 2012-2018
+            Copyright © 2012-2021
           </footer>
           <div class="yandex_metrika">
   <!-- Yandex.Metrika informer -->

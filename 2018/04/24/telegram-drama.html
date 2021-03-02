@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="/images/favicon.ico">
     <meta name="yandex-verification" content="3bfdb691bc608cfc" />
     <meta name="description" content="Investigation on how telegram is blocked in Russia">
     <title>Telegram drama</title>
@@ -50,8 +51,8 @@ server was <code>example.com</code> with IP address <code>x.x.x.x</code> and my 
 address <code>y.y.y.y</code>.</p>
 <div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>ping example.com
 PING x.x.x.x: 64 data bytes
-72 bytes from x.x.x.x: <span class="nv">seq</span><span class="o">=</span>0 <span class="nv">ttl</span><span class="o">=</span>52 <span class="nb">time</span><span class="o">=</span>141.242 ms
-72 bytes from x.x.x.x: <span class="nv">seq</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>52 <span class="nb">time</span><span class="o">=</span>140.809 ms
+72 bytes from x.x.x.x: <span class="nb">seq</span><span class="o">=</span>0 <span class="nv">ttl</span><span class="o">=</span>52 <span class="nb">time</span><span class="o">=</span>141.242 ms
+72 bytes from x.x.x.x: <span class="nb">seq</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>52 <span class="nb">time</span><span class="o">=</span>140.809 ms
 
 2 packets transmitted, 2 packets received, 0% packet loss
 round-trip min/avg/max <span class="o">=</span> 140.702/140.918/141.242 ms
@@ -137,47 +138,47 @@ one window open curl and tcpdump on another:</p>
 curl: <span class="o">(</span>7<span class="o">)</span> Failed to connect to example.com port 80: Connection timed out
 </code></pre></div><div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span><span class="nb">sudo </span>tcpdump <span class="nt">-nn</span> <span class="nt">-vvv</span> <span class="nt">-i</span> enp4s0 dst x.x.x.x or src x.x.x.x
 tcpdump: listening on enp4s0, link-type EN10MB <span class="o">(</span>Ethernet<span class="o">)</span>, capture size 262144 bytes
-23:38:18.908971 IP <span class="o">(</span>tos 0x0, ttl 64, id 59563, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 60<span class="o">)</span>
-    192.168.0.13.41722 <span class="o">&gt;</span> x.x.x.x.80: Flags <span class="o">[</span>S], cksum 0xd52f <span class="o">(</span>correct<span class="o">)</span>, seq 1092877667, win 29200, options <span class="o">[</span>mss 1460,sackOK,TS val 3908771289 ecr 0,nop,wscale 7], length 0
-23:38:18.925014 IP <span class="o">(</span>tos 0x0, ttl 58, id 1, offset 0, flags <span class="o">[</span>none], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 40<span class="o">)</span>
-    x.x.x.x.80 <span class="o">&gt;</span> 192.168.0.13.41722: Flags <span class="o">[</span>R], cksum 0x43e5 <span class="o">(</span>correct<span class="o">)</span>, seq 0, win 29200, length 0
-23:38:19.932815 IP <span class="o">(</span>tos 0x0, ttl 64, id 59564, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 60<span class="o">)</span>
-    192.168.0.13.41722 <span class="o">&gt;</span> x.x.x.x.80: Flags <span class="o">[</span>S], cksum 0xd12f <span class="o">(</span>correct<span class="o">)</span>, seq 1092877667, win 29200, options <span class="o">[</span>mss 1460,sackOK,TS val 3908772313 ecr 0,nop,wscale 7], length 0
-23:38:19.948956 IP <span class="o">(</span>tos 0x0, ttl 58, id 1, offset 0, flags <span class="o">[</span>none], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 40<span class="o">)</span>
-    x.x.x.x.80 <span class="o">&gt;</span> 192.168.0.13.41722: Flags <span class="o">[</span>R], cksum 0x43e5 <span class="o">(</span>correct<span class="o">)</span>, seq 0, win 29200, length 0
+23:38:18.908971 IP <span class="o">(</span>tos 0x0, ttl 64, <span class="nb">id </span>59563, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 60<span class="o">)</span>
+    192.168.0.13.41722 <span class="o">&gt;</span> x.x.x.x.80: Flags <span class="o">[</span>S], <span class="nb">cksum </span>0xd52f <span class="o">(</span>correct<span class="o">)</span>, <span class="nb">seq </span>1092877667, win 29200, options <span class="o">[</span>mss 1460,sackOK,TS val 3908771289 ecr 0,nop,wscale 7], length 0
+23:38:18.925014 IP <span class="o">(</span>tos 0x0, ttl 58, <span class="nb">id </span>1, offset 0, flags <span class="o">[</span>none], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 40<span class="o">)</span>
+    x.x.x.x.80 <span class="o">&gt;</span> 192.168.0.13.41722: Flags <span class="o">[</span>R], <span class="nb">cksum </span>0x43e5 <span class="o">(</span>correct<span class="o">)</span>, <span class="nb">seq </span>0, win 29200, length 0
+23:38:19.932815 IP <span class="o">(</span>tos 0x0, ttl 64, <span class="nb">id </span>59564, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 60<span class="o">)</span>
+    192.168.0.13.41722 <span class="o">&gt;</span> x.x.x.x.80: Flags <span class="o">[</span>S], <span class="nb">cksum </span>0xd12f <span class="o">(</span>correct<span class="o">)</span>, <span class="nb">seq </span>1092877667, win 29200, options <span class="o">[</span>mss 1460,sackOK,TS val 3908772313 ecr 0,nop,wscale 7], length 0
+23:38:19.948956 IP <span class="o">(</span>tos 0x0, ttl 58, <span class="nb">id </span>1, offset 0, flags <span class="o">[</span>none], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 40<span class="o">)</span>
+    x.x.x.x.80 <span class="o">&gt;</span> 192.168.0.13.41722: Flags <span class="o">[</span>R], <span class="nb">cksum </span>0x43e5 <span class="o">(</span>correct<span class="o">)</span>, <span class="nb">seq </span>0, win 29200, length 0
 </code></pre></div>
 <p>3-Way TCP Handshake should be (SYN, SYN-ACK, ACK). Instead we see RST packet
 right after SYN. You can see them as [S] and [R] flags. In other words all
 outgoing http traffic dropped in the middle and instead we are sent RST packet.
 Let&rsquo;s send an outgoing packet from the droplet with source port 80 to home
 router on port 80:</p>
-<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>yes | nc <span class="nt">-p</span> 80 <span class="nt">-t</span> y.y.y.y 80
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span><span class="nb">yes</span> | nc <span class="nt">-p</span> 80 <span class="nt">-t</span> y.y.y.y 80
 
 <span class="nv">$ </span><span class="nb">sudo </span>tcpdump <span class="nt">-nn</span> <span class="nt">-vvv</span> <span class="nt">-i</span> eth0 dst y.y.y.y and dst port 80 or src y.y.y.y and dst port 80
 tcpdump: listening on eth0, link-type EN10MB <span class="o">(</span>Ethernet<span class="o">)</span>, capture size 262144 bytes
-05:39:49.968049 IP <span class="o">(</span>tos 0x0, ttl 64, id 18207, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 60<span class="o">)</span>
-    x.x.x.x.80 <span class="o">&gt;</span> y.y.y.y.80: Flags <span class="o">[</span>S], cksum 0x6e4e <span class="o">(</span>incorrect -&gt; 0x16e9<span class="o">)</span>, seq 3260122744, win 29200, options <span class="o">[</span>mss 1460,sackOK,TS val 1175830887 ecr 0,nop,wscale 7], length 0
-05:39:50.109076 IP <span class="o">(</span>tos 0x28, ttl 49, id 0, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 60<span class="o">)</span>
-    y.y.y.y.80 <span class="o">&gt;</span> x.x.x.x.80: Flags <span class="o">[</span>S.], cksum 0x83e9 <span class="o">(</span>correct<span class="o">)</span>, seq 3723973951, ack 3260122745, win 28960, options <span class="o">[</span>mss 1440,sackOK,TS val 3637479403 ecr 1175830887,nop,wscale 7], length 0
-05:39:50.109117 IP <span class="o">(</span>tos 0x0, ttl 64, id 18208, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 52<span class="o">)</span>
-    x.x.x.x.80 <span class="o">&gt;</span> y.y.y.y.80: Flags <span class="o">[</span>.], cksum 0x6e46 <span class="o">(</span>incorrect -&gt; 0x22b9<span class="o">)</span>, seq 1, ack 1, win 229, options <span class="o">[</span>nop,nop,TS val 1175830923 ecr 3637479403], length 0
-05:39:50.109230 IP <span class="o">(</span>tos 0x0, ttl 64, id 18209, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 2100<span class="o">)</span>
-    x.x.x.x.80 <span class="o">&gt;</span> y.y.y.y.80: Flags <span class="o">[</span>P.], cksum 0x7646 <span class="o">(</span>incorrect -&gt; 0xf0cc<span class="o">)</span>, seq 1:2049, ack 1, win 229, options <span class="o">[</span>nop,nop,TS val 1175830923 ecr 3637479403], length 2048: HTTP
-05:39:50.109280 IP <span class="o">(</span>tos 0x0, ttl 64, id 18211, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 1480<span class="o">)</span>
-    x.x.x.x.80 <span class="o">&gt;</span> y.y.y.y.80: Flags <span class="o">[</span>.], cksum 0x73da <span class="o">(</span>incorrect -&gt; 0x7def<span class="o">)</span>, seq 2049:3477, ack 1, win 229, options <span class="o">[</span>nop,nop,TS val 1175830923 ecr 3637479403], length 1428: HTTP
-05:39:50.109299 IP <span class="o">(</span>tos 0x0, ttl 64, id 18212, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 1480<span class="o">)</span>
-    x.x.x.x.80 <span class="o">&gt;</span> y.y.y.y.80: Flags <span class="o">[</span>.], cksum 0x73da <span class="o">(</span>incorrect -&gt; 0x785b<span class="o">)</span>, seq 3477:4905, ack 1, win 229, options <span class="o">[</span>nop,nop,TS val 1175830923 ecr 3637479403], length 1428: HTTP
-05:39:50.109331 IP <span class="o">(</span>tos 0x0, ttl 64, id 18213, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 2908<span class="o">)</span>
-    x.x.x.x.80 <span class="o">&gt;</span> y.y.y.y.80: Flags <span class="o">[</span>.], cksum 0x796e <span class="o">(</span>incorrect -&gt; 0xd5fd<span class="o">)</span>, seq 4905:7761, ack 1, win 229, options <span class="o">[</span>nop,nop,TS val 1175830923 ecr 3637479403], length 2856: HTTP
-05:39:50.109349 IP <span class="o">(</span>tos 0x0, ttl 64, id 18215, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 1480<span class="o">)</span>
-    x.x.x.x.80 <span class="o">&gt;</span> y.y.y.y.80: Flags <span class="o">[</span>.], cksum 0x73da <span class="o">(</span>incorrect -&gt; 0x679f<span class="o">)</span>, seq 7761:9189, ack 1, win 229, options <span class="o">[</span>nop,nop,TS val 1175830923 ecr 3637479403], length 1428: HTTP
-05:39:50.109371 IP <span class="o">(</span>tos 0x0, ttl 64, id 18216, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 2908<span class="o">)</span>
-    x.x.x.x.80 <span class="o">&gt;</span> y.y.y.y.80: Flags <span class="o">[</span>.], cksum 0x796e <span class="o">(</span>incorrect -&gt; 0xc541<span class="o">)</span>, seq 9189:12045, ack 1, win 229, options <span class="o">[</span>nop,nop,TS val 1175830923 ecr 3637479403], length 2856: HTTP
-05:39:50.109390 IP <span class="o">(</span>tos 0x0, ttl 64, id 18218, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 1480<span class="o">)</span>
-    x.x.x.x.80 <span class="o">&gt;</span> y.y.y.y.80: Flags <span class="o">[</span>.], cksum 0x73da <span class="o">(</span>incorrect -&gt; 0x56e3<span class="o">)</span>, seq 12045:13473, ack 1, win 229, options <span class="o">[</span>nop,nop,TS val 1175830923 ecr 3637479403], length 1428: HTTP
-05:39:50.251998 IP <span class="o">(</span>tos 0x28, ttl 49, id 34134, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 40<span class="o">)</span>
-    y.y.y.y.80 <span class="o">&gt;</span> x.x.x.x.80: Flags <span class="o">[</span>R], cksum 0x0de9 <span class="o">(</span>correct<span class="o">)</span>, seq 3723973952, win 0, length 0
-05:39:50.252020 IP <span class="o">(</span>tos 0x28, ttl 49, id 34135, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 40<span class="o">)</span>
+05:39:49.968049 IP <span class="o">(</span>tos 0x0, ttl 64, <span class="nb">id </span>18207, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 60<span class="o">)</span>
+    x.x.x.x.80 <span class="o">&gt;</span> y.y.y.y.80: Flags <span class="o">[</span>S], <span class="nb">cksum </span>0x6e4e <span class="o">(</span>incorrect -&gt; 0x16e9<span class="o">)</span>, <span class="nb">seq </span>3260122744, win 29200, options <span class="o">[</span>mss 1460,sackOK,TS val 1175830887 ecr 0,nop,wscale 7], length 0
+05:39:50.109076 IP <span class="o">(</span>tos 0x28, ttl 49, <span class="nb">id </span>0, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 60<span class="o">)</span>
+    y.y.y.y.80 <span class="o">&gt;</span> x.x.x.x.80: Flags <span class="o">[</span>S.], <span class="nb">cksum </span>0x83e9 <span class="o">(</span>correct<span class="o">)</span>, <span class="nb">seq </span>3723973951, ack 3260122745, win 28960, options <span class="o">[</span>mss 1440,sackOK,TS val 3637479403 ecr 1175830887,nop,wscale 7], length 0
+05:39:50.109117 IP <span class="o">(</span>tos 0x0, ttl 64, <span class="nb">id </span>18208, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 52<span class="o">)</span>
+    x.x.x.x.80 <span class="o">&gt;</span> y.y.y.y.80: Flags <span class="o">[</span>.], <span class="nb">cksum </span>0x6e46 <span class="o">(</span>incorrect -&gt; 0x22b9<span class="o">)</span>, <span class="nb">seq </span>1, ack 1, win 229, options <span class="o">[</span>nop,nop,TS val 1175830923 ecr 3637479403], length 0
+05:39:50.109230 IP <span class="o">(</span>tos 0x0, ttl 64, <span class="nb">id </span>18209, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 2100<span class="o">)</span>
+    x.x.x.x.80 <span class="o">&gt;</span> y.y.y.y.80: Flags <span class="o">[</span>P.], <span class="nb">cksum </span>0x7646 <span class="o">(</span>incorrect -&gt; 0xf0cc<span class="o">)</span>, <span class="nb">seq </span>1:2049, ack 1, win 229, options <span class="o">[</span>nop,nop,TS val 1175830923 ecr 3637479403], length 2048: HTTP
+05:39:50.109280 IP <span class="o">(</span>tos 0x0, ttl 64, <span class="nb">id </span>18211, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 1480<span class="o">)</span>
+    x.x.x.x.80 <span class="o">&gt;</span> y.y.y.y.80: Flags <span class="o">[</span>.], <span class="nb">cksum </span>0x73da <span class="o">(</span>incorrect -&gt; 0x7def<span class="o">)</span>, <span class="nb">seq </span>2049:3477, ack 1, win 229, options <span class="o">[</span>nop,nop,TS val 1175830923 ecr 3637479403], length 1428: HTTP
+05:39:50.109299 IP <span class="o">(</span>tos 0x0, ttl 64, <span class="nb">id </span>18212, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 1480<span class="o">)</span>
+    x.x.x.x.80 <span class="o">&gt;</span> y.y.y.y.80: Flags <span class="o">[</span>.], <span class="nb">cksum </span>0x73da <span class="o">(</span>incorrect -&gt; 0x785b<span class="o">)</span>, <span class="nb">seq </span>3477:4905, ack 1, win 229, options <span class="o">[</span>nop,nop,TS val 1175830923 ecr 3637479403], length 1428: HTTP
+05:39:50.109331 IP <span class="o">(</span>tos 0x0, ttl 64, <span class="nb">id </span>18213, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 2908<span class="o">)</span>
+    x.x.x.x.80 <span class="o">&gt;</span> y.y.y.y.80: Flags <span class="o">[</span>.], <span class="nb">cksum </span>0x796e <span class="o">(</span>incorrect -&gt; 0xd5fd<span class="o">)</span>, <span class="nb">seq </span>4905:7761, ack 1, win 229, options <span class="o">[</span>nop,nop,TS val 1175830923 ecr 3637479403], length 2856: HTTP
+05:39:50.109349 IP <span class="o">(</span>tos 0x0, ttl 64, <span class="nb">id </span>18215, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 1480<span class="o">)</span>
+    x.x.x.x.80 <span class="o">&gt;</span> y.y.y.y.80: Flags <span class="o">[</span>.], <span class="nb">cksum </span>0x73da <span class="o">(</span>incorrect -&gt; 0x679f<span class="o">)</span>, <span class="nb">seq </span>7761:9189, ack 1, win 229, options <span class="o">[</span>nop,nop,TS val 1175830923 ecr 3637479403], length 1428: HTTP
+05:39:50.109371 IP <span class="o">(</span>tos 0x0, ttl 64, <span class="nb">id </span>18216, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 2908<span class="o">)</span>
+    x.x.x.x.80 <span class="o">&gt;</span> y.y.y.y.80: Flags <span class="o">[</span>.], <span class="nb">cksum </span>0x796e <span class="o">(</span>incorrect -&gt; 0xc541<span class="o">)</span>, <span class="nb">seq </span>9189:12045, ack 1, win 229, options <span class="o">[</span>nop,nop,TS val 1175830923 ecr 3637479403], length 2856: HTTP
+05:39:50.109390 IP <span class="o">(</span>tos 0x0, ttl 64, <span class="nb">id </span>18218, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 1480<span class="o">)</span>
+    x.x.x.x.80 <span class="o">&gt;</span> y.y.y.y.80: Flags <span class="o">[</span>.], <span class="nb">cksum </span>0x73da <span class="o">(</span>incorrect -&gt; 0x56e3<span class="o">)</span>, <span class="nb">seq </span>12045:13473, ack 1, win 229, options <span class="o">[</span>nop,nop,TS val 1175830923 ecr 3637479403], length 1428: HTTP
+05:39:50.251998 IP <span class="o">(</span>tos 0x28, ttl 49, <span class="nb">id </span>34134, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 40<span class="o">)</span>
+    y.y.y.y.80 <span class="o">&gt;</span> x.x.x.x.80: Flags <span class="o">[</span>R], <span class="nb">cksum </span>0x0de9 <span class="o">(</span>correct<span class="o">)</span>, <span class="nb">seq </span>3723973952, win 0, length 0
+05:39:50.252020 IP <span class="o">(</span>tos 0x28, ttl 49, <span class="nb">id </span>34135, offset 0, flags <span class="o">[</span>DF], proto TCP <span class="o">(</span>6<span class="o">)</span>, length 40<span class="o">)</span>
 </code></pre></div>
 <p>TCP handshake and reset after all but they at least exchanged a few packets.
 I wonder if we can catch where exactly http traffic drops. With traceroute we can
@@ -267,7 +268,7 @@ network IP address inside the tunnel will be <code>192.168.0.1</code> for server
 <span class="nv">$ </span>ifdown tun1 <span class="o">&amp;&amp;</span> ifup tun1
 </code></pre></div>
 <p>On the router:</p>
-<div class="highlight"><pre class="highlight shell"><code>/interface gre add <span class="nv">name</span><span class="o">=</span><span class="s2">"gre-tunnel1"</span> <span class="nv">mtu</span><span class="o">=</span>auto local-address<span class="o">=</span>y.y.y.y remote-address<span class="o">=</span>x.x.x.x clamp-tcp-mss<span class="o">=</span>yes dont-fragment<span class="o">=</span>no allow-fast-path<span class="o">=</span>yes
+<div class="highlight"><pre class="highlight shell"><code>/interface gre add <span class="nv">name</span><span class="o">=</span><span class="s2">"gre-tunnel1"</span> <span class="nv">mtu</span><span class="o">=</span>auto local-address<span class="o">=</span>y.y.y.y remote-address<span class="o">=</span>x.x.x.x clamp-tcp-mss<span class="o">=</span><span class="nb">yes </span>dont-fragment<span class="o">=</span>no allow-fast-path<span class="o">=</span><span class="nb">yes</span>
 /ip address add <span class="nv">address</span><span class="o">=</span>192.168.0.2/24 <span class="nv">network</span><span class="o">=</span>192.168.0.0 <span class="nv">interface</span><span class="o">=</span>gre-tunnel1
 
 /ip firewall mangle
@@ -295,19 +296,11 @@ thru the tunnel. That&rsquo;s it.</p>
 <li><a href="https://lurkmore.to/GPON">Lurkmore GPON</a></li>
 </ul>
 
-    <div class="share">
-      <a href="https://twitter.com/share" class="twitter-share-button" data-via="rO_Oute">Tweet</a>
-      <script type="text/javascript">
-        //<![CDATA[
-          !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
-        //]]>
-      </script>
-    </div>
   </article>
           <footer>
             <a href="/about.html">Dmitry Vorotilin</a>
             |
-            Copyright © 2012-2018
+            Copyright © 2012-2021
           </footer>
           <div class="yandex_metrika">
   <!-- Yandex.Metrika informer -->

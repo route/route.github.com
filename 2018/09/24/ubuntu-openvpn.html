@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="/images/favicon.ico">
     <meta name="yandex-verification" content="3bfdb691bc608cfc" />
     <meta name="description" content="Set up OpenVPN on Ubuntu">
     <title>OpenVPN on Ubuntu 18.04</title>
@@ -25,11 +26,11 @@
     <time datetime="2018-09-24">September 24, 2018</time>
     <h3>Install and copy configs:</h3>
 <div class="highlight"><pre class="highlight shell"><code><span class="nb">sudo </span>apt update
-<span class="nb">sudo </span>apt install openvpn
+<span class="nb">sudo </span>apt <span class="nb">install </span>openvpn
 wget <span class="nt">-P</span> ~/ https://github.com/OpenVPN/easy-rsa/releases/download/v3.0.4/EasyRSA-3.0.4.tgz
 <span class="nb">tar </span>zxvf EasyRSA-3.0.4.tgz
 <span class="nb">cd </span>EasyRSA-3.0.4
-cp vars.example vars
+<span class="nb">cp </span>vars.example vars
 vim vars
 </code></pre></div>
 <p>Set these variables in the file and save:</p>
@@ -58,7 +59,7 @@ openvpn <span class="nt">--genkey</span> <span class="nt">--secret</span> ta.key
 ./easyrsa build-client-full <span class="nv">$CLIENT_NAME</span> nopass
 </code></pre></div>
 <h3>Copy server keys:</h3>
-<div class="highlight"><pre class="highlight shell"><code>cp pki/dh.pem <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell"><code><span class="nb">cp </span>pki/dh.pem <span class="se">\</span>
    pki/ca.crt <span class="se">\</span>
    pki/issued/openvpn-server.crt <span class="se">\</span>
    pki/private/openvpn-server.key <span class="se">\</span>
@@ -69,7 +70,7 @@ openvpn <span class="nt">--genkey</span> <span class="nt">--secret</span> ta.key
 
 <p>Change <code>&lt;server-ip&gt;</code> in the middle of the ovpn file to your server IP address.</p>
 <div class="highlight"><pre class="highlight shell"><code><span class="nb">cd</span> /etc/openvpn
-touch <span class="nv">$CLIENT_NAME</span>.ovpn
+<span class="nb">touch</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">cat</span> <span class="o">&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 client
 nobind
@@ -87,7 +88,7 @@ redirect-gateway def1
 <span class="nb">cat</span> ~/EasyRSA-3.0.4/pki/private/<span class="nv">$CLIENT_NAME</span>.key <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">printf</span> <span class="s2">"&lt;/key&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">printf</span> <span class="s2">"&lt;cert&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
-sed <span class="nt">-n</span> <span class="s1">'/^-----BEGIN/,/^-----END/p'</span> ~/EasyRSA-3.0.4/pki/issued/<span class="nv">$CLIENT_NAME</span>.crt <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
+<span class="nb">sed</span> <span class="nt">-n</span> <span class="s1">'/^-----BEGIN/,/^-----END/p'</span> ~/EasyRSA-3.0.4/pki/issued/<span class="nv">$CLIENT_NAME</span>.crt <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">printf</span> <span class="s2">"&lt;/cert&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">printf</span> <span class="s2">"&lt;ca&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 <span class="nb">cat</span> ~/EasyRSA-3.0.4/pki/ca.crt <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
@@ -97,7 +98,7 @@ sed <span class="nt">-n</span> <span class="s1">'/^-----BEGIN/,/^-----END/p'</sp
 <span class="nb">printf</span> <span class="s2">"&lt;/tls-auth&gt;</span><span class="se">\n</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn
 </code></pre></div>
 <h3>Configure server:</h3>
-<div class="highlight"><pre class="highlight shell"><code>touch server.conf
+<div class="highlight"><pre class="highlight shell"><code><span class="nb">touch </span>server.conf
 <span class="nb">cat</span> <span class="o">&gt;</span> server.conf
 server 192.168.255.0 255.255.255.0
 
@@ -145,7 +146,7 @@ server. Set <code>net.ipv4.ip_forward=1</code> in this file:</p>
 metric 100. Rememeber your interface name and put it to iptable rules below:</p>
 <div class="highlight"><pre class="highlight shell"><code>iptables <span class="nt">-t</span> nat <span class="nt">-A</span> POSTROUTING <span class="nt">-o</span> ens3 <span class="nt">-j</span> MASQUERADE
 iptables <span class="nt">-A</span> FORWARD <span class="nt">-j</span> ACCEPT
-apt-get install iptables-persistent
+apt-get <span class="nb">install </span>iptables-persistent
 </code></pre></div>
 <p>When you install iptables-persistent it will ask you to save current rules into
 file, just agree with that and then start the service:</p>
@@ -157,19 +158,11 @@ internet securely:</p>
 <div class="highlight"><pre class="highlight shell"><code>scp root@&lt;server-ip&gt;:/etc/openvpn/&lt;client-name&gt;.ovpn ./
 <span class="nb">sudo </span>openvpn &lt;client-name&gt;.ovpn
 </code></pre></div>
-    <div class="share">
-      <a href="https://twitter.com/share" class="twitter-share-button" data-via="rO_Oute">Tweet</a>
-      <script type="text/javascript">
-        //<![CDATA[
-          !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
-        //]]>
-      </script>
-    </div>
   </article>
           <footer>
             <a href="/about.html">Dmitry Vorotilin</a>
             |
-            Copyright © 2012-2018
+            Copyright © 2012-2021
           </footer>
           <div class="yandex_metrika">
   <!-- Yandex.Metrika informer -->

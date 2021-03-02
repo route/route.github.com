@@ -2,13 +2,24 @@
 
 @import url('https://fonts.googleapis.com/css?family=Raleway');
 
+@font-face {
+  font-family: 'Museo300';
+  font-style: normal;
+  font-weight: 300;
+  src: url('fonts/museo300-regular-webfont.eot') format('embedded-opentype'),
+       url('fonts/museo300-regular-webfont.woff') format('woff'),
+       url('fonts/museo300-regular-webfont.ttf')  format('truetype');
+}
+
 $color-header: #000000;
 $color-footer: #aaaaaa;
 $color-text:   #3f3f3f;
 $color-title:  #74ab2e;
+$color-code:   lighten(#b58900, 8%);
 
 @mixin title {
   color: $color-title;
+  font-family: 'Raleway', 'Museo300', serif;
   font-weight: bold;
   font-size: 24px;
   text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
@@ -21,20 +32,43 @@ $color-title:  #74ab2e;
   color: $color-footer;
 }
 
+@mixin code-bg($width: 1px, $bg-color: #f8f8f8, $br-color: #f8f8f8) {
+  background-color: transparentize($bg-color, 0.7);
+  border: $width solid darken($br-color, 1%);
+  border-radius: 5px;
+}
+
 body {
   background-color: #fff;
   color: $color-text;
-  font-family: 'Raleway', serif;
+  font-family: 'Museo300', 'Raleway', serif;
   font-size: 20px;
-  line-height: 1.5;
 }
 
-code {
-  color: lighten( #b58900, 8% );
+div.highlight {
+  margin: 0 20px;
+
+  pre {
+    padding: 5px;
+    font-size: 14px;
+    @include code-bg(0px);
+
+    &.json {
+      white-space: pre-wrap;
+      white-space: -moz-pre-wrap;
+      word-wrap: break-word;
+    }
+  }
+}
+
+p code {
+  padding: 2px;
+  color: $color-code;
+  @include code-bg($br-color: lighten($color-code, 54%));
 }
 
 .container {
-  max-width: 790px;
+  max-width: 900px;
 
   .row {
     .col {
@@ -55,7 +89,20 @@ code {
         line-height: 28px;
       }
       h3 {
+        line-height: 35px;
         font-size: 20px;
+      }
+      h4 {
+        line-height: 35px;
+        font-weight: bold;
+        font-size: 18px;
+        padding-left: 5px;
+      }
+      h6 {
+        font-size: 14px;
+        color: $color-footer;
+        text-align: right;
+        margin-bottom: 30px;
       }
 
       ol {
@@ -117,11 +164,8 @@ code {
           @include time;
         }
         p {
-          padding-bottom: 10px;
-        }
-        .share {
-          padding-top: 50px;
-          text-align: center;
+          line-height: 1.75em;
+          padding: 0 20px 10px 20px;
         }
       }
 

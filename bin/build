@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+bundle exec middleman build
+
+cd build && git add . && git commit -am "Build" && git push origin master

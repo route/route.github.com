@@ -11,26 +11,6 @@ body {
   font-family: 'Museo300', 'Raleway', serif;
   font-size: 20px; }
 
-div.highlight {
-  margin: 0 20px; }
-  div.highlight pre {
-    padding: 5px;
-    font-size: 14px;
-    background-color: rgba(248, 248, 248, 0.3);
-    border: 0px solid whitesmoke;
-    border-radius: 5px; }
-    div.highlight pre.json {
-      white-space: pre-wrap;
-      white-space: -moz-pre-wrap;
-      word-wrap: break-word; }
-
-p code {
-  padding: 2px;
-  color: #dea800;
-  background-color: rgba(248, 248, 248, 0.3);
-  border: 1px solid #fffbed;
-  border-radius: 5px; }
-
 .container {
   max-width: 900px; }
   .container .row .col a {
@@ -44,16 +24,17 @@ p code {
     color: #74ab2e;
     font-family: 'Raleway', 'Museo300', serif;
     font-weight: bold;
-    font-size: 24px;
-    text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
+    text-shadow: 1px 1px rgba(0, 0, 0, 0.1); }
+  .container .row .col h2 {
+    font-size: 29px;
     line-height: 28px; }
   .container .row .col h3 {
-    line-height: 35px;
-    font-size: 20px; }
+    font-size: 24px;
+    line-height: 38px; }
   .container .row .col h4 {
+    font-size: 21px;
     line-height: 35px;
     font-weight: bold;
-    font-size: 18px;
     padding-left: 5px; }
   .container .row .col h6 {
     font-size: 14px;
@@ -78,13 +59,30 @@ p code {
       line-height: 64px;
       font-size: 18px;
       border-bottom: 0px; }
+  .container .row .col div.highlight {
+    margin: 0; }
+    .container .row .col div.highlight pre {
+      padding: 5px;
+      font-size: 14px;
+      background-color: rgba(248, 248, 248, 0.7);
+      border: 0px solid whitesmoke;
+      border-radius: 5px; }
+      .container .row .col div.highlight pre.json {
+        white-space: pre-wrap;
+        white-space: -moz-pre-wrap;
+        word-wrap: break-word; }
+  .container .row .col p code {
+    padding: 2px;
+    color: #dea800;
+    background-color: rgba(248, 248, 248, 0.3);
+    border: 1px solid #fffbed;
+    border-radius: 5px; }
   .container .row .col > div article {
     padding-bottom: 60px; }
     .container .row .col > div article header a {
       color: #74ab2e;
       font-family: 'Raleway', 'Museo300', serif;
       font-weight: bold;
-      font-size: 24px;
       text-shadow: 1px 1px rgba(0, 0, 0, 0.1); }
     .container .row .col > div article header time {
       display: block;
@@ -95,6 +93,10 @@ p code {
       line-height: 32px; }
       .container .row .col > div article footer a {
         font-size: 14px; }
+  .container .row .col > div p.pagination {
+    width: 100%;
+    display: inline-block;
+    text-align: center; }
   .container .row .col > article .tags > a {
     color: #a6d768;
     font-size: 14px;

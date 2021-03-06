@@ -1,6 +1,5 @@
 <% if paginate %>
-  <center>
-    <p>
+    <p class="pagination">
       <% if prev_page %>
         <%= link_to 'Prev', prev_page %>
         |
@@ -11,5 +10,4 @@
         <%= link_to 'Next', next_page %>
       <% end %>
     </p>
-  </center>
 <% end %>

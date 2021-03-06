@@ -21,7 +21,6 @@ $color-code:   lighten(#b58900, 8%);
   color: $color-title;
   font-family: 'Raleway', 'Museo300', serif;
   font-weight: bold;
-  font-size: 24px;
   text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
 }
 
@@ -32,8 +31,8 @@ $color-code:   lighten(#b58900, 8%);
   color: $color-footer;
 }
 
-@mixin code-bg($width: 1px, $bg-color: #f8f8f8, $br-color: #f8f8f8) {
-  background-color: transparentize($bg-color, 0.7);
+@mixin code-bg($width: 1px, $bg-color: #f8f8f8, $bg-transparency: 0.7, $br-color: #f8f8f8) {
+  background-color: transparentize($bg-color, $bg-transparency);
   border: $width solid darken($br-color, 1%);
   border-radius: 5px;
 }
@@ -43,28 +42,6 @@ body {
   color: $color-text;
   font-family: 'Museo300', 'Raleway', serif;
   font-size: 20px;
-}
-
-div.highlight {
-  margin: 0 20px;
-
-  pre {
-    padding: 5px;
-    font-size: 14px;
-    @include code-bg(0px);
-
-    &.json {
-      white-space: pre-wrap;
-      white-space: -moz-pre-wrap;
-      word-wrap: break-word;
-    }
-  }
-}
-
-p code {
-  padding: 2px;
-  color: $color-code;
-  @include code-bg($br-color: lighten($color-code, 54%));
 }
 
 .container {
@@ -86,16 +63,19 @@ p code {
 
       h1, h2, h3 {
         @include title;
+      }
+      h2 {
+        font-size: 29px;
         line-height: 28px;
       }
       h3 {
-        line-height: 35px;
-        font-size: 20px;
+        font-size: 24px;
+        line-height: 38px;
       }
       h4 {
+        font-size: 21px;
         line-height: 35px;
         font-weight: bold;
-        font-size: 18px;
         padding-left: 5px;
       }
       h6 {
@@ -132,6 +112,27 @@ p code {
         }
       }
 
+      div.highlight {
+        margin: 0;
+        pre {
+          padding: 5px;
+          font-size: 14px;
+          @include code-bg(0px, $bg-transparency: 0.3);
+
+          &.json {
+            white-space: pre-wrap;
+            white-space: -moz-pre-wrap;
+            word-wrap: break-word;
+          }
+        }
+      }
+
+      p code {
+        padding: 2px;
+        color: $color-code;
+        @include code-bg($br-color: lighten($color-code, 54%));
+      }
+
       // Main
       > div {
         article {
@@ -150,6 +151,12 @@ p code {
             }
             line-height: 32px;
           }
+        }
+
+        p.pagination {
+          width: 100%;
+          display: inline-block;
+          text-align: center;
         }
       }
 

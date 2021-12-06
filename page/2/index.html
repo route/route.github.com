@@ -20,6 +20,25 @@
           <div>
             <article>
               <header>
+                <h2><a href="/2018/05/21/freebsd-openvpn.html">OpenVPN on FreeBSD 11.1</a></h2>
+                <time datetime="2018-05-21">May 21, 2018</time>
+              </header>
+              <div>
+                <h3>Install and copy configs:</h3>
+
+<p>Let’s first change shell to sh as FreeBSD comes with csh by default:</p>
+<div class="highlight"><pre class="highlight shell"><code>root@vpn:~ <span class="c"># sh</span>
+</code></pre></div><div class="highlight"><pre class="highlight shell"><code>pkg update <span class="o">&amp;&amp;</span> pkg <span class="nb">install </span>openvpn
+<span class="nb">mkdir</span> /usr/local/etc/openvpn
+<span class="nb">cp</span> /usr/local/share/examples/openvpn/sample-config-files/server.conf <span class="se">\</span>
+ ...</code></pre></div>
+              </div>
+              <footer>
+                <a href="/2018/05/21/freebsd-openvpn.html">Read more</a>
+              </footer>
+          </article>
+          <article>
+              <header>
                 <h2><a href="/2018/04/24/telegram-drama.html">Telegram drama</a></h2>
                 <time datetime="2018-04-24">April 24, 2018</time>
               </header>
@@ -54,21 +73,6 @@ so simple that it doesn’t even deserve a post but you have to stop doing that.
               </div>
               <footer>
                 <a href="/2018/04/12/stop-using-active-record-first.html">Read more</a>
-              </footer>
-          </article>
-          <article>
-              <header>
-                <h2><a href="/2014/08/10/query-trail.html">Query Trail</a></h2>
-                <time datetime="2014-08-10">August 10, 2014</time>
-              </header>
-              <div>
-                <p>Recently I switched on a project with lots of legacy code. It was on Rails 2,
-Rails 3 and now I’ve updated it to Rails 4.1. You can’t even imagine how much
-rubbish I got rid of. But the thing I’d like to share with you today is
-<a href="https://github.com/route/query_trail">QueryTrail</a>. This simple...</p>
-              </div>
-              <footer>
-                <a href="/2014/08/10/query-trail.html">Read more</a>
               </footer>
           </article>
 

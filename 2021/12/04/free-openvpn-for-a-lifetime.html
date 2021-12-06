@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="/images/favicon.ico">
+    <meta name="yandex-verification" content="3bfdb691bc608cfc" />
+    <meta name="description" content="Set up OpenVPN server on Ubuntu 20.04 for free for a lifetime in Oracle cloud">
+    <title>Free VPN for a lifetime in Oracle cloud</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link href="/stylesheets/application.css" rel="stylesheet" /><link href="/stylesheets/highlighting.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <header>
+            <a href="/">NopeCode</a>
+          </header>
+            <article>
+    <h2>Free VPN for a lifetime in Oracle cloud</h2>
+    <div class="tags">
+        <a href="/tags/network.html">network</a>
+        <a href="/tags/vpn.html">vpn</a>
+        <a href="/tags/openvpn.html">openvpn</a>
+    </div>
+    <time datetime="2021-12-04">December  4, 2021</time>
+    <p>Yes you heard it right, for a lifetime! Oracle Cloud has a <a href="https://www.oracle.com/cloud/free/">tremendous proposal</a>, on
+their Free Tier you can use &ldquo;Always Free&rdquo; services including <a href="https://www.oracle.com/cloud/compute/arm/">Arm Ampere A1 Compute</a>
+instances. Yea you can create instances with up to 24 Gb of memory and 4 CPU cores. It can be one or a few it&rsquo;s up to
+you but it should be in the specified limits.</p>
+
+<p>Set up the account because we are going to create OpenVPN server using modern tools like
+<a href="https://learn.hashicorp.com/tutorials/terraform/install-cli">Terraform</a> and
+<a href="https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html">Ansible</a>. Be sure you have them in
+the system. </p>
+
+<p>At this point you&rsquo;ll have an account and it&rsquo;s time to create API keys. Go to you profile and click &ldquo;Add API Key&rdquo;. Copy
+what you are given and save it somewhere we&rsquo;ll need it later.</p>
+
+<ul>
+<li><code>git clone git@github.com:route/oracle.git</code></li>
+<li><code>cd oracle/instances/vpn/terraform</code></li>
+<li><code>cp terraform.tfvars.example terraform.tfvars</code>
+paste values Oracle provided and copy pem key to the <code>config/ssh</code> folder. Set <code>private_key_path</code> with your ssh public
+key, which will be used to ssh into your server. By default we create: 1cpu x 1Gb machine.</li>
+<li><code>terraform init</code></li>
+<li><code>terraform apply</code> </li>
+</ul>
+
+<p>At this point you have a server and IP address, copy it we&rsquo;ll need it for Ansible.</p>
+
+<ul>
+<li><code>cd ../ansible</code></li>
+<li><code>cp hosts.example hosts</code>
+paste IP address in two places and fill in easy_rsa variables with arbitrary data needed for certificates.
+<code>*.ovpn</code> config files are generated for clients listed in clients variable. Generate as many as you&rsquo;d like to have
+people.</li>
+<li><code>./bin/setup</code></li>
+<li><code>./bin/clients</code></li>
+</ul>
+
+<p>After running these steps you&rsquo;ll have two openvpn config files <code>linux.ovpn</code> and <code>mac.ovpn</code> downloaded in clients folder.
+Now you can use them to serve internet privately. For linux you can setup OpenVPN tunnel ins settings for mac I prefer
+<a href="https://www.sparklabs.com/viscosity/">Viscosity</a>.</p>
+
+  </article>
+          <footer>
+            <a href="/about.html">Dmitry Vorotilin</a>
+            |
+            Copyright © 2012-2021
+          </footer>
+          <div class="yandex_metrika">
+  <!-- Yandex.Metrika informer -->
+  <a href="https://metrika.yandex.ru/stat/?id=25785359&amp;from=informer"
+  target="_blank" rel="nofollow"><img src="https://informer.yandex.ru/informer/25785359/1_0_FFFFFFFF_EFEFEFFF_0_pageviews"
+  style="width:80px; height:15px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры)" /></a>
+  <!-- /Yandex.Metrika informer -->
+
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript" >
+      (function (d, w, c) {
+          (w[c] = w[c] || []).push(function() {
+              try {
+                  w.yaCounter25785359 = new Ya.Metrika({
+                      id:25785359,
+                      clickmap:true,
+                      trackLinks:true,
+                      accurateTrackBounce:true,
+                      webvisor:true
+                  });
+              } catch(e) { }
+          });
+
+          var n = d.getElementsByTagName("script")[0],
+              s = d.createElement("script"),
+              f = function () { n.parentNode.insertBefore(s, n); };
+          s.type = "text/javascript";
+          s.async = true;
+          s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+          if (w.opera == "[object Opera]") {
+              d.addEventListener("DOMContentLoaded", f, false);
+          } else { f(); }
+      })(document, window, "yandex_metrika_callbacks");
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/25785359" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+</div>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

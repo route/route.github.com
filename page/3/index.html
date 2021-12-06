@@ -20,6 +20,21 @@
           <div>
             <article>
               <header>
+                <h2><a href="/2014/08/10/query-trail.html">Query Trail</a></h2>
+                <time datetime="2014-08-10">August 10, 2014</time>
+              </header>
+              <div>
+                <p>Recently I switched on a project with lots of legacy code. It was on Rails 2,
+Rails 3 and now I’ve updated it to Rails 4.1. You can’t even imagine how much
+rubbish I got rid of. But the thing I’d like to share with you today is
+<a href="https://github.com/route/query_trail">QueryTrail</a>. This simple...</p>
+              </div>
+              <footer>
+                <a href="/2014/08/10/query-trail.html">Read more</a>
+              </footer>
+          </article>
+          <article>
+              <header>
                 <h2><a href="/2013/11/13/rails-autoloading.html">Rails autoloading</a></h2>
                 <time datetime="2013-11-13">November 13, 2013</time>
               </header>
@@ -46,24 +61,6 @@ about how Ruby loads and requires modules, constant name...</p>
               </div>
               <footer>
                 <a href="/2013/11/05/ruby-loading-and-requiring-files-constant-name-resolution.html">Read more</a>
-              </footer>
-          </article>
-          <article>
-              <header>
-                <h2><a href="/2012/12/16/ruby-inherited-method-bug.html">Ruby inherited method bug</a></h2>
-                <time datetime="2012-12-16">December 16, 2012</time>
-              </header>
-              <div>
-                <p>This post is about the bug I found when I was writing tests for <code>quiet_assets</code>.
-I won’t show you all those tests, just a small piece:</p>
-<div class="highlight"><pre class="highlight ruby"><code><span class="no">Class</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">Rails</span><span class="o">::</span><span class="no">Application</span><span class="p">)</span> <span class="k">do</span>
-  <span class="n">routes</span><span class="p">.</span><span class="nf">append</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
-<span class="k">end</span>
-</code></pre></div>
-<p>All of them were passed on my laptop, but Travis-CI showed...</p>
-              </div>
-              <footer>
-                <a href="/2012/12/16/ruby-inherited-method-bug.html">Read more</a>
               </footer>
           </article>
 

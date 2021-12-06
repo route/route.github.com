@@ -1,6 +1,6 @@
 ---
 title: OpenVPN on Ubuntu 18.04
-tags: network, vpn
+tags: network, vpn, openvpn
 description: Set up OpenVPN on Ubuntu
 ---
 

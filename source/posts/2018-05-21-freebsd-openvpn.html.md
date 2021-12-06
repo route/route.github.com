@@ -1,6 +1,6 @@
 ---
 title: OpenVPN on FreeBSD 11.1
-tags: network, vpn
+tags: network, vpn, openvpn
 description: Set up OpenVPN on FreeBSD
 ---
 

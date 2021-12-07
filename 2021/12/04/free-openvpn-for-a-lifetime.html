@@ -28,41 +28,39 @@
     <p>Yes you heard it right, for a lifetime! Oracle Cloud has a <a href="https://www.oracle.com/cloud/free/">tremendous proposal</a>, on
 their Free Tier you can use &ldquo;Always Free&rdquo; services including <a href="https://www.oracle.com/cloud/compute/arm/">Arm Ampere A1 Compute</a>
 instances. Yea you can create instances with up to 24 Gb of memory and 4 CPU cores. It can be one or a few it&rsquo;s up to
-you but it should be in the specified limits.</p>
+you, but it should be in the specified limits.</p>
 
-<p>Set up the account because we are going to create OpenVPN server using modern tools like
-<a href="https://learn.hashicorp.com/tutorials/terraform/install-cli">Terraform</a> and
-<a href="https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html">Ansible</a>. Be sure you have them in
-the system. </p>
+<p>We are going to create OpenVPN server using <a href="https://learn.hashicorp.com/tutorials/terraform/install-cli">Terraform</a> and
+<a href="https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html">Ansible</a>. Make sure you have them
+installed.</p>
 
-<p>At this point you&rsquo;ll have an account and it&rsquo;s time to create API keys. Go to you profile and click &ldquo;Add API Key&rdquo;. Copy
-what you are given and save it somewhere we&rsquo;ll need it later.</p>
+<p>At this point you have Oracle account (if not <a href="https://signup.cloud.oracle.com/?language=en&amp;sourceType=:ow:o:p:feb:0916FreePageBannerButton&amp;intcmp=:ow:o:p:feb:0916FreePageBannerButton">set it up</a>),
+and it&rsquo;s time to create API keys. Go to your profile and click &ldquo;Add API Key&rdquo;. Copy what you are given and download pem key.</p>
 
-<ul>
-<li><code>git clone git@github.com:route/oracle.git</code></li>
-<li><code>cd oracle/instances/vpn/terraform</code></li>
-<li><code>cp terraform.tfvars.example terraform.tfvars</code>
-paste values Oracle provided and copy pem key to the <code>config/ssh</code> folder. Set <code>private_key_path</code> with your ssh public
-key, which will be used to ssh into your server. By default we create: 1cpu x 1Gb machine.</li>
-<li><code>terraform init</code></li>
-<li><code>terraform apply</code> </li>
-</ul>
+<p>Run these commands:
+* <code>git clone git@github.com:route/oracle.git</code>
+* <code>cd oracle/instances/vpn/terraform</code>
+* <code>cp terraform.tfvars.example terraform.tfvars</code>
+  paste values Oracle provided and copy pem key to the <code>config/ssh</code> folder, set <code>private_key_path</code> with the name of your
+  pem key. Fill in <code>instance_ssh_public_key</code>, it&rsquo;s used to ssh into the server using you public ssh key. By default, we
+  create: 1 Cpu x 1 Gb machine.
+* <code>terraform init</code>
+* <code>terraform apply</code></p>
 
-<p>At this point you have a server and IP address, copy it we&rsquo;ll need it for Ansible.</p>
+<p>At this point you have a server and IP address in the output, copy it, we&rsquo;ll need it for Ansible.</p>
 
 <ul>
 <li><code>cd ../ansible</code></li>
 <li><code>cp hosts.example hosts</code>
-paste IP address in two places and fill in easy_rsa variables with arbitrary data needed for certificates.
-<code>*.ovpn</code> config files are generated for clients listed in clients variable. Generate as many as you&rsquo;d like to have
-people.</li>
+paste IP address and fill in easy<em>rsa</em>* variables with arbitrary data needed for certificates. <code>*.ovpn</code> config files
+are generated for clients listed in clients variable. Generate as many as you&rsquo;d like to have people.</li>
 <li><code>./bin/setup</code></li>
 <li><code>./bin/clients</code></li>
 </ul>
 
-<p>After running these steps you&rsquo;ll have two openvpn config files <code>linux.ovpn</code> and <code>mac.ovpn</code> downloaded in clients folder.
-Now you can use them to serve internet privately. For linux you can setup OpenVPN tunnel ins settings for mac I prefer
-<a href="https://www.sparklabs.com/viscosity/">Viscosity</a>.</p>
+<p>After running these commands you&rsquo;ll have two openvpn config files <code>linux.ovpn</code> and <code>mac.ovpn</code> downloaded in clients
+folder. Now you can use them to browse internet privately. For linux you can set up OpenVPN tunnel in settings, for mac
+I prefer <a href="https://www.sparklabs.com/viscosity/">Viscosity</a>.</p>
 
   </article>
           <footer>

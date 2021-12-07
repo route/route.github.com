@@ -23,41 +23,39 @@ instances. Yea you can create instances with up to 24 Gb of memory and 4 CPU cor
     <content type="html">&lt;p&gt;Yes you heard it right, for a lifetime! Oracle Cloud has a &lt;a href="https://www.oracle.com/cloud/free/"&gt;tremendous proposal&lt;/a&gt;, on
 their Free Tier you can use &amp;ldquo;Always Free&amp;rdquo; services including &lt;a href="https://www.oracle.com/cloud/compute/arm/"&gt;Arm Ampere A1 Compute&lt;/a&gt;
 instances. Yea you can create instances with up to 24 Gb of memory and 4 CPU cores. It can be one or a few it&amp;rsquo;s up to
-you but it should be in the specified limits.&lt;/p&gt;
+you, but it should be in the specified limits.&lt;/p&gt;
 
-&lt;p&gt;Set up the account because we are going to create OpenVPN server using modern tools like
-&lt;a href="https://learn.hashicorp.com/tutorials/terraform/install-cli"&gt;Terraform&lt;/a&gt; and
-&lt;a href="https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html"&gt;Ansible&lt;/a&gt;. Be sure you have them in
-the system. &lt;/p&gt;
+&lt;p&gt;We are going to create OpenVPN server using &lt;a href="https://learn.hashicorp.com/tutorials/terraform/install-cli"&gt;Terraform&lt;/a&gt; and
+&lt;a href="https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html"&gt;Ansible&lt;/a&gt;. Make sure you have them
+installed.&lt;/p&gt;
 
-&lt;p&gt;At this point you&amp;rsquo;ll have an account and it&amp;rsquo;s time to create API keys. Go to you profile and click &amp;ldquo;Add API Key&amp;rdquo;. Copy
-what you are given and save it somewhere we&amp;rsquo;ll need it later.&lt;/p&gt;
+&lt;p&gt;At this point you have Oracle account (if not &lt;a href="https://signup.cloud.oracle.com/?language=en&amp;amp;sourceType=:ow:o:p:feb:0916FreePageBannerButton&amp;amp;intcmp=:ow:o:p:feb:0916FreePageBannerButton"&gt;set it up&lt;/a&gt;),
+and it&amp;rsquo;s time to create API keys. Go to your profile and click &amp;ldquo;Add API Key&amp;rdquo;. Copy what you are given and download pem key.&lt;/p&gt;
 
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;git clone git@github.com:route/oracle.git&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;cd oracle/instances/vpn/terraform&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;cp terraform.tfvars.example terraform.tfvars&lt;/code&gt;
-paste values Oracle provided and copy pem key to the &lt;code&gt;config/ssh&lt;/code&gt; folder. Set &lt;code&gt;private_key_path&lt;/code&gt; with your ssh public
-key, which will be used to ssh into your server. By default we create: 1cpu x 1Gb machine.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;terraform init&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;terraform apply&lt;/code&gt; &lt;/li&gt;
-&lt;/ul&gt;
+&lt;p&gt;Run these commands:
+* &lt;code&gt;git clone git@github.com:route/oracle.git&lt;/code&gt;
+* &lt;code&gt;cd oracle/instances/vpn/terraform&lt;/code&gt;
+* &lt;code&gt;cp terraform.tfvars.example terraform.tfvars&lt;/code&gt;
+  paste values Oracle provided and copy pem key to the &lt;code&gt;config/ssh&lt;/code&gt; folder, set &lt;code&gt;private_key_path&lt;/code&gt; with the name of your
+  pem key. Fill in &lt;code&gt;instance_ssh_public_key&lt;/code&gt;, it&amp;rsquo;s used to ssh into the server using you public ssh key. By default, we
+  create: 1 Cpu x 1 Gb machine.
+* &lt;code&gt;terraform init&lt;/code&gt;
+* &lt;code&gt;terraform apply&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;At this point you have a server and IP address, copy it we&amp;rsquo;ll need it for Ansible.&lt;/p&gt;
+&lt;p&gt;At this point you have a server and IP address in the output, copy it, we&amp;rsquo;ll need it for Ansible.&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;cd ../ansible&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;cp hosts.example hosts&lt;/code&gt;
-paste IP address in two places and fill in easy_rsa variables with arbitrary data needed for certificates.
-&lt;code&gt;*.ovpn&lt;/code&gt; config files are generated for clients listed in clients variable. Generate as many as you&amp;rsquo;d like to have
-people.&lt;/li&gt;
+paste IP address and fill in easy&lt;em&gt;rsa&lt;/em&gt;* variables with arbitrary data needed for certificates. &lt;code&gt;*.ovpn&lt;/code&gt; config files
+are generated for clients listed in clients variable. Generate as many as you&amp;rsquo;d like to have people.&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;./bin/setup&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;./bin/clients&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;After running these steps you&amp;rsquo;ll have two openvpn config files &lt;code&gt;linux.ovpn&lt;/code&gt; and &lt;code&gt;mac.ovpn&lt;/code&gt; downloaded in clients folder.
-Now you can use them to serve internet privately. For linux you can setup OpenVPN tunnel ins settings for mac I prefer
-&lt;a href="https://www.sparklabs.com/viscosity/"&gt;Viscosity&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;After running these commands you&amp;rsquo;ll have two openvpn config files &lt;code&gt;linux.ovpn&lt;/code&gt; and &lt;code&gt;mac.ovpn&lt;/code&gt; downloaded in clients
+folder. Now you can use them to browse internet privately. For linux you can set up OpenVPN tunnel in settings, for mac
+I prefer &lt;a href="https://www.sparklabs.com/viscosity/"&gt;Viscosity&lt;/a&gt;.&lt;/p&gt;
 </content>
   </entry>
   <entry>

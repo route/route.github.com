@@ -34,29 +34,28 @@ you, but it should be in the specified limits.</p>
 <a href="https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html">Ansible</a>. Make sure you have them
 installed.</p>
 
-<p>At this point you have Oracle account (if not <a href="https://signup.cloud.oracle.com/?language=en&amp;sourceType=:ow:o:p:feb:0916FreePageBannerButton&amp;intcmp=:ow:o:p:feb:0916FreePageBannerButton">set it up</a>),
+<p>At this point you have Oracle account if not <a href="https://signup.cloud.oracle.com/?language=en&amp;sourceType=:ow:o:p:feb:0916FreePageBannerButton&amp;intcmp=:ow:o:p:feb:0916FreePageBannerButton">set it up</a>,
 and it&rsquo;s time to create API keys. Go to your profile and click &ldquo;Add API Key&rdquo;. Copy what you are given and download pem key.</p>
 
-<p>Run commands below, and paste values Oracle provided to <code>terraform.tfvars</code>. Copy pem key to the <code>config/ssh</code> folder, set
-<code>private_key_path</code> with the name of your pem key. Fill in <code>instance_ssh_public_key</code>, it&rsquo;s used to ssh into the server
-using you public ssh key. By default, we create 1 Cpu x 1 Gb machine.</p>
+<p>Run commands below:</p>
 <div class="highlight"><pre class="highlight shell"><code>git clone git@github.com:route/oracle.git
-<span class="nb">cd </span>oracle/instances/vpn/terraform
-<span class="nb">cp </span>terraform.tfvars.example terraform.tfvars <span class="c"># Edit this file  </span>
-terraform init
-terraform apply
+<span class="nb">cd </span>oracle/instances/vpn
+<span class="nb">cp </span>environment.example environment
 </code></pre></div>
-<p>At this point you have a server and IP address in the output, copy it, we&rsquo;ll need it for Ansible. Open <code>hosts</code> file and
-paste IP address you copied, fill in easy<em>rsa</em>* variables with arbitrary data needed for certificates. <code>*.ovpn</code> config
-files are generated for clients listed in clients variable. Generate as many as you&rsquo;d like to have people.</p>
-<div class="highlight"><pre class="highlight shell"><code><span class="nb">cd</span> ../ansible
-<span class="nb">cp </span>hosts.example hosts  <span class="c"># Edit this file</span>
-./bin/setup
-./bin/clients
+<p>Paste values Oracle provided to <code>environment</code>. Copy Oracle&rsquo;s pem key to <code>terraform/config/ssh</code> folder and set the name
+in <code>PRIVATE_KEY_NAME</code>. Fill in <code>INSTANCE_SSH_PUBLIC_KEY</code>, it&rsquo;s used to ssh into the server using you public ssh key.
+Fill in <code>OPENVPN_EASY_RSA_*</code> variables with arbitrary data needed for certificates. Config files are generated for
+clients listed in <code>OPENVPN_CLIENTS</code> variable. Set as many names as you&rsquo;d like to have people. By default, we create
+1 Cpu x 2 Gb machine. If all is set then run:</p>
+<div class="highlight"><pre class="highlight shell"><code>./configure
 </code></pre></div>
-<p>After running these commands you&rsquo;ll have two openvpn config files <code>linux.ovpn</code> and <code>mac.ovpn</code> downloaded in clients
-folder. Now you can use them to browse internet privately. For linux you can set up OpenVPN tunnel in settings, for mac
-I prefer <a href="https://www.sparklabs.com/viscosity/">Viscosity</a>.</p>
+<p>After running this you&rsquo;ll have a server up and running and two openvpn config files <code>linux.ovpn</code> and <code>mac.ovpn</code>
+downloaded in clients folder. Now you can use them to browse internet privately. For linux you can set up OpenVPN tunnel
+in settings, for mac I prefer <a href="https://www.sparklabs.com/viscosity/">Viscosity</a>.</p>
+
+<p><code>configure</code> shell script is quite idempotent it&rsquo;s fine to change a variable and run it multiple times, it won&rsquo;t create
+additional machines or add new services. If you need to add one more client, change environment and run:
+<code>./configure client</code>. </p>
 
   </article>
           <footer>

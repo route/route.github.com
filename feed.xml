@@ -32,27 +32,23 @@ installed.&lt;/p&gt;
 &lt;p&gt;At this point you have Oracle account (if not &lt;a href="https://signup.cloud.oracle.com/?language=en&amp;amp;sourceType=:ow:o:p:feb:0916FreePageBannerButton&amp;amp;intcmp=:ow:o:p:feb:0916FreePageBannerButton"&gt;set it up&lt;/a&gt;),
 and it&amp;rsquo;s time to create API keys. Go to your profile and click &amp;ldquo;Add API Key&amp;rdquo;. Copy what you are given and download pem key.&lt;/p&gt;
 
-&lt;p&gt;Run these commands:
-* &lt;code&gt;git clone git@github.com:route/oracle.git&lt;/code&gt;
-* &lt;code&gt;cd oracle/instances/vpn/terraform&lt;/code&gt;
-* &lt;code&gt;cp terraform.tfvars.example terraform.tfvars&lt;/code&gt;
-  paste values Oracle provided and copy pem key to the &lt;code&gt;config/ssh&lt;/code&gt; folder, set &lt;code&gt;private_key_path&lt;/code&gt; with the name of your
-  pem key. Fill in &lt;code&gt;instance_ssh_public_key&lt;/code&gt;, it&amp;rsquo;s used to ssh into the server using you public ssh key. By default, we
-  create: 1 Cpu x 1 Gb machine.
-* &lt;code&gt;terraform init&lt;/code&gt;
-* &lt;code&gt;terraform apply&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;At this point you have a server and IP address in the output, copy it, we&amp;rsquo;ll need it for Ansible.&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;cd ../ansible&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;cp hosts.example hosts&lt;/code&gt;
-paste IP address and fill in easy&lt;em&gt;rsa&lt;/em&gt;* variables with arbitrary data needed for certificates. &lt;code&gt;*.ovpn&lt;/code&gt; config files
-are generated for clients listed in clients variable. Generate as many as you&amp;rsquo;d like to have people.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;./bin/setup&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;./bin/clients&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
+&lt;p&gt;Run commands below, and paste values Oracle provided to &lt;code&gt;terraform.tfvars&lt;/code&gt;. Copy pem key to the &lt;code&gt;config/ssh&lt;/code&gt; folder, set
+&lt;code&gt;private_key_path&lt;/code&gt; with the name of your pem key. Fill in &lt;code&gt;instance_ssh_public_key&lt;/code&gt;, it&amp;rsquo;s used to ssh into the server
+using you public ssh key. By default, we create 1 Cpu x 1 Gb machine.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;git clone git@github.com:route/oracle.git
+&lt;span class="nb"&gt;cd &lt;/span&gt;oracle/instances/vpn/terraform
+&lt;span class="nb"&gt;cp &lt;/span&gt;terraform.tfvars.example terraform.tfvars &lt;span class="c"&gt;# Edit this file  &lt;/span&gt;
+terraform init
+terraform apply
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;At this point you have a server and IP address in the output, copy it, we&amp;rsquo;ll need it for Ansible. Open &lt;code&gt;hosts&lt;/code&gt; file and
+paste IP address you copied, fill in easy&lt;em&gt;rsa&lt;/em&gt;* variables with arbitrary data needed for certificates. &lt;code&gt;*.ovpn&lt;/code&gt; config
+files are generated for clients listed in clients variable. Generate as many as you&amp;rsquo;d like to have people.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; ../ansible
+&lt;span class="nb"&gt;cp &lt;/span&gt;hosts.example hosts  &lt;span class="c"&gt;# Edit this file&lt;/span&gt;
+./bin/setup
+./bin/clients
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;After running these commands you&amp;rsquo;ll have two openvpn config files &lt;code&gt;linux.ovpn&lt;/code&gt; and &lt;code&gt;mac.ovpn&lt;/code&gt; downloaded in clients
 folder. Now you can use them to browse internet privately. For linux you can set up OpenVPN tunnel in settings, for mac
 I prefer &lt;a href="https://www.sparklabs.com/viscosity/"&gt;Viscosity&lt;/a&gt;.&lt;/p&gt;

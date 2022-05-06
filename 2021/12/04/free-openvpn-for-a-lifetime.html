@@ -32,30 +32,32 @@ you, but it should be in the specified limits.</p>
 
 <p>We are going to create OpenVPN server using <a href="https://learn.hashicorp.com/tutorials/terraform/install-cli">Terraform</a> and
 <a href="https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html">Ansible</a>. Make sure you have them
-installed.</p>
+installed, as I won&rsquo;t go into installation details here.</p>
 
-<p>At this point you have Oracle account if not <a href="https://signup.cloud.oracle.com/?language=en&amp;sourceType=:ow:o:p:feb:0916FreePageBannerButton&amp;intcmp=:ow:o:p:feb:0916FreePageBannerButton">set it up</a>,
-and it&rsquo;s time to create API keys. Go to your profile and click &ldquo;Add API Key&rdquo;. Copy what you are given and download pem key.</p>
+<p>At this point, you&rsquo;ll have set <a href="https://signup.cloud.oracle.com/?language=en&amp;sourceType=:ow:o:p:feb:0916FreePageBannerButton&amp;intcmp=:ow:o:p:feb:0916FreePageBannerButton">Oracle account</a>,
+and it&rsquo;s time to create API keys. Go to your <code>Profile</code> ➞ <code>API keys</code> and click <code>Add API Key</code>. Copy what you are given and
+download pem key to <code>~/.oci</code> folder.</p>
 
 <p>Run commands below:</p>
-<div class="highlight"><pre class="highlight shell"><code>git clone git@github.com:route/oracle.git
-<span class="nb">cd </span>oracle/instances/vpn
-<span class="nb">cp </span>environment.example environment
+<div class="highlight"><pre class="highlight shell"><code>git clone git@github.com:route/oracle.git <span class="o">&amp;&amp;</span> <span class="se">\</span>
+  <span class="nb">cd </span>oracle <span class="o">&amp;&amp;</span> <span class="se">\</span>
+  <span class="nb">cp </span>tf.env.example tf.env <span class="o">&amp;&amp;</span> <span class="se">\</span>
+  <span class="nb">cp </span>compute/vpn/ovpn.env.example compute/vpn/ovpn.env
 </code></pre></div>
-<p>Paste values Oracle provided to <code>environment</code>. Copy Oracle&rsquo;s pem key to <code>terraform/config/ssh</code> folder and set the name
-in <code>PRIVATE_KEY_NAME</code>. Fill in <code>INSTANCE_SSH_PUBLIC_KEY</code>, it&rsquo;s used to ssh into the server using you public ssh key.
-Fill in <code>OPENVPN_EASY_RSA_*</code> variables with arbitrary data needed for certificates. Config files are generated for
-clients listed in <code>OPENVPN_CLIENTS</code> variable. Set as many names as you&rsquo;d like to have people. By default, we create
-1 Cpu x 2 Gb machine. If all is set then run:</p>
+<p>Open it with your favorite editor and paste values Oracle provided to <code>tf.env</code>. Fill in <code>INSTANCE_SSH_PUBLIC_KEY</code> as
+well, it&rsquo;s used to ssh into the server using your public ssh key. By default, we create 1 Cpu x 2 Gb machine.</p>
+
+<p>Go to <code>compute/vpn</code> as well and fill in values for OpenVPN file <code>ovpn.env</code>. Set <code>OPENVPN_EASY_RSA_*</code> variables with
+arbitrary data needed for certificates. Config files are generated for clients listed in <code>OPENVPN_CLIENTS</code> variable. Set
+as many names as you&rsquo;d like to have people.</p>
+
+<p>If all is set then run:</p>
 <div class="highlight"><pre class="highlight shell"><code>./configure
 </code></pre></div>
 <p>After running this you&rsquo;ll have a server up and running and two openvpn config files <code>linux.ovpn</code> and <code>mac.ovpn</code>
-downloaded in clients folder. Now you can use them to browse internet privately. For linux you can set up OpenVPN tunnel
-in settings, for mac I prefer <a href="https://www.sparklabs.com/viscosity/">Viscosity</a>.</p>
-
-<p><code>configure</code> shell script is quite idempotent it&rsquo;s fine to change a variable and run it multiple times, it won&rsquo;t create
-additional machines or add new services. If you need to add one more client, change environment and run:
-<code>./configure client</code>. </p>
+downloaded in <code>compute/vpn/ansinle/clients</code> folder. Now you can use them to browse internet privately. For linux you can
+set up OpenVPN tunnel in settings, for mac I prefer <a href="https://www.sparklabs.com/viscosity/">Viscosity</a>. If you&rsquo;d like to
+add more clients, change <code>ovpn.env</code> and run <code>(cd compute/vpn &amp;&amp; ./configure run openvpn_clients)</code> </p>
 
   </article>
           <footer>

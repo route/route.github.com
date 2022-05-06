@@ -30,7 +30,7 @@ you, but it should be in the specified limits.&lt;/p&gt;
 installed, as I won&amp;rsquo;t go into installation details here.&lt;/p&gt;
 
 &lt;p&gt;At this point, you&amp;rsquo;ll have set &lt;a href="https://signup.cloud.oracle.com/?language=en&amp;amp;sourceType=:ow:o:p:feb:0916FreePageBannerButton&amp;amp;intcmp=:ow:o:p:feb:0916FreePageBannerButton"&gt;Oracle account&lt;/a&gt;,
-and it&amp;rsquo;s time to create API keys. Go to your &lt;code&gt;Profile&lt;/code&gt; ➞ &lt;code&gt;API keys&lt;/code&gt; and click &lt;code&gt;Add API Key&lt;/code&gt;. Copy what you are given and
+and it&amp;rsquo;s time to create API keys. Go to your &amp;ldquo;Profile&amp;rdquo; ➞ &amp;ldquo;API keys&amp;rdquo; and click &amp;ldquo;Add API Key&amp;rdquo;. Copy what you are given and
 download pem key to &lt;code&gt;~/.oci&lt;/code&gt; folder.&lt;/p&gt;
 
 &lt;p&gt;Run commands below:&lt;/p&gt;
@@ -51,8 +51,9 @@ as many names as you&amp;rsquo;d like to have people.&lt;/p&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;After running this you&amp;rsquo;ll have a server up and running and two openvpn config files &lt;code&gt;linux.ovpn&lt;/code&gt; and &lt;code&gt;mac.ovpn&lt;/code&gt;
 downloaded in &lt;code&gt;compute/vpn/ansinle/clients&lt;/code&gt; folder. Now you can use them to browse internet privately. For linux you can
-set up OpenVPN tunnel in settings, for mac I prefer &lt;a href="https://www.sparklabs.com/viscosity/"&gt;Viscosity&lt;/a&gt;. If you&amp;rsquo;d like to
-add more clients, change &lt;code&gt;ovpn.env&lt;/code&gt; and run &lt;code&gt;(cd compute/vpn &amp;amp;&amp;amp; ./configure run openvpn_clients)&lt;/code&gt; &lt;/p&gt;
+set up OpenVPN tunnel in settings, for mac I prefer &lt;a href="https://www.sparklabs.com/viscosity/"&gt;Viscosity&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;If you&amp;rsquo;d like to add more clients, change &lt;code&gt;ovpn.env&lt;/code&gt; and run &lt;code&gt;(cd compute/vpn &amp;amp;&amp;amp; ./configure run openvpn_clients)&lt;/code&gt; &lt;/p&gt;
 </content>
   </entry>
   <entry>

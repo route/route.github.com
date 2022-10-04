@@ -22,10 +22,9 @@ such projects like [Rails](http://contributors.rubyonrails.org/contributors/dmit
 [Mogrify](https://github.com/elixir-mogrify/mogrify),
 [Ruby](https://github.com/ruby/ruby/pull/1475),
 [MiniTest](https://github.com/seattlerb/minitest/search?q=route&type=Commits) and so on.
-Besides job I like having fun with friends, cycling around the city, skating, playing football, doing sports and meeting
-new people.
 
-Get in touch with me: d.vorotilin [at] gmail.com
+Besides job I like having fun with friends, cycling around the city, skating, playing football, doing sports and meeting
+new people. Get in touch with me: d.vorotilin [at] gmail.com
 
 ### Technical:
 * Ruby/Rails/Rack/Sinatra

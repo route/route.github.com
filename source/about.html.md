@@ -9,7 +9,7 @@ very curious about design and paradigms of different programming languages. I li
 scenes with distressing bugs where everyone scratches their heads. I always try to learn something new reading books
 but most skills I've got mainly experimenting on practice. I was working as a system administrator for a couple of
 years at the start of my career and since then I've never stopped evolving in this direction adding here modern
-methodologies like devops and gitops.  
+methodologies like devops and gitops and things like containers and kubernetes.
 
 You can see my commits in
 such projects like [Rails](http://contributors.rubyonrails.org/contributors/dmitry-vorotilin/commits),

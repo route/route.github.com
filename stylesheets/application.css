@@ -13,103 +13,108 @@ body {
 
 .container {
   max-width: 900px; }
-  .container .row .col a {
+  .container .row [class*="col"] a {
     color: #669729;
     text-decoration: none;
     text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
     border-bottom: 1px solid #d6ecb9; }
-    .container .row .col a:hover, .container .row .col a:focus {
+    .container .row [class*="col"] a:hover, .container .row [class*="col"] a:focus {
       border-bottom: 0px; }
-  .container .row .col h1, .container .row .col h2, .container .row .col h3 {
+  .container .row [class*="col"] h1, .container .row [class*="col"] h2, .container .row [class*="col"] h3 {
     color: #74ab2e;
     font-family: 'Raleway', 'Museo300', serif;
     font-weight: bold;
     text-shadow: 1px 1px rgba(0, 0, 0, 0.1); }
-  .container .row .col h2 {
+  .container .row [class*="col"] h2 {
     font-size: 29px;
     line-height: 28px; }
-  .container .row .col h3 {
+  .container .row [class*="col"] h3 {
     font-size: 24px;
     line-height: 38px; }
-  .container .row .col h4 {
+  .container .row [class*="col"] h4 {
     font-size: 21px;
     line-height: 35px;
     font-weight: bold;
     padding-left: 5px; }
-  .container .row .col h6 {
+  .container .row [class*="col"] h5 {
+    font-size: 14px;
+    line-height: 25px;
+    font-weight: bold;
+    padding-left: 5px; }
+  .container .row [class*="col"] h6 {
     font-size: 14px;
     color: #aaaaaa;
     text-align: right;
     margin-bottom: 30px; }
-  .container .row .col ol {
+  .container .row [class*="col"] ol {
     list-style-type: decimal; }
-  .container .row .col ul {
+  .container .row [class*="col"] ul {
     list-style-type: disc; }
-  .container .row .col ol li, .container .row .col ul li {
+  .container .row [class*="col"] ol li, .container .row [class*="col"] ul li {
     margin: 10px 10px 10px 30px; }
-  .container .row .col img {
+  .container .row [class*="col"] img {
     display: block;
     margin: 20px auto 20px auto; }
-  .container .row .col > header {
+  .container .row [class*="col"] > header {
     height: 64px;
     border-bottom: 1px solid silver;
     margin-bottom: 30px; }
-    .container .row .col > header a {
+    .container .row [class*="col"] > header a {
       color: #000000;
       line-height: 64px;
       font-size: 18px;
       border-bottom: 0px; }
-  .container .row .col div.highlight {
+  .container .row [class*="col"] div.highlight {
     margin: 0; }
-    .container .row .col div.highlight pre {
+    .container .row [class*="col"] div.highlight pre {
       padding: 5px;
       font-size: 14px;
       background-color: rgba(248, 248, 248, 0.7);
       border: 0px solid whitesmoke;
       border-radius: 5px; }
-      .container .row .col div.highlight pre.json {
+      .container .row [class*="col"] div.highlight pre.json {
         white-space: pre-wrap;
         white-space: -moz-pre-wrap;
         word-wrap: break-word; }
-  .container .row .col p code {
+  .container .row [class*="col"] p code {
     padding: 2px;
     color: #dea800;
     background-color: rgba(248, 248, 248, 0.3);
     border: 1px solid #fffbed;
     border-radius: 5px; }
-  .container .row .col > div article {
+  .container .row [class*="col"] > div article {
     padding-bottom: 60px; }
-    .container .row .col > div article header a {
+    .container .row [class*="col"] > div article header a {
       color: #74ab2e;
       font-family: 'Raleway', 'Museo300', serif;
       font-weight: bold;
       text-shadow: 1px 1px rgba(0, 0, 0, 0.1); }
-    .container .row .col > div article header time {
+    .container .row [class*="col"] > div article header time {
       display: block;
       line-height: 32px;
       font-size: 11px;
       color: #aaaaaa; }
-    .container .row .col > div article footer {
+    .container .row [class*="col"] > div article footer {
       line-height: 32px; }
-      .container .row .col > div article footer a {
+      .container .row [class*="col"] > div article footer a {
         font-size: 14px; }
-  .container .row .col > div p.pagination {
+  .container .row [class*="col"] > div p.pagination {
     width: 100%;
     display: inline-block;
     text-align: center; }
-  .container .row .col > article .tags > a {
+  .container .row [class*="col"] > article .tags > a {
     color: #a6d768;
     font-size: 14px;
     border-bottom: 1px solid #bee191; }
-  .container .row .col > article time {
+  .container .row [class*="col"] > article time {
     display: block;
     line-height: 32px;
     font-size: 11px;
     color: #aaaaaa; }
-  .container .row .col > article p {
+  .container .row [class*="col"] > article p {
     line-height: 1.75em;
     padding: 0 20px 10px 20px; }
-  .container .row .col > footer {
+  .container .row [class*="col"] > footer {
     color: #aaaaaa;
     font-size: 11px;
     line-height: 64px;

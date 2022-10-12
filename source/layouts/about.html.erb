@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="/images/favicon.ico">
+    <meta name="yandex-verification" content="3bfdb691bc608cfc" />
+    <%- if current_page.data.description -%>
+      <meta name="description" content="<%= current_page.data.description %>">
+    <%- end -%>
+    <title><%= current_page.data.title || "NopeCode" %></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+    <%= stylesheet_link_tag "application", "about" %>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <%= partial "skills" %>
+        </div>
+        <div class="col-8">
+          <%= yield -%>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

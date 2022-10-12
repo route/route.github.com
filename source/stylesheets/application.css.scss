@@ -48,7 +48,7 @@ body {
   max-width: 900px;
 
   .row {
-    .col {
+    [class*="col"] {
       a {
         color: darken( $color-title, 5% );
         text-decoration: none;
@@ -75,6 +75,12 @@ body {
       h4 {
         font-size: 21px;
         line-height: 35px;
+        font-weight: bold;
+        padding-left: 5px;
+      }
+      h5 {
+        font-size: 14px;
+        line-height: 25px;
         font-weight: bold;
         padding-left: 5px;
       }

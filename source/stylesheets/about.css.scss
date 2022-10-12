@@ -1,0 +1,41 @@
+@charset "utf-8";
+
+$color-year: #888;
+
+body {
+  font-size: 18px;
+}
+
+.container {
+  .row {
+    [class*="col"] {
+      strong {
+        font-weight: bold;
+        font-size: 17px;
+        color: $color-year;
+      }
+
+      span.year {
+        font-size: 18px;
+        display: inline-block;
+        float: right;
+      }
+
+      ul {
+        padding: 0;
+        margin: 0;
+
+        li {
+          list-style: none;
+          margin-left: 10px;
+          font-size: 16px;
+        }
+
+        li:before {
+          content: "-";
+          padding-right: 5px;
+        }
+      }
+    }
+  }
+}

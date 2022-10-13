@@ -7,9 +7,7 @@ body {
   color: #888; }
 
 .container .row [class*="col"] span.year {
-  font-size: 18px;
-  display: inline-block;
-  float: right; }
+  font-size: 18px; }
 
 .container .row [class*="col"] ul {
   padding: 0;

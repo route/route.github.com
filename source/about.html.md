@@ -4,7 +4,7 @@ title: Resume
 
 ### Employment:
 
-#### <a href="https://fingerprint.com" target="_blank">Fingerprint</a>, __Senior Golang Engineer__ <span class="year">2021 - 2022</span>
+#### <a href="https://fingerprint.com" target="_blank">Fingerprint</a>, __Senior Golang Engineer__ <span class="year float-right">2021 - 2022</span>
 
 I was responsible for the webhooks subsystem
 
@@ -12,7 +12,7 @@ I was responsible for the webhooks subsystem
 - Introduced Terraform and provisioned all the infrastructure for the application.
 - Created metrics and monitoring for the application with Grafana and AWS CloudWatch.
 
-#### <a href="https://machinio.com" target="_blank">Machinio.com</a>, __Senior Software Engineer / Team Lead__ <span class="year">2015 - 2021</span>
+#### <a href="https://machinio.com" target="_blank">Machinio.com</a>, __Senior Software Engineer / Team Lead__ <span class="year float-right">2015 - 2021</span>
 
 I was responsible for leading the core team and the crawler team, hiring and teaching new engineers.
 
@@ -27,7 +27,7 @@ listings.
 <a href="https://github.com/rubycdp/vessel" target="_blank">Vessel</a>.
 - Committed a bug fix in <a href="https://github.com/ruby/ruby/pull/1475" target="_blank">Ruby</a>.
 
-#### <a href="https://evrone.com" target="_blank">Evrone.com</a>, __Senior Software Engineer / Team Lead__ <span class="year">2010 - 2015</span>
+#### <a href="https://evrone.com" target="_blank">Evrone.com</a>, __Senior Software Engineer / Team Lead__ <span class="year float-right">2010 - 2015</span>
 
 Worked with lots of startups, written mainly on Ruby/Rails. The most famous one is <a href="https://igooods.ru/" target="_blank">igooods.ru</a>. Was
 responsible for hiring and teaching new engineers.
@@ -40,7 +40,7 @@ responsible for hiring and teaching new engineers.
 <a href="https://github.com/elixir-mogrify/mogrify" target="_blank">Mogrify</a>.
 
 
-#### [Computer Plus](), __Sysadmin__ <span class="year">2007 - 2010</span>
+#### [Computer Plus](), __Sysadmin__ <span class="year float-right">2007 - 2010</span>
 
 - Developed and maintained the company's website using PHP, LDAP and MySQL.
 - Orchestrated heterogeneous network with Windows AD, Terminal Services, and Unix (Linux/BSD) with NATing/filtering,

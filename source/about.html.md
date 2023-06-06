@@ -4,6 +4,10 @@ title: Resume
 
 ### Employment:
 
+#### <a href="https://www.spaceti.com/" target="_blank">Spaceti</a>, __Senior Software Engineer__ <span class="year float-right">2022 - current</span>
+
+Working on the backend, k8s cluster, authorization and so on.
+
 #### <a href="https://fingerprint.com" target="_blank">Fingerprint</a>, __Senior Golang Engineer__ <span class="year float-right">2021 - 2022</span>
 
 I was responsible for the webhooks subsystem

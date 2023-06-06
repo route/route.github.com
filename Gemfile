@@ -1,5 +1,6 @@
 source "https://rubygems.org"
 
+gem "haml", "~> 5.2"
 gem "middleman"
 gem "middleman-syntax"
 gem "middleman-autoprefixer"

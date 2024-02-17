@@ -119,6 +119,8 @@ body {
     font-size: 11px;
     line-height: 64px;
     text-align: center; }
+    .container .row [class*="col"] > footer span.infin {
+      font-family: sans-serif; }
 
 .yandex_metrika {
   display: none;

@@ -4,9 +4,13 @@ title: Resume
 
 ### Employment:
 
-#### <a href="https://www.spaceti.com/" target="_blank">Spaceti</a>, __Senior Software Engineer__ <span class="year float-right">2022 - current</span>
+#### <a href="https://sincera.io/" target="_blank">Sincera</a>, __Senior Software Engineer__ <span class="year float-right">2023 - current</span>
 
-Working on the backend, k8s cluster, authorization and so on.
+To be specified...
+
+#### <a href="https://www.spaceti.com/" target="_blank">Spaceti</a>, __Senior Software Engineer__ <span class="year float-right">2022 - 2023</span>
+
+Worked on the backend, k8s cluster, authorization and so on. Refactored the whole core components.
 
 #### <a href="https://fingerprint.com" target="_blank">Fingerprint</a>, __Senior Golang Engineer__ <span class="year float-right">2021 - 2022</span>
 

@@ -20,6 +20,27 @@
           <div>
             <article>
               <header>
+                <h2><a href="/2018/09/24/ubuntu-openvpn.html">OpenVPN on Ubuntu 18.04</a></h2>
+                <time datetime="2018-09-24">September 24, 2018</time>
+              </header>
+              <div>
+                <h3>Install and copy configs:</h3>
+<div class="highlight"><pre class="highlight shell"><code><span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt <span class="nb">install </span>openvpn
+wget <span class="nt">-P</span> ~/ https://github.com/OpenVPN/easy-rsa/releases/download/v3.0.4/EasyRSA-3.0.4.tgz
+<span class="nb">tar </span>zxvf EasyRSA-3.0.4.tgz
+<span class="nb">cd </span>EasyRSA-3.0.4
+<span class="nb">cp </span>vars.example vars
+vim vars
+</code></pre></div>
+<p>Set these variables...</p>
+              </div>
+              <footer>
+                <a href="/2018/09/24/ubuntu-openvpn.html">Read more</a>
+              </footer>
+          </article>
+          <article>
+              <header>
                 <h2><a href="/2018/05/21/freebsd-openvpn.html">OpenVPN on FreeBSD 11.1</a></h2>
                 <time datetime="2018-05-21">May 21, 2018</time>
               </header>
@@ -55,24 +76,6 @@ someone else.</p>
               </div>
               <footer>
                 <a href="/2018/04/24/telegram-drama.html">Read more</a>
-              </footer>
-          </article>
-          <article>
-              <header>
-                <h2><a href="/2018/04/12/stop-using-active-record-first.html">Slow query with ActiveRecord's method first</a></h2>
-                <time datetime="2018-04-12">April 12, 2018</time>
-              </header>
-              <div>
-                <p>If you’ve grown with Rails like me you know that everyone used and perhaps still
-uses everywhere <code>first</code> method. You just type it automatically. I know that it’s
-so simple that it doesn’t even deserve a post but you have to stop doing that.</p>
-
-<p><img src="/images/irb.png" class="img-fluid" alt="irb"></p>
-
-<p>Things...</p>
-              </div>
-              <footer>
-                <a href="/2018/04/12/stop-using-active-record-first.html">Read more</a>
               </footer>
           </article>
 

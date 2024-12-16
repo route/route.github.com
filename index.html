@@ -20,6 +20,25 @@
           <div>
             <article>
               <header>
+                <h2><a href="/2024/12/16/ubuntu-no-pki-openvpn.html">OpenVPN without PKI on Ubuntu 24.04</a></h2>
+                <time datetime="2024-12-16">December 16, 2024</time>
+              </header>
+              <div>
+                <p>It’s mostly copy-paste version of the original OpenVPN <a href="https://github.com/openvpn/openvpn/blob/master/doc/man-sections/example-fingerprint.rst">example</a> with
+exception to editing <code>/etc/sysctl.conf</code>, figuring out default interface and downloading ovpn file.</p>
+
+<h3>Install and copy configs:</h3>
+<div class="highlight"><pre class="highlight shell"><code><span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt upgrade
+<span class="nb">sudo </span>reboot
+<span class="nb">sudo </span>apt <span class="nb">install...</span></code></pre></div>
+              </div>
+              <footer>
+                <a href="/2024/12/16/ubuntu-no-pki-openvpn.html">Read more</a>
+              </footer>
+          </article>
+          <article>
+              <header>
                 <h2><a href="/2021/12/04/free-openvpn-for-a-lifetime.html">Free VPN for a lifetime in Oracle cloud</a></h2>
                 <time datetime="2021-12-04">December  4, 2021</time>
               </header>
@@ -46,27 +65,6 @@ There are none I’ve found on how to properly debug and really...</p>
               </div>
               <footer>
                 <a href="/2021/03/03/your-flaky-system-test-again.html">Read more</a>
-              </footer>
-          </article>
-          <article>
-              <header>
-                <h2><a href="/2018/09/24/ubuntu-openvpn.html">OpenVPN on Ubuntu 18.04</a></h2>
-                <time datetime="2018-09-24">September 24, 2018</time>
-              </header>
-              <div>
-                <h3>Install and copy configs:</h3>
-<div class="highlight"><pre class="highlight shell"><code><span class="nb">sudo </span>apt update
-<span class="nb">sudo </span>apt <span class="nb">install </span>openvpn
-wget <span class="nt">-P</span> ~/ https://github.com/OpenVPN/easy-rsa/releases/download/v3.0.4/EasyRSA-3.0.4.tgz
-<span class="nb">tar </span>zxvf EasyRSA-3.0.4.tgz
-<span class="nb">cd </span>EasyRSA-3.0.4
-<span class="nb">cp </span>vars.example vars
-vim vars
-</code></pre></div>
-<p>Set these variables...</p>
-              </div>
-              <footer>
-                <a href="/2018/09/24/ubuntu-openvpn.html">Read more</a>
               </footer>
           </article>
 

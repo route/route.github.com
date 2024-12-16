@@ -4,10 +4,127 @@
   <id>http://route.github.io/</id>
   <link href="http://route.github.io/"/>
   <link href="http://route.github.io/feed.xml" rel="self"/>
-  <updated>2021-12-04T00:00:00+03:00</updated>
+  <updated>2024-12-16T00:00:00+03:00</updated>
   <author>
     <name>Dmitry Vorotilin</name>
   </author>
+  <entry>
+    <title>OpenVPN without PKI on Ubuntu 24.04</title>
+    <link rel="alternate" href="/2024/12/16/ubuntu-no-pki-openvpn.html"/>
+    <id>/2024/12/16/ubuntu-no-pki-openvpn.html</id>
+    <published>2024-12-16T00:00:00+03:00</published>
+    <updated>2024-12-16T00:00:00+03:00</updated>
+    <author>
+      <name>Dmitry Vorotilin</name>
+    </author>
+    <summary type="html">&lt;p&gt;It’s mostly copy-paste version of the original OpenVPN &lt;a href="https://github.com/openvpn/openvpn/blob/master/doc/man-sections/example-fingerprint.rst"&gt;example&lt;/a&gt; with
+exception to editing &lt;code&gt;/etc/sysctl.conf&lt;/code&gt;, figuring out default interface and downloading ovpn file.&lt;/p&gt;
+
+&lt;h3&gt;Install and copy configs:&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nb"&gt;sudo &lt;/span&gt;apt update
+&lt;span class="nb"&gt;sudo &lt;/span&gt;apt upgrade
+&lt;span class="nb"&gt;sudo &lt;/span&gt;reboot
+&lt;span class="nb"&gt;sudo &lt;/span&gt;apt &lt;span class="nb"&gt;install...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</summary>
+    <content type="html">&lt;p&gt;It&amp;rsquo;s mostly copy-paste version of the original OpenVPN &lt;a href="https://github.com/openvpn/openvpn/blob/master/doc/man-sections/example-fingerprint.rst"&gt;example&lt;/a&gt; with
+exception to editing &lt;code&gt;/etc/sysctl.conf&lt;/code&gt;, figuring out default interface and downloading ovpn file.&lt;/p&gt;
+
+&lt;h3&gt;Install and copy configs:&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nb"&gt;sudo &lt;/span&gt;apt update
+&lt;span class="nb"&gt;sudo &lt;/span&gt;apt upgrade
+&lt;span class="nb"&gt;sudo &lt;/span&gt;reboot
+&lt;span class="nb"&gt;sudo &lt;/span&gt;apt &lt;span class="nb"&gt;install &lt;/span&gt;openvpn
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;Generate server/client configs:&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nb"&gt;export &lt;/span&gt;&lt;span class="nv"&gt;CLIENT_NAME&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;client &lt;span class="c"&gt;# arbitrary client name&lt;/span&gt;
+&lt;span class="nb"&gt;export &lt;/span&gt;&lt;span class="nv"&gt;REMOTE_SERVER_IP&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'x.x.x.x'&lt;/span&gt; &lt;span class="c"&gt;# public ip address of the server&lt;/span&gt;
+
+openssl req &lt;span class="nt"&gt;-x509&lt;/span&gt; &lt;span class="nt"&gt;-newkey&lt;/span&gt; ec:&amp;lt;&lt;span class="o"&gt;(&lt;/span&gt;openssl ecparam &lt;span class="nt"&gt;-name&lt;/span&gt; secp384r1&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="nt"&gt;-keyout&lt;/span&gt; server.key &lt;span class="nt"&gt;-out&lt;/span&gt; server.crt &lt;span class="nt"&gt;-nodes&lt;/span&gt; &lt;span class="nt"&gt;-sha256&lt;/span&gt; &lt;span class="nt"&gt;-days&lt;/span&gt; 3650 &lt;span class="nt"&gt;-subj&lt;/span&gt; &lt;span class="s1"&gt;'/CN=server'&lt;/span&gt;
+&lt;span class="nb"&gt;export &lt;/span&gt;&lt;span class="nv"&gt;SERVER_FINGERPRINT&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="si"&gt;$(&lt;/span&gt;openssl x509 &lt;span class="nt"&gt;-fingerprint&lt;/span&gt; &lt;span class="nt"&gt;-sha256&lt;/span&gt; &lt;span class="nt"&gt;-in&lt;/span&gt; server.crt &lt;span class="nt"&gt;-noout&lt;/span&gt; | &lt;span class="nb"&gt;cut&lt;/span&gt; &lt;span class="nt"&gt;-d&lt;/span&gt;&lt;span class="s1"&gt;'='&lt;/span&gt; &lt;span class="nt"&gt;-f2&lt;/span&gt;&lt;span class="si"&gt;)&lt;/span&gt;
+
+openssl req &lt;span class="nt"&gt;-x509&lt;/span&gt; &lt;span class="nt"&gt;-newkey&lt;/span&gt; ec:&amp;lt;&lt;span class="o"&gt;(&lt;/span&gt;openssl ecparam &lt;span class="nt"&gt;-name&lt;/span&gt; secp384r1&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="nt"&gt;-nodes&lt;/span&gt; &lt;span class="nt"&gt;-sha256&lt;/span&gt; &lt;span class="nt"&gt;-days&lt;/span&gt; 3650 &lt;span class="nt"&gt;-subj&lt;/span&gt; &lt;span class="s2"&gt;"/CN=&lt;/span&gt;&lt;span class="k"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CLIENT_NAME&lt;/span&gt;&lt;span class="k"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; client.cert
+&lt;span class="nb"&gt;export &lt;/span&gt;&lt;span class="nv"&gt;CLIENT_CERTIFICATE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="si"&gt;$(&lt;/span&gt;&amp;lt;client.cert&lt;span class="si"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;export &lt;/span&gt;&lt;span class="nv"&gt;CLIENT_PRIVATE_KEY&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="si"&gt;$(&lt;/span&gt;&amp;lt;privkey.pem&lt;span class="si"&gt;)&lt;/span&gt;
+
+&lt;span class="nb"&gt;cat&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="nv"&gt;$CLIENT_NAME&lt;/span&gt;.ovpn &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class="no"&gt;EOF&lt;/span&gt;&lt;span class="sh"&gt;
+remote &lt;/span&gt;&lt;span class="nv"&gt;$REMOTE_SERVER_IP&lt;/span&gt;&lt;span class="sh"&gt; 1194 udp
+
+client
+nobind
+dev tun
+tun-mtu 1400
+
+key-direction 1
+
+redirect-gateway def1
+
+&amp;lt;key&amp;gt;
+&lt;/span&gt;&lt;span class="nv"&gt;$CLIENT_PRIVATE_KEY&lt;/span&gt;&lt;span class="sh"&gt;
+&amp;lt;/key&amp;gt;
+
+&amp;lt;cert&amp;gt;
+&lt;/span&gt;&lt;span class="nv"&gt;$CLIENT_CERTIFICATE&lt;/span&gt;&lt;span class="sh"&gt;
+&amp;lt;/cert&amp;gt;
+
+peer-fingerprint &lt;/span&gt;&lt;span class="nv"&gt;$SERVER_FINGERPRINT&lt;/span&gt;&lt;span class="sh"&gt;
+&lt;/span&gt;&lt;span class="no"&gt;
+EOF
+
+&lt;/span&gt;&lt;span class="nb"&gt;export &lt;/span&gt;&lt;span class="nv"&gt;CLIENT_FINGERPRINT&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="si"&gt;$(&lt;/span&gt;openssl x509 &lt;span class="nt"&gt;-fingerprint&lt;/span&gt; &lt;span class="nt"&gt;-sha256&lt;/span&gt; &lt;span class="nt"&gt;-noout&lt;/span&gt; &lt;span class="nt"&gt;-in&lt;/span&gt; &lt;span class="nv"&gt;$CLIENT_NAME&lt;/span&gt;.ovpn | &lt;span class="nb"&gt;cut&lt;/span&gt; &lt;span class="nt"&gt;-d&lt;/span&gt;&lt;span class="s1"&gt;'='&lt;/span&gt; &lt;span class="nt"&gt;-f2&lt;/span&gt;&lt;span class="si"&gt;)&lt;/span&gt;
+
+&lt;span class="nb"&gt;cat&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; server.conf &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class="no"&gt;EOF&lt;/span&gt;&lt;span class="sh"&gt;
+server 192.168.255.0 255.255.255.0
+
+cert server/server.crt
+key server/server.key
+dh none
+
+proto udp
+port 1194
+dev tun
+tun-mtu 1400
+
+&amp;lt;peer-fingerprint&amp;gt;
+&lt;/span&gt;&lt;span class="nv"&gt;$CLIENT_FINGERPRINT&lt;/span&gt;&lt;span class="sh"&gt;
+&amp;lt;/peer-fingerprint&amp;gt;
+
+explicit-exit-notify 1
+
+keepalive 10 60
+
+push "dhcp-option DNS 8.8.8.8"
+push "dhcp-option DNS 8.8.4.4"
+&lt;/span&gt;&lt;span class="no"&gt;
+EOF
+
+&lt;/span&gt;&lt;span class="nb"&gt;rm &lt;/span&gt;client.cert privkey.pem
+&lt;span class="nb"&gt;sudo mv &lt;/span&gt;server.key server.crt /etc/openvpn/server
+&lt;span class="nb"&gt;sudo mv&lt;/span&gt; &lt;span class="nv"&gt;$CLIENT_NAME&lt;/span&gt;.ovpn /etc/openvpn/client
+&lt;span class="nb"&gt;sudo mv &lt;/span&gt;server.conf /etc/openvpn
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;That&amp;rsquo;s basically it, we only need to allow traffic to be NATed through the
+server. Set &lt;code&gt;net.ipv4.ip_forward=1&lt;/code&gt; in this file:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nb"&gt;sudo &lt;/span&gt;sysctl &lt;span class="nt"&gt;-w&lt;/span&gt; net.ipv4.ip_forward&lt;span class="o"&gt;=&lt;/span&gt;1
+&lt;span class="nb"&gt;sudo &lt;/span&gt;vim /etc/sysctl.conf &lt;span class="c"&gt;# edit this file, so that setting is applied after reboot&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Find your default interface:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;ip route | &lt;span class="nb"&gt;grep &lt;/span&gt;default
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Output should be like: default via x.x.x.x dev &lt;code&gt;ens5&lt;/code&gt; proto dhcp src x.x.x.x
+metric 100. Remember your interface name and put it to iptables rules below:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nb"&gt;sudo &lt;/span&gt;iptables &lt;span class="nt"&gt;-t&lt;/span&gt; nat &lt;span class="nt"&gt;-A&lt;/span&gt; POSTROUTING &lt;span class="nt"&gt;-o&lt;/span&gt; ens5 &lt;span class="nt"&gt;-j&lt;/span&gt; MASQUERADE
+&lt;span class="nb"&gt;sudo &lt;/span&gt;iptables &lt;span class="nt"&gt;-A&lt;/span&gt; FORWARD &lt;span class="nt"&gt;-j&lt;/span&gt; ACCEPT
+&lt;span class="nb"&gt;sudo &lt;/span&gt;apt-get &lt;span class="nb"&gt;install &lt;/span&gt;iptables-persistent
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;When you install iptables-persistent it will ask you to save current rules into
+file, just agree with that and then start the service:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nb"&gt;sudo &lt;/span&gt;systemctl &lt;span class="nb"&gt;enable &lt;/span&gt;openvpn@server
+&lt;span class="nb"&gt;sudo &lt;/span&gt;systemctl start openvpn@server
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now you can download &lt;code&gt;$CLIENT_NAME.ovpn&lt;/code&gt; to your machine and start browsing internet securely:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;scp ubuntu@&amp;lt;server-ip&amp;gt;:/etc/openvpn/client/&amp;lt;client-name&amp;gt;.ovpn ./
+&lt;span class="nb"&gt;sudo &lt;/span&gt;openvpn &amp;lt;client-name&amp;gt;.ovpn
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content>
+  </entry>
   <entry>
     <title>Free VPN for a lifetime in Oracle cloud</title>
     <link rel="alternate" href="/2021/12/04/free-openvpn-for-a-lifetime.html"/>
@@ -930,60 +1047,6 @@ thru the tunnel. That&amp;rsquo;s it.&lt;/p&gt;
 &lt;li&gt;&lt;a href="https://pierrekim.github.io/blog/2016-11-01-gpon-ftth-networks-insecurity.html"&gt;GPON FTTH networks (in)security&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://lurkmore.to/GPON"&gt;Lurkmore GPON&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-</content>
-  </entry>
-  <entry>
-    <title>Slow query with ActiveRecord's method first</title>
-    <link rel="alternate" href="/2018/04/12/stop-using-active-record-first.html"/>
-    <id>/2018/04/12/stop-using-active-record-first.html</id>
-    <published>2018-04-12T00:00:00+03:00</published>
-    <updated>2018-04-12T00:00:00+03:00</updated>
-    <author>
-      <name>Dmitry Vorotilin</name>
-    </author>
-    <summary type="html">&lt;p&gt;If you’ve grown with Rails like me you know that everyone used and perhaps still
-uses everywhere &lt;code&gt;first&lt;/code&gt; method. You just type it automatically. I know that it’s
-so simple that it doesn’t even deserve a post but you have to stop doing that.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src="/images/irb.png" class="img-fluid" alt="irb"&gt;&lt;/p&gt;
-
-&lt;p&gt;Things...&lt;/p&gt;</summary>
-    <content type="html">&lt;p&gt;If you&amp;rsquo;ve grown with Rails like me you know that everyone used and perhaps still
-uses everywhere &lt;code&gt;first&lt;/code&gt; method. You just type it automatically. I know that it&amp;rsquo;s
-so simple that it doesn&amp;rsquo;t even deserve a post but you have to stop doing that.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src="/images/irb.png" class="img-fluid" alt="irb"&gt;&lt;/p&gt;
-
-&lt;p&gt;Things are getting more intersting with PostgreSQL v10:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight sql"&gt;&lt;code&gt;&lt;span class="k"&gt;EXPLAIN&lt;/span&gt; &lt;span class="k"&gt;ANALYZE&lt;/span&gt; &lt;span class="k"&gt;SELECT&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="k"&gt;FROM&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt; &lt;span class="k"&gt;WHERE&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;"deleted_at"&lt;/span&gt; &lt;span class="k"&gt;IS&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt; &lt;span class="k"&gt;AND&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;"user_id"&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="k"&gt;order&lt;/span&gt; &lt;span class="k"&gt;by&lt;/span&gt; &lt;span class="n"&gt;id&lt;/span&gt; &lt;span class="k"&gt;ASC&lt;/span&gt; &lt;span class="k"&gt;limit&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-                                                                    &lt;span class="n"&gt;QUERY&lt;/span&gt; &lt;span class="n"&gt;PLAN&lt;/span&gt;                                                                    
-&lt;span class="c1"&gt;--------------------------------------------------------------------------------------------------------------------------------------------------&lt;/span&gt;
- &lt;span class="k"&gt;Limit&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;26&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;91&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;327&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;actual&lt;/span&gt; &lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;875&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;875&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-   &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;  &lt;span class="k"&gt;Index&lt;/span&gt; &lt;span class="n"&gt;Scan&lt;/span&gt; &lt;span class="k"&gt;using&lt;/span&gt; &lt;span class="n"&gt;posts_pkey&lt;/span&gt; &lt;span class="k"&gt;on&lt;/span&gt; &lt;span class="n"&gt;posts&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;2057670&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;78&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;76800&lt;/span&gt; &lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;327&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;actual&lt;/span&gt; &lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;874&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;874&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-         &lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;deleted_at&lt;/span&gt; &lt;span class="k"&gt;IS&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;AND&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;user_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-         &lt;span class="k"&gt;Rows&lt;/span&gt; &lt;span class="n"&gt;Removed&lt;/span&gt; &lt;span class="k"&gt;by&lt;/span&gt; &lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;26826499&lt;/span&gt;
- &lt;span class="n"&gt;Planning&lt;/span&gt; &lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;202&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt;
- &lt;span class="n"&gt;Execution&lt;/span&gt; &lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;37557&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;905&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt;
-&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Doesn&amp;rsquo;t it look creepy? According to &lt;a href="https://stackoverflow.com/questions/21385555/postgresql-query-very-slow-with-limit-1"&gt;stackoverflow&lt;/a&gt;
-it can be an issue in the planner and given that you have pretty large table
-this query becomes drastically slower than planned. So a combination of two
-issues results in a waste of time for investigation. First of all it shouldn&amp;rsquo;t
-have happened if we used &lt;code&gt;take&lt;/code&gt; method added &lt;a href="https://github.com/rails/rails/commit/1379375f93c53d4c49fa8592b6117c3ade263f2e"&gt;long ago&lt;/a&gt;:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight sql"&gt;&lt;code&gt;&lt;span class="k"&gt;EXPLAIN&lt;/span&gt; &lt;span class="k"&gt;ANALYZE&lt;/span&gt; &lt;span class="k"&gt;SELECT&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="k"&gt;FROM&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt; &lt;span class="k"&gt;WHERE&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;"deleted_at"&lt;/span&gt; &lt;span class="k"&gt;IS&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt; &lt;span class="k"&gt;AND&lt;/span&gt; &lt;span class="nv"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nv"&gt;"user_id"&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="k"&gt;limit&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-                                                     &lt;span class="n"&gt;QUERY&lt;/span&gt; &lt;span class="n"&gt;PLAN&lt;/span&gt;                                                     
-&lt;span class="c1"&gt;--------------------------------------------------------------------------------------------------------------------&lt;/span&gt;
- &lt;span class="k"&gt;Limit&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;00&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;13&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;40&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;327&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;actual&lt;/span&gt; &lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;979&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;979&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-   &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;  &lt;span class="n"&gt;Seq&lt;/span&gt; &lt;span class="n"&gt;Scan&lt;/span&gt; &lt;span class="k"&gt;on&lt;/span&gt; &lt;span class="n"&gt;posts&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;00&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;1029108&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;93&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;76800&lt;/span&gt; &lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;327&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;actual&lt;/span&gt; &lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;978&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;978&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-         &lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;deleted_at&lt;/span&gt; &lt;span class="k"&gt;IS&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;AND&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;user_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-         &lt;span class="k"&gt;Rows&lt;/span&gt; &lt;span class="n"&gt;Removed&lt;/span&gt; &lt;span class="k"&gt;by&lt;/span&gt; &lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;3463&lt;/span&gt;
- &lt;span class="n"&gt;Planning&lt;/span&gt; &lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;606&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt;
- &lt;span class="n"&gt;Execution&lt;/span&gt; &lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;047&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt;
-&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt; &lt;span class="k"&gt;rows&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Force yourself typing &lt;code&gt;take&lt;/code&gt; instead of &lt;code&gt;first&lt;/code&gt; if you don&amp;rsquo;t care about the
-order which in most cases is true.&lt;/p&gt;
 </content>
   </entry>
 </feed>

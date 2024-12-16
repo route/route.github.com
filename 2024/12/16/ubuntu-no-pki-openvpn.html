@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="/images/favicon.ico">
+    <meta name="yandex-verification" content="3bfdb691bc608cfc" />
+    <meta name="description" content="Set up OpenVPN on Ubuntu">
+    <title>OpenVPN without PKI on Ubuntu 24.04</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link href="/stylesheets/application.css" rel="stylesheet" /><link href="/stylesheets/highlighting.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <header>
+            <a href="/">NopeCode</a>
+          </header>
+            <article>
+    <h2>OpenVPN without PKI on Ubuntu 24.04</h2>
+    <div class="tags">
+        <a href="/tags/network.html">network</a>
+        <a href="/tags/vpn.html">vpn</a>
+        <a href="/tags/openvpn.html">openvpn</a>
+    </div>
+    <time datetime="2024-12-16">December 16, 2024</time>
+    <p>It&rsquo;s mostly copy-paste version of the original OpenVPN <a href="https://github.com/openvpn/openvpn/blob/master/doc/man-sections/example-fingerprint.rst">example</a> with
+exception to editing <code>/etc/sysctl.conf</code>, figuring out default interface and downloading ovpn file.</p>
+
+<h3>Install and copy configs:</h3>
+<div class="highlight"><pre class="highlight shell"><code><span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt upgrade
+<span class="nb">sudo </span>reboot
+<span class="nb">sudo </span>apt <span class="nb">install </span>openvpn
+</code></pre></div>
+<h3>Generate server/client configs:</h3>
+<div class="highlight"><pre class="highlight shell"><code><span class="nb">export </span><span class="nv">CLIENT_NAME</span><span class="o">=</span>client <span class="c"># arbitrary client name</span>
+<span class="nb">export </span><span class="nv">REMOTE_SERVER_IP</span><span class="o">=</span><span class="s1">'x.x.x.x'</span> <span class="c"># public ip address of the server</span>
+
+openssl req <span class="nt">-x509</span> <span class="nt">-newkey</span> ec:&lt;<span class="o">(</span>openssl ecparam <span class="nt">-name</span> secp384r1<span class="o">)</span> <span class="nt">-keyout</span> server.key <span class="nt">-out</span> server.crt <span class="nt">-nodes</span> <span class="nt">-sha256</span> <span class="nt">-days</span> 3650 <span class="nt">-subj</span> <span class="s1">'/CN=server'</span>
+<span class="nb">export </span><span class="nv">SERVER_FINGERPRINT</span><span class="o">=</span><span class="si">$(</span>openssl x509 <span class="nt">-fingerprint</span> <span class="nt">-sha256</span> <span class="nt">-in</span> server.crt <span class="nt">-noout</span> | <span class="nb">cut</span> <span class="nt">-d</span><span class="s1">'='</span> <span class="nt">-f2</span><span class="si">)</span>
+
+openssl req <span class="nt">-x509</span> <span class="nt">-newkey</span> ec:&lt;<span class="o">(</span>openssl ecparam <span class="nt">-name</span> secp384r1<span class="o">)</span> <span class="nt">-nodes</span> <span class="nt">-sha256</span> <span class="nt">-days</span> 3650 <span class="nt">-subj</span> <span class="s2">"/CN=</span><span class="k">${</span><span class="nv">CLIENT_NAME</span><span class="k">}</span><span class="s2">"</span> <span class="o">&gt;</span> client.cert
+<span class="nb">export </span><span class="nv">CLIENT_CERTIFICATE</span><span class="o">=</span><span class="si">$(</span>&lt;client.cert<span class="si">)</span>
+<span class="nb">export </span><span class="nv">CLIENT_PRIVATE_KEY</span><span class="o">=</span><span class="si">$(</span>&lt;privkey.pem<span class="si">)</span>
+
+<span class="nb">cat</span> <span class="o">&gt;</span> <span class="nv">$CLIENT_NAME</span>.ovpn <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh">
+remote </span><span class="nv">$REMOTE_SERVER_IP</span><span class="sh"> 1194 udp
+
+client
+nobind
+dev tun
+tun-mtu 1400
+
+key-direction 1
+
+redirect-gateway def1
+
+&lt;key&gt;
+</span><span class="nv">$CLIENT_PRIVATE_KEY</span><span class="sh">
+&lt;/key&gt;
+
+&lt;cert&gt;
+</span><span class="nv">$CLIENT_CERTIFICATE</span><span class="sh">
+&lt;/cert&gt;
+
+peer-fingerprint </span><span class="nv">$SERVER_FINGERPRINT</span><span class="sh">
+</span><span class="no">
+EOF
+
+</span><span class="nb">export </span><span class="nv">CLIENT_FINGERPRINT</span><span class="o">=</span><span class="si">$(</span>openssl x509 <span class="nt">-fingerprint</span> <span class="nt">-sha256</span> <span class="nt">-noout</span> <span class="nt">-in</span> <span class="nv">$CLIENT_NAME</span>.ovpn | <span class="nb">cut</span> <span class="nt">-d</span><span class="s1">'='</span> <span class="nt">-f2</span><span class="si">)</span>
+
+<span class="nb">cat</span> <span class="o">&gt;</span> server.conf <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh">
+server 192.168.255.0 255.255.255.0
+
+cert server/server.crt
+key server/server.key
+dh none
+
+proto udp
+port 1194
+dev tun
+tun-mtu 1400
+
+&lt;peer-fingerprint&gt;
+</span><span class="nv">$CLIENT_FINGERPRINT</span><span class="sh">
+&lt;/peer-fingerprint&gt;
+
+explicit-exit-notify 1
+
+keepalive 10 60
+
+push "dhcp-option DNS 8.8.8.8"
+push "dhcp-option DNS 8.8.4.4"
+</span><span class="no">
+EOF
+
+</span><span class="nb">rm </span>client.cert privkey.pem
+<span class="nb">sudo mv </span>server.key server.crt /etc/openvpn/server
+<span class="nb">sudo mv</span> <span class="nv">$CLIENT_NAME</span>.ovpn /etc/openvpn/client
+<span class="nb">sudo mv </span>server.conf /etc/openvpn
+</code></pre></div>
+<p>That&rsquo;s basically it, we only need to allow traffic to be NATed through the
+server. Set <code>net.ipv4.ip_forward=1</code> in this file:</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nb">sudo </span>sysctl <span class="nt">-w</span> net.ipv4.ip_forward<span class="o">=</span>1
+<span class="nb">sudo </span>vim /etc/sysctl.conf <span class="c"># edit this file, so that setting is applied after reboot</span>
+</code></pre></div>
+<p>Find your default interface:</p>
+<div class="highlight"><pre class="highlight shell"><code>ip route | <span class="nb">grep </span>default
+</code></pre></div>
+<p>Output should be like: default via x.x.x.x dev <code>ens5</code> proto dhcp src x.x.x.x
+metric 100. Remember your interface name and put it to iptables rules below:</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nb">sudo </span>iptables <span class="nt">-t</span> nat <span class="nt">-A</span> POSTROUTING <span class="nt">-o</span> ens5 <span class="nt">-j</span> MASQUERADE
+<span class="nb">sudo </span>iptables <span class="nt">-A</span> FORWARD <span class="nt">-j</span> ACCEPT
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>iptables-persistent
+</code></pre></div>
+<p>When you install iptables-persistent it will ask you to save current rules into
+file, just agree with that and then start the service:</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nb">sudo </span>systemctl <span class="nb">enable </span>openvpn@server
+<span class="nb">sudo </span>systemctl start openvpn@server
+</code></pre></div>
+<p>Now you can download <code>$CLIENT_NAME.ovpn</code> to your machine and start browsing internet securely:</p>
+<div class="highlight"><pre class="highlight shell"><code>scp ubuntu@&lt;server-ip&gt;:/etc/openvpn/client/&lt;client-name&gt;.ovpn ./
+<span class="nb">sudo </span>openvpn &lt;client-name&gt;.ovpn
+</code></pre></div>
+  </article>
+          <footer>
+            <a href="/about.html">Dmitry Vorotilin</a>
+            |
+            Copyright © 2012-<span class="infin">&infin;</span>
+          </footer>
+          <div class="yandex_metrika">
+  <!-- Yandex.Metrika informer -->
+  <a href="https://metrika.yandex.ru/stat/?id=25785359&amp;from=informer"
+  target="_blank" rel="nofollow"><img src="https://informer.yandex.ru/informer/25785359/1_0_FFFFFFFF_EFEFEFFF_0_pageviews"
+  style="width:80px; height:15px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры)" /></a>
+  <!-- /Yandex.Metrika informer -->
+
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript" >
+      (function (d, w, c) {
+          (w[c] = w[c] || []).push(function() {
+              try {
+                  w.yaCounter25785359 = new Ya.Metrika({
+                      id:25785359,
+                      clickmap:true,
+                      trackLinks:true,
+                      accurateTrackBounce:true,
+                      webvisor:true
+                  });
+              } catch(e) { }
+          });
+
+          var n = d.getElementsByTagName("script")[0],
+              s = d.createElement("script"),
+              f = function () { n.parentNode.insertBefore(s, n); };
+          s.type = "text/javascript";
+          s.async = true;
+          s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+          if (w.opera == "[object Opera]") {
+              d.addEventListener("DOMContentLoaded", f, false);
+          } else { f(); }
+      })(document, window, "yandex_metrika_callbacks");
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/25785359" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+</div>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

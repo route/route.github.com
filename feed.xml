@@ -4,10 +4,35 @@
   <id>http://route.github.io/</id>
   <link href="http://route.github.io/"/>
   <link href="http://route.github.io/feed.xml" rel="self"/>
-  <updated>2024-12-16T00:00:00+03:00</updated>
+  <updated>2025-01-14T00:00:00+03:00</updated>
   <author>
     <name>Dmitry Vorotilin</name>
   </author>
+  <entry>
+    <title>AI is going to steal your job because you are dumb</title>
+    <link rel="alternate" href="/2025/01/14/ai-is-not-stealing-my-job.html"/>
+    <id>/2025/01/14/ai-is-not-stealing-my-job.html</id>
+    <published>2025-01-14T00:00:00+03:00</published>
+    <updated>2025-01-14T00:00:00+03:00</updated>
+    <author>
+      <name>Dmitry Vorotilin</name>
+    </author>
+    <summary type="html">&lt;p&gt;AI is never going to steal my job. Period. &lt;/p&gt;
+
+&lt;p&gt;there are tasks that you can’t google, you have to fit it into your memory, grasp and produce the result. These kind of tasks are ungoogled. &lt;/p&gt;
+
+&lt;p&gt;better code is no code, better ticket is not ticket.&lt;/p&gt;
+
+&lt;p&gt;a better...&lt;/p&gt;</summary>
+    <content type="html">&lt;p&gt;AI is never going to steal my job. Period. &lt;/p&gt;
+
+&lt;p&gt;there are tasks that you can&amp;rsquo;t google, you have to fit it into your memory, grasp and produce the result. These kind of tasks are ungoogled. &lt;/p&gt;
+
+&lt;p&gt;better code is no code, better ticket is not ticket.&lt;/p&gt;
+
+&lt;p&gt;a better engineer before starting to work on the ticket should ask himself, does business need this feature?&lt;/p&gt;
+</content>
+  </entry>
   <entry>
     <title>OpenVPN without PKI on Ubuntu 24.04</title>
     <link rel="alternate" href="/2024/12/16/ubuntu-no-pki-openvpn.html"/>
@@ -757,296 +782,5 @@ and start browsing internet securely:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;scp root@&amp;lt;server-ip&amp;gt;:/usr/local/etc/openvpn/&amp;lt;client-name&amp;gt;.ovpn ./
 &lt;span class="nb"&gt;sudo &lt;/span&gt;openvpn &amp;lt;client-name&amp;gt;.ovpn
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content>
-  </entry>
-  <entry>
-    <title>Telegram drama</title>
-    <link rel="alternate" href="/2018/04/24/telegram-drama.html"/>
-    <id>/2018/04/24/telegram-drama.html</id>
-    <published>2018-04-24T00:00:00+03:00</published>
-    <updated>2018-04-24T00:00:00+03:00</updated>
-    <author>
-      <name>Dmitry Vorotilin</name>
-    </author>
-    <summary type="html">&lt;p&gt;In my childhood internet and network looked like a magick. In the movies they
-showed something like ping output and I definitely thought that someone hacked
-someone else.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src="/images/hackers.png" class="img-fluid" alt="hackers"&gt;&lt;/p&gt;
-
-&lt;h3&gt;The beginning of story&lt;/h3&gt;
-
-&lt;p&gt;Recently media regulator Roskomnadzor started to block...&lt;/p&gt;</summary>
-    <content type="html">&lt;p&gt;In my childhood internet and network looked like a magick. In the movies they
-showed something like ping output and I definitely thought that someone hacked
-someone else.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src="/images/hackers.png" class="img-fluid" alt="hackers"&gt;&lt;/p&gt;
-
-&lt;h3&gt;The beginning of story&lt;/h3&gt;
-
-&lt;p&gt;Recently media regulator Roskomnadzor started to block Telegram IP addresses
-because the latter denied giving goverment keys to decipher messages. It goes
-without saying that it&amp;rsquo;s creepy but among other things Roskomnadzor blocked like
-roughly 18m of IP addresses. It happened because Telegram used services publicly
-provided by AWS and other big companies. Here I should say that&amp;rsquo;s exactly the
-reason these companies exist lol they provide services. Roskomnadzor started to
-block these IPs and Telegram started to use other IPs and so on. The post is not
-about how secure Telegram is or why it doesn&amp;rsquo;t provide secure E2E encrypted
-channels by default. In general it&amp;rsquo;s about freedom to talk to each other, browse
-internet and live privately and by the way tools you can use to debug network.&lt;/p&gt;
-
-&lt;h3&gt;The debugging&lt;/h3&gt;
-
-&lt;p&gt;As usually this morning I tried to connect to one of our web services and it
-timed out. ICMP traffic wasn&amp;rsquo;t blocked though. Let&amp;rsquo;s say a domain for this
-server was &lt;code&gt;example.com&lt;/code&gt; with IP address &lt;code&gt;x.x.x.x&lt;/code&gt; and my PC had white IP
-address &lt;code&gt;y.y.y.y&lt;/code&gt;.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;ping example.com
-PING x.x.x.x: 64 data bytes
-72 bytes from x.x.x.x: &lt;span class="nb"&gt;seq&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;0 &lt;span class="nv"&gt;ttl&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;52 &lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;141.242 ms
-72 bytes from x.x.x.x: &lt;span class="nb"&gt;seq&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 &lt;span class="nv"&gt;ttl&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;52 &lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;140.809 ms
-
-2 packets transmitted, 2 packets received, 0% packet loss
-round-trip min/avg/max &lt;span class="o"&gt;=&lt;/span&gt; 140.702/140.918/141.242 ms
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Ping goes smoothly but providers can block resources using different techniques
-starting from DNS spoofing and ending by DPI. If I want to open &lt;a href="http://rutracker.org"&gt;rutracker.org&lt;/a&gt;
-for example my ISP redirects me to its own &lt;a href="http://warning.rt.ru/?id=9&amp;amp;st=0&amp;amp;dt=195.82.146.214&amp;amp;rs=http%3A%2F%2Frutracker.org%2Fforum%2Findex.php"&gt;page&lt;/a&gt;
-showing that this address was in fact blocked by goverment. Though it&amp;rsquo;s not the
-case for &lt;code&gt;x.x.x.x&lt;/code&gt; where HTTP traffic disappears silently. Opening
-&lt;code&gt;chrome://net-internals&lt;/code&gt; sometimes is very intersting and confirms time out:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight plaintext"&gt;&lt;code&gt;14057: URL_REQUEST
-https://example.com/
-Start Time: 2018-04-24 08:07:06.009
-
-t=144674 [st=    0] +REQUEST_ALIVE  [dt=24521]
-                     --&amp;gt; priority = "HIGHEST"
-                     --&amp;gt; url = "https://example.com/"
-t=144674 [st=    0]    URL_REQUEST_DELEGATE  [dt=0]
-t=144674 [st=    0]   +URL_REQUEST_START_JOB  [dt=24521]
-                       --&amp;gt; load_flags = 4353 (MAIN_FRAME_DEPRECATED | VALIDATE_CACHE | VERIFY_EV_CERT)
-                       --&amp;gt; method = "GET"
-                       --&amp;gt; url = "https://example.com/"
-t=144674 [st=    0]      URL_REQUEST_DELEGATE  [dt=0]
-t=144674 [st=    0]      HTTP_CACHE_GET_BACKEND  [dt=0]
-t=144674 [st=    0]      HTTP_CACHE_OPEN_ENTRY  [dt=0]
-                         --&amp;gt; net_error = -2 (ERR_FAILED)
-t=144674 [st=    0]      HTTP_CACHE_CREATE_ENTRY  [dt=0]
-t=144674 [st=    0]      HTTP_CACHE_ADD_TO_ENTRY  [dt=1]
-t=144675 [st=    1]     +HTTP_STREAM_REQUEST  [dt=24520]
-t=144675 [st=    1]        HTTP_STREAM_JOB_CONTROLLER_BOUND
-                           --&amp;gt; source_dependency = 14060 (HTTP_STREAM_JOB_CONTROLLER)
-t=169195 [st=24521]        HTTP_STREAM_REQUEST_BOUND_TO_JOB
-                           --&amp;gt; source_dependency = 14061 (HTTP_STREAM_JOB)
-t=169195 [st=24521]     -HTTP_STREAM_REQUEST
-t=169195 [st=24521]   -URL_REQUEST_START_JOB
-                       --&amp;gt; net_error = -118 (ERR_CONNECTION_TIMED_OUT)
-t=169195 [st=24521]    URL_REQUEST_DELEGATE  [dt=0]
-t=169195 [st=24521] -REQUEST_ALIVE
-                     --&amp;gt; net_error = -118 (ERR_CONNECTION_TIMED_OUT)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Traceroute from my machine to this IP shows a few intermidiate backbone providers:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;traceroute to example.com &lt;span class="o"&gt;(&lt;/span&gt;x.x.x.x&lt;span class="o"&gt;)&lt;/span&gt;, 30 hops max, 60 byte packets
- 1  gateway &lt;span class="o"&gt;(&lt;/span&gt;192.168.0.1&lt;span class="o"&gt;)&lt;/span&gt;  0.417 ms  0.484 ms  0.568 ms
- 2  100.103.0.1 &lt;span class="o"&gt;(&lt;/span&gt;100.103.0.1&lt;span class="o"&gt;)&lt;/span&gt;  4.935 ms  4.992 ms  5.020 ms
- 3  213.59.232.208 &lt;span class="o"&gt;(&lt;/span&gt;213.59.232.208&lt;span class="o"&gt;)&lt;/span&gt;  38.910 ms 213.59.232.204 &lt;span class="o"&gt;(&lt;/span&gt;213.59.232.204&lt;span class="o"&gt;)&lt;/span&gt;  5.076 ms 213.59.232.208 &lt;span class="o"&gt;(&lt;/span&gt;213.59.232.208&lt;span class="o"&gt;)&lt;/span&gt;  5.339 ms
- 4  87.226.146.65 &lt;span class="o"&gt;(&lt;/span&gt;87.226.146.65&lt;span class="o"&gt;)&lt;/span&gt;  6.112 ms 87.226.146.63 &lt;span class="o"&gt;(&lt;/span&gt;87.226.146.63&lt;span class="o"&gt;)&lt;/span&gt;  6.889 ms  6.970 ms
- 5  87.226.146.58 &lt;span class="o"&gt;(&lt;/span&gt;87.226.146.58&lt;span class="o"&gt;)&lt;/span&gt;  20.707 ms  20.892 ms  20.702 ms
- 6  213.59.212.235 &lt;span class="o"&gt;(&lt;/span&gt;213.59.212.235&lt;span class="o"&gt;)&lt;/span&gt;  20.632 ms  16.806 ms  17.437 ms
- 7  rostelecom.demarc.cogentco.com &lt;span class="o"&gt;(&lt;/span&gt;149.11.20.138&lt;span class="o"&gt;)&lt;/span&gt;  63.077 ms  63.722 ms  64.571 ms
- 8  hu0-1-0-4.rcr22.fra06.atlas.cogentco.com &lt;span class="o"&gt;(&lt;/span&gt;149.11.20.137&lt;span class="o"&gt;)&lt;/span&gt;  57.615 ms  58.457 ms  58.454 ms
- 9  be2845.ccr41.fra03.atlas.cogentco.com &lt;span class="o"&gt;(&lt;/span&gt;154.54.56.189&lt;span class="o"&gt;)&lt;/span&gt;  58.463 ms be2846.ccr42.fra03.atlas.cogentco.com &lt;span class="o"&gt;(&lt;/span&gt;154.54.37.29&lt;span class="o"&gt;)&lt;/span&gt;  66.791 ms be2845.ccr41.fra03.atlas.cogentco.com &lt;span class="o"&gt;(&lt;/span&gt;154.54.56.189&lt;span class="o"&gt;)&lt;/span&gt;  59.662 ms
-10  be3187.agr41.fra03.atlas.cogentco.com &lt;span class="o"&gt;(&lt;/span&gt;130.117.1.117&lt;span class="o"&gt;)&lt;/span&gt;  63.433 ms be3186.agr41.fra03.atlas.cogentco.com &lt;span class="o"&gt;(&lt;/span&gt;130.117.0.2&lt;span class="o"&gt;)&lt;/span&gt;  64.132 ms be3187.agr41.fra03.atlas.cogentco.com &lt;span class="o"&gt;(&lt;/span&gt;130.117.1.117&lt;span class="o"&gt;)&lt;/span&gt;  63.998 ms
-11  telia.fra03.atlas.cogentco.com &lt;span class="o"&gt;(&lt;/span&gt;130.117.14.198&lt;span class="o"&gt;)&lt;/span&gt;  70.302 ms  70.477 ms  70.480 ms
-12  ffm-bb3-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.133.34&lt;span class="o"&gt;)&lt;/span&gt;  168.162 ms ffm-bb4-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.125.218&lt;span class="o"&gt;)&lt;/span&gt;  140.360 ms ffm-bb3-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.120.3&lt;span class="o"&gt;)&lt;/span&gt;  165.617 ms
-13  prs-bb3-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.123.13&lt;span class="o"&gt;)&lt;/span&gt;  171.186 ms  171.374 ms  169.994 ms
-14  nyk-bb3-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;213.155.135.5&lt;span class="o"&gt;)&lt;/span&gt;  164.382 ms nyk-bb4-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;80.91.251.100&lt;span class="o"&gt;)&lt;/span&gt;  149.359 ms  150.275 ms
-15  nyk-b3-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.140.223&lt;span class="o"&gt;)&lt;/span&gt;  163.973 ms hbg-bb1-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;80.91.249.11&lt;span class="o"&gt;)&lt;/span&gt;  177.416 ms  177.405 ms
-16  digitalocean-ic-306498-nyk-b3.c.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.45.10&lt;span class="o"&gt;)&lt;/span&gt;  145.430 ms  145.572 ms  158.371 ms
-17  &lt;span class="k"&gt;*&lt;/span&gt; &lt;span class="k"&gt;*&lt;/span&gt; &lt;span class="k"&gt;*&lt;/span&gt;
-18  x.x.x.x &lt;span class="o"&gt;(&lt;/span&gt;x.x.x.x&lt;span class="o"&gt;)&lt;/span&gt;  154.054 ms  140.789 ms  141.688 ms
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;While backwards from the droplet there&amp;rsquo;s only one of them:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;traceroute to y.y.y.y &lt;span class="o"&gt;(&lt;/span&gt;y.y.y.y&lt;span class="o"&gt;)&lt;/span&gt;, 30 hops max, 60 byte packets
- 1  159.89.176.253 &lt;span class="o"&gt;(&lt;/span&gt;159.89.176.253&lt;span class="o"&gt;)&lt;/span&gt;  0.290 ms  0.263 ms  0.231 ms
- 2  138.197.248.28 &lt;span class="o"&gt;(&lt;/span&gt;138.197.248.28&lt;span class="o"&gt;)&lt;/span&gt;  0.478 ms  0.469 ms  0.456 ms
- 3  nyk-b3-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.45.9&lt;span class="o"&gt;)&lt;/span&gt;  1.021 ms  1.058 ms  1.043 ms
- 4  nyk-bb3-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.140.222&lt;span class="o"&gt;)&lt;/span&gt;  1.153 ms nyk-bb4-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.139.150&lt;span class="o"&gt;)&lt;/span&gt;  1.523 ms nyk-bb3-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.140.222&lt;span class="o"&gt;)&lt;/span&gt;  1.111 ms
- 5  prs-bb4-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;80.91.251.101&lt;span class="o"&gt;)&lt;/span&gt;  71.869 ms prs-bb3-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;213.155.135.4&lt;span class="o"&gt;)&lt;/span&gt;  106.781 ms  107.322 ms
- 6  prs-bb3-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.134.92&lt;span class="o"&gt;)&lt;/span&gt;  88.216 ms  88.162 ms ffm-bb4-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.122.139&lt;span class="o"&gt;)&lt;/span&gt;  81.890 ms
- 7  ffm-b1-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.141.237&lt;span class="o"&gt;)&lt;/span&gt;  93.304 ms ffm-bb3-link.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.123.12&lt;span class="o"&gt;)&lt;/span&gt;  101.734 ms  102.168 ms
- 8  rostelecom-ic-319651-ffm-b1.c.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.151.97&lt;span class="o"&gt;)&lt;/span&gt;  156.199 ms  156.187 ms  156.198 ms
- 9  213.59.212.103 &lt;span class="o"&gt;(&lt;/span&gt;213.59.212.103&lt;span class="o"&gt;)&lt;/span&gt;  138.304 ms  149.985 ms rostelecom-ic-319651-ffm-b1.c.telia.net &lt;span class="o"&gt;(&lt;/span&gt;62.115.151.97&lt;span class="o"&gt;)&lt;/span&gt;  158.270 ms
-10  y.y.y.y &lt;span class="o"&gt;(&lt;/span&gt;y.y.y.y&lt;span class="o"&gt;)&lt;/span&gt;  139.571 ms  139.690 ms  139.701 ms
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;The difference can be explained by dynamic routing. Since routes are described
-by &lt;a href="https://en.wikipedia.org/wiki/Border_Gateway_Protocol"&gt;BGP&lt;/a&gt; even a few
-sequential traceroutes can show different routes. In BGP realm the trust is
-above everything. This site &lt;a href="https://bgpstream.com/"&gt;bgpstream.com&lt;/a&gt; can be very
-interesting if you are into it. Though the route from DO is twice as shorter
-then from Rostelekom. Let&amp;rsquo;s monitor outgoing and incoming traffic for this IP on
-one window open curl and tcpdump on another:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;curl http://example.com
-curl: &lt;span class="o"&gt;(&lt;/span&gt;7&lt;span class="o"&gt;)&lt;/span&gt; Failed to connect to example.com port 80: Connection timed out
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo &lt;/span&gt;tcpdump &lt;span class="nt"&gt;-nn&lt;/span&gt; &lt;span class="nt"&gt;-vvv&lt;/span&gt; &lt;span class="nt"&gt;-i&lt;/span&gt; enp4s0 dst x.x.x.x or src x.x.x.x
-tcpdump: listening on enp4s0, link-type EN10MB &lt;span class="o"&gt;(&lt;/span&gt;Ethernet&lt;span class="o"&gt;)&lt;/span&gt;, capture size 262144 bytes
-23:38:18.908971 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, &lt;span class="nb"&gt;id &lt;/span&gt;59563, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 60&lt;span class="o"&gt;)&lt;/span&gt;
-    192.168.0.13.41722 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; x.x.x.x.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;S], &lt;span class="nb"&gt;cksum &lt;/span&gt;0xd52f &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, &lt;span class="nb"&gt;seq &lt;/span&gt;1092877667, win 29200, options &lt;span class="o"&gt;[&lt;/span&gt;mss 1460,sackOK,TS val 3908771289 ecr 0,nop,wscale 7], length 0
-23:38:18.925014 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 58, &lt;span class="nb"&gt;id &lt;/span&gt;1, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;none], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 40&lt;span class="o"&gt;)&lt;/span&gt;
-    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 192.168.0.13.41722: Flags &lt;span class="o"&gt;[&lt;/span&gt;R], &lt;span class="nb"&gt;cksum &lt;/span&gt;0x43e5 &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, &lt;span class="nb"&gt;seq &lt;/span&gt;0, win 29200, length 0
-23:38:19.932815 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, &lt;span class="nb"&gt;id &lt;/span&gt;59564, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 60&lt;span class="o"&gt;)&lt;/span&gt;
-    192.168.0.13.41722 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; x.x.x.x.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;S], &lt;span class="nb"&gt;cksum &lt;/span&gt;0xd12f &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, &lt;span class="nb"&gt;seq &lt;/span&gt;1092877667, win 29200, options &lt;span class="o"&gt;[&lt;/span&gt;mss 1460,sackOK,TS val 3908772313 ecr 0,nop,wscale 7], length 0
-23:38:19.948956 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 58, &lt;span class="nb"&gt;id &lt;/span&gt;1, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;none], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 40&lt;span class="o"&gt;)&lt;/span&gt;
-    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; 192.168.0.13.41722: Flags &lt;span class="o"&gt;[&lt;/span&gt;R], &lt;span class="nb"&gt;cksum &lt;/span&gt;0x43e5 &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, &lt;span class="nb"&gt;seq &lt;/span&gt;0, win 29200, length 0
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;3-Way TCP Handshake should be (SYN, SYN-ACK, ACK). Instead we see RST packet
-right after SYN. You can see them as [S] and [R] flags. In other words all
-outgoing http traffic dropped in the middle and instead we are sent RST packet.
-Let&amp;rsquo;s send an outgoing packet from the droplet with source port 80 to home
-router on port 80:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;yes&lt;/span&gt; | nc &lt;span class="nt"&gt;-p&lt;/span&gt; 80 &lt;span class="nt"&gt;-t&lt;/span&gt; y.y.y.y 80
-
-&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo &lt;/span&gt;tcpdump &lt;span class="nt"&gt;-nn&lt;/span&gt; &lt;span class="nt"&gt;-vvv&lt;/span&gt; &lt;span class="nt"&gt;-i&lt;/span&gt; eth0 dst y.y.y.y and dst port 80 or src y.y.y.y and dst port 80
-tcpdump: listening on eth0, link-type EN10MB &lt;span class="o"&gt;(&lt;/span&gt;Ethernet&lt;span class="o"&gt;)&lt;/span&gt;, capture size 262144 bytes
-05:39:49.968049 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, &lt;span class="nb"&gt;id &lt;/span&gt;18207, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 60&lt;span class="o"&gt;)&lt;/span&gt;
-    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; y.y.y.y.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;S], &lt;span class="nb"&gt;cksum &lt;/span&gt;0x6e4e &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0x16e9&lt;span class="o"&gt;)&lt;/span&gt;, &lt;span class="nb"&gt;seq &lt;/span&gt;3260122744, win 29200, options &lt;span class="o"&gt;[&lt;/span&gt;mss 1460,sackOK,TS val 1175830887 ecr 0,nop,wscale 7], length 0
-05:39:50.109076 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x28, ttl 49, &lt;span class="nb"&gt;id &lt;/span&gt;0, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 60&lt;span class="o"&gt;)&lt;/span&gt;
-    y.y.y.y.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; x.x.x.x.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;S.], &lt;span class="nb"&gt;cksum &lt;/span&gt;0x83e9 &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, &lt;span class="nb"&gt;seq &lt;/span&gt;3723973951, ack 3260122745, win 28960, options &lt;span class="o"&gt;[&lt;/span&gt;mss 1440,sackOK,TS val 3637479403 ecr 1175830887,nop,wscale 7], length 0
-05:39:50.109117 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, &lt;span class="nb"&gt;id &lt;/span&gt;18208, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 52&lt;span class="o"&gt;)&lt;/span&gt;
-    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; y.y.y.y.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], &lt;span class="nb"&gt;cksum &lt;/span&gt;0x6e46 &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0x22b9&lt;span class="o"&gt;)&lt;/span&gt;, &lt;span class="nb"&gt;seq &lt;/span&gt;1, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 0
-05:39:50.109230 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, &lt;span class="nb"&gt;id &lt;/span&gt;18209, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 2100&lt;span class="o"&gt;)&lt;/span&gt;
-    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; y.y.y.y.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;P.], &lt;span class="nb"&gt;cksum &lt;/span&gt;0x7646 &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0xf0cc&lt;span class="o"&gt;)&lt;/span&gt;, &lt;span class="nb"&gt;seq &lt;/span&gt;1:2049, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 2048: HTTP
-05:39:50.109280 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, &lt;span class="nb"&gt;id &lt;/span&gt;18211, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 1480&lt;span class="o"&gt;)&lt;/span&gt;
-    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; y.y.y.y.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], &lt;span class="nb"&gt;cksum &lt;/span&gt;0x73da &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0x7def&lt;span class="o"&gt;)&lt;/span&gt;, &lt;span class="nb"&gt;seq &lt;/span&gt;2049:3477, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 1428: HTTP
-05:39:50.109299 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, &lt;span class="nb"&gt;id &lt;/span&gt;18212, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 1480&lt;span class="o"&gt;)&lt;/span&gt;
-    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; y.y.y.y.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], &lt;span class="nb"&gt;cksum &lt;/span&gt;0x73da &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0x785b&lt;span class="o"&gt;)&lt;/span&gt;, &lt;span class="nb"&gt;seq &lt;/span&gt;3477:4905, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 1428: HTTP
-05:39:50.109331 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, &lt;span class="nb"&gt;id &lt;/span&gt;18213, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 2908&lt;span class="o"&gt;)&lt;/span&gt;
-    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; y.y.y.y.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], &lt;span class="nb"&gt;cksum &lt;/span&gt;0x796e &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0xd5fd&lt;span class="o"&gt;)&lt;/span&gt;, &lt;span class="nb"&gt;seq &lt;/span&gt;4905:7761, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 2856: HTTP
-05:39:50.109349 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, &lt;span class="nb"&gt;id &lt;/span&gt;18215, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 1480&lt;span class="o"&gt;)&lt;/span&gt;
-    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; y.y.y.y.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], &lt;span class="nb"&gt;cksum &lt;/span&gt;0x73da &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0x679f&lt;span class="o"&gt;)&lt;/span&gt;, &lt;span class="nb"&gt;seq &lt;/span&gt;7761:9189, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 1428: HTTP
-05:39:50.109371 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, &lt;span class="nb"&gt;id &lt;/span&gt;18216, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 2908&lt;span class="o"&gt;)&lt;/span&gt;
-    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; y.y.y.y.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], &lt;span class="nb"&gt;cksum &lt;/span&gt;0x796e &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0xc541&lt;span class="o"&gt;)&lt;/span&gt;, &lt;span class="nb"&gt;seq &lt;/span&gt;9189:12045, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 2856: HTTP
-05:39:50.109390 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x0, ttl 64, &lt;span class="nb"&gt;id &lt;/span&gt;18218, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 1480&lt;span class="o"&gt;)&lt;/span&gt;
-    x.x.x.x.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; y.y.y.y.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;.], &lt;span class="nb"&gt;cksum &lt;/span&gt;0x73da &lt;span class="o"&gt;(&lt;/span&gt;incorrect -&amp;gt; 0x56e3&lt;span class="o"&gt;)&lt;/span&gt;, &lt;span class="nb"&gt;seq &lt;/span&gt;12045:13473, ack 1, win 229, options &lt;span class="o"&gt;[&lt;/span&gt;nop,nop,TS val 1175830923 ecr 3637479403], length 1428: HTTP
-05:39:50.251998 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x28, ttl 49, &lt;span class="nb"&gt;id &lt;/span&gt;34134, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 40&lt;span class="o"&gt;)&lt;/span&gt;
-    y.y.y.y.80 &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; x.x.x.x.80: Flags &lt;span class="o"&gt;[&lt;/span&gt;R], &lt;span class="nb"&gt;cksum &lt;/span&gt;0x0de9 &lt;span class="o"&gt;(&lt;/span&gt;correct&lt;span class="o"&gt;)&lt;/span&gt;, &lt;span class="nb"&gt;seq &lt;/span&gt;3723973952, win 0, length 0
-05:39:50.252020 IP &lt;span class="o"&gt;(&lt;/span&gt;tos 0x28, ttl 49, &lt;span class="nb"&gt;id &lt;/span&gt;34135, offset 0, flags &lt;span class="o"&gt;[&lt;/span&gt;DF], proto TCP &lt;span class="o"&gt;(&lt;/span&gt;6&lt;span class="o"&gt;)&lt;/span&gt;, length 40&lt;span class="o"&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;TCP handshake and reset after all but they at least exchanged a few packets.
-I wonder if we can catch where exactly http traffic drops. With traceroute we can
-see where ICMP packets go but does that mean HTTP goes the same direction?
-traceroute supports other options for example you can trace tcp SYN packets:
-&lt;code&gt;traceroute -T -O syn —port=80 -n -N 1 -q 1 x.x.x.x&lt;/code&gt;. The tool creates packets
-manually so that they are only 44 bytes long and they pass DPI see SYN-ACK:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight plaintext"&gt;&lt;code&gt;10:34:34.815998 IP (tos 0x0, ttl 19, id 61933, offset 0, flags [none], proto TCP (6), length 44)
-    y.y.y.y.58057 &amp;gt; x.x.x.x.80: Flags [S], cksum 0x61ef (correct), seq 3848879829, win 5840, options [mss 1460], length 0
-  0x0000:  4500 002c f1ed 0000 1306 9dd0 c0a8 0002  E..,............
-  0x0010:  9f59 b80a e2c9 0050 e569 3ed5 0000 0000  .Y.....P.i&amp;gt;.....
-  0x0020:  6002 16d0 61ef 0000 0204 05b4            `...a.......
-10:34:34.974844 IP (tos 0x0, ttl 51, id 0, offset 0, flags [DF], proto TCP (6), length 44)
-    x.x.x.x.80 &amp;gt; y.y.y.y.58057: Flags [S.], cksum 0x0feb (correct), seq 2544066339, ack 3848879830, win 29200, options [mss 1440], length 0
-  0x0000:  4500 002c 0000 4000 3306 2fbe 9f59 b80a  E..,..@.3./..Y..
-  0x0010:  c0a8 0002 0050 e2c9 97a3 5f23 e569 3ed6  .....P...._#.i&amp;gt;.
-  0x0020:  6012 7210 0feb 0000 0204 05a0 0000       `.r...........
-10:34:34.974909 IP (tos 0x0, ttl 64, id 61944, offset 0, flags [DF], proto TCP (6), length 40)
-    y.y.y.y.58057 &amp;gt; x.x.x.x.80: Flags [R], cksum 0x9078 (correct), seq 3848879830, win 0, length 0
-  0x0000:  4500 0028 f1f8 4000 4006 30c9 c0a8 0002  E..(..@.@.0.....
-  0x0010:  9f59 b80a e2c9 0050 e569 3ed6 0000 0000  .Y.....P.i&amp;gt;.....
-  0x0020:  5004 0000 9078 0000                      P....x..
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;The real SYN packet from browser is 60 bytes and DPI drops it:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight plaintext"&gt;&lt;code&gt;10:33:48.537807 IP (tos 0x0, ttl 19, id 54902, offset 0, flags [none], proto TCP (6), length 60)
-    y.y.y.y.42193 &amp;gt; x.x.x.x.80: Flags [S], cksum 0xe900 (correct), seq 2785663221, win 5840, options [mss 1460,sackOK,TS val 1652926847 ecr 0,nop,wscale 2], length 0
-  0x0000:  4500 003c d676 0000 1306 b937 c0a8 0002  E..&amp;lt;.v.....7....
-  0x0010:  9f59 b80a a4d1 0050 a609 d8f5 0000 0000  .Y.....P........
-  0x0020:  a002 16d0 e900 0000 0204 05b4 0402 080a  ................
-  0x0030:  6285 a97f 0000 0000 0103 0302            b...........
-10:33:48.563619 IP (tos 0x0, ttl 8, id 1, offset 0, flags [none], proto TCP (6), length 40)
-    x.x.x.x.80 &amp;gt; y.y.y.y.42193: Flags [R], cksum 0x5ce1 (correct), seq 0, win 5840, length 0
-  0x0000:  4500 0028 0001 0000 0806 9ac1 9f59 b80a  E..(.........Y..
-  0x0010:  c0a8 0002 0050 a4d1 0000 0000 a609 d8f5  .....P..........
-  0x0020:  5004 16d0 5ce1 0000 0000 0000 0000       P...\.........
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;This all suggests that provider definitely dropped packets while they said they
-didn&amp;rsquo;t to me.&lt;/p&gt;
-
-&lt;p&gt;Overall I feel disappointed about the road internet march nowadays. It started
-like a small network with purpose of exchanging data for research, helping
-humankind to solve issues or at least doing something meaningful.
-Instead I feel more like a resource that big company can sell and goverment can
-control limiting my view. They all either earn money or get benefit trading you
-but the thing is you don&amp;rsquo;t get anything out of it.&lt;/p&gt;
-
-&lt;h3&gt;A few words about GPON&lt;/h3&gt;
-
-&lt;p&gt;The text below is true for many ISPs. There are many downsides of GPON you can
-read articles about it in the footer but for me it&amp;rsquo;s inability to set up my own
-or at least high quality router instead of the one given by provider. You as a
-customer will rent a router from them. The router usually goes with buggy
-firmware, remote access for provider and inability to set it to the bridge mode.
-In other words it is a useless piece of trash which you will own as you redeem
-it during 2 years and you cannot buy another one and replace this shit because
-it simply won&amp;rsquo;t work with GPON. Also &lt;a href="https://habr.com/post/113086/"&gt;Rostelekom is the biggest player&lt;/a&gt;
-in Russia and has tight realtionship with goverment so I prefer stayng as far
-away as possible from them and pay to a smaller provider to keep it on the air.&lt;/p&gt;
-
-&lt;h3&gt;A way to bypass restrictions&lt;/h3&gt;
-
-&lt;p&gt;I want my internet to work w/o restrictions and I don&amp;rsquo;t want to set up tunnels
-on every signle device. In other words router should set up the tunnel and route
-traffic accordingly. My new toy is &lt;a href="https://mikrotik.com/product/hap_ac2"&gt;Mikrotik hap ac2&lt;/a&gt;
-and I&amp;rsquo;m very happy with it. It supports many cool features, the speed is great
-and hardware accelearation for IPsec should speed it up even more.&lt;/p&gt;
-
-&lt;p&gt;I have bought a server overseas, let&amp;rsquo;s setup GRE tunnel between router and a
-server(&lt;code&gt;x.x.x.x&lt;/code&gt; - server&amp;rsquo;s white IP, &lt;code&gt;y.y.y.y&lt;/code&gt; - router&amp;rsquo;s white IP), the
-network IP address inside the tunnel will be &lt;code&gt;192.168.0.1&lt;/code&gt; for server and
-&lt;code&gt;192.168.0.2&lt;/code&gt; for router, my home network behind router is &lt;code&gt;192.168.88.0/24&lt;/code&gt;:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo cat&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;EOF&lt;/span&gt;&lt;span class="sh"&gt; &amp;gt;&amp;gt; /etc/network/interfaces
- iface tun1 inet static
-    address 192.168.0.1
-    netmask 255.255.255.0
-    mtu 1456
-    pre-up iptunnel add tun1 mode gre local x.x.x.x remote y.y.y.y ttl 255
-    up ifconfig tun1 multicast
-    pointopoint 192.168.0.2
-    post-down iptunnel del tun1
- up ip ro add 192.168.88.0/24 via 192.168.0.2
-&lt;/span&gt;&lt;span class="no"&gt;EOF
-
-&lt;/span&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo echo&lt;/span&gt; &lt;span class="s2"&gt;"net.ipv4.ip_forward = 1"&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt; /etc/sysctl.conf
-&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo &lt;/span&gt;sysctl &lt;span class="nt"&gt;-p&lt;/span&gt; &lt;span class="c"&gt;# check if it's set properly&lt;/span&gt;
-&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;sudo &lt;/span&gt;iptables &lt;span class="nt"&gt;-t&lt;/span&gt; nat &lt;span class="nt"&gt;-A&lt;/span&gt; POSTROUTING &lt;span class="nt"&gt;-o&lt;/span&gt; ens3 &lt;span class="nt"&gt;-j&lt;/span&gt; MASQUERADE
-&lt;span class="nv"&gt;$ &lt;/span&gt;ifdown tun1 &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; ifup tun1
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;On the router:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre class="highlight shell"&gt;&lt;code&gt;/interface gre add &lt;span class="nv"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"gre-tunnel1"&lt;/span&gt; &lt;span class="nv"&gt;mtu&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;auto local-address&lt;span class="o"&gt;=&lt;/span&gt;y.y.y.y remote-address&lt;span class="o"&gt;=&lt;/span&gt;x.x.x.x clamp-tcp-mss&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;yes &lt;/span&gt;dont-fragment&lt;span class="o"&gt;=&lt;/span&gt;no allow-fast-path&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;yes&lt;/span&gt;
-/ip address add &lt;span class="nv"&gt;address&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;192.168.0.2/24 &lt;span class="nv"&gt;network&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;192.168.0.0 &lt;span class="nv"&gt;interface&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
-
-/ip firewall mangle
-add &lt;span class="nv"&gt;chain&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;forward &lt;span class="nv"&gt;action&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;change-mss new-mss&lt;span class="o"&gt;=&lt;/span&gt;clamp-to-pmtu &lt;span class="nv"&gt;passthrough&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;no tcp-flags&lt;span class="o"&gt;=&lt;/span&gt;syn &lt;span class="nv"&gt;protocol&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;tcp &lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="nt"&gt;-interface&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1 tcp-mss&lt;span class="o"&gt;=&lt;/span&gt;1300-65535 &lt;span class="nv"&gt;log&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;no log-prefix&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;""&lt;/span&gt;
-add &lt;span class="nv"&gt;chain&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;forward &lt;span class="nv"&gt;action&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;change-mss new-mss&lt;span class="o"&gt;=&lt;/span&gt;clamp-to-pmtu &lt;span class="nv"&gt;passthrough&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;no tcp-flags&lt;span class="o"&gt;=&lt;/span&gt;syn &lt;span class="nv"&gt;protocol&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;tcp out-interface&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1 tcp-mss&lt;span class="o"&gt;=&lt;/span&gt;1300-65535 &lt;span class="nv"&gt;log&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;no log-prefix&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;""&lt;/span&gt;
-
-/ip route
-add &lt;span class="nv"&gt;comment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;linkedin &lt;span class="nv"&gt;distance&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 dst-address&lt;span class="o"&gt;=&lt;/span&gt;91.225.248.0/22 &lt;span class="nv"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
-add &lt;span class="nv"&gt;comment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;linkedin &lt;span class="nv"&gt;distance&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 dst-address&lt;span class="o"&gt;=&lt;/span&gt;108.174.0.0/20 &lt;span class="nv"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
-add &lt;span class="nv"&gt;comment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;linkedin &lt;span class="nv"&gt;distance&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 dst-address&lt;span class="o"&gt;=&lt;/span&gt;185.63.144.0/22 &lt;span class="nv"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
-add &lt;span class="nv"&gt;comment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;rutracker &lt;span class="nv"&gt;distance&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 dst-address&lt;span class="o"&gt;=&lt;/span&gt;195.82.146.0/24 &lt;span class="nv"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
-add &lt;span class="nv"&gt;comment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;telegram &lt;span class="nv"&gt;distance&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1 dst-address&lt;span class="o"&gt;=&lt;/span&gt;149.154.164.0/22 &lt;span class="nv"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;gre-tunnel1
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;You can now open all sites you added routes to; the packets for them now flow
-thru the tunnel. That&amp;rsquo;s it.&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href="https://www.eff.org/cyberspace-independence"&gt;Cyberspace independence&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="http://www.lookatme.ru/mag/magazine/russian-internet/207489-decentralization"&gt;Decentralization&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="https://www.newyorker.com/tech/elements/the-mission-to-decentralize-the-internet"&gt;The mission to decentralize the internet&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="https://dyn.com/blog/could-it-happen-in-your-countr/"&gt;Could it happen in your country&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="https://dyn.com/blog/vast-world-of-fraudulent-routing/"&gt;Vast world of fraudulent routing&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="https://dyn.com/blog/latest-isps-to-hijack/"&gt;Latest ISPs to hijack&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="https://pierrekim.github.io/blog/2016-11-01-gpon-ftth-networks-insecurity.html"&gt;GPON FTTH networks (in)security&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="https://lurkmore.to/GPON"&gt;Lurkmore GPON&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</content>
   </entry>
 </feed>

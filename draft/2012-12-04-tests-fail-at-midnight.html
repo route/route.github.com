@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="/images/favicon.ico">
+    <meta name="yandex-verification" content="3bfdb691bc608cfc" />
+    <title>Tests fail at midnight</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link href="/stylesheets/application.css" rel="stylesheet" /><link href="/stylesheets/highlighting.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <header>
+            <a href="/">NopeCode</a>
+          </header>
+          <div>
+  <p>I&rsquo;m always making the same mistake with my tests. I write them, see them passed
+and everything looks good before I run them after midnight. Have you ever had
+experience with it? I think yes, everyone has to. I hope you know the reason why
+they behave this way if it&rsquo;s happend to you and I&rsquo;m going to give you decision.
+First of all let&rsquo;s see the docs about how Rails works with time columns since
+our mistake is time dependent.</p>
+
+<p>ActiveRecord automatically updates fields named <code>created_(at|on)</code> or
+<code>updated_(at|on)</code>. There&rsquo;s a setting that can change this behavior:
+<code>config.active_record.record_timestamps</code>.</p>
+
+<p>Rails API says that timestamps are in the <code>:local</code> timezone by default,
+but you can set it to utc by: <code>config.active_record.default_timezone = :utc</code>.
+Indeed they lie!</p>
+
+<p>Here&rsquo;s the block of code from <code>activerecord\lib\active_record\railtie.rb</code>:</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="n">initializer</span> <span class="s2">"active_record.initialize_timezone"</span> <span class="k">do</span>
+  <span class="no">ActiveSupport</span><span class="p">.</span><span class="nf">on_load</span><span class="p">(</span><span class="ss">:active_record</span><span class="p">)</span> <span class="k">do</span>
+    <span class="o">...</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">default_timezone</span> <span class="o">=</span> <span class="ss">:utc</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>It&rsquo;s <code>:utc</code> by default in Rails, and it&rsquo;s <code>:local</code> if you use ActiveRecord out
+of it. By the way they have already changed this behavior and Rails 4 gonna ship
+with <code>:utc</code>. So what does this option do?</p>
+
+<p>I have to say that my system time zone is Europe/Moscow (+4):</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span><span class="nb">sudo </span>systemsetup <span class="nt">-gettimezone</span>
+Time Zone: Europe/Moscow
+</code></pre></div>
+<p>And I have to mention another setting named <code>config.time_zone</code> which is UTC
+by default. All time aware fields will be converted to that timezone.</p>
+
+<p>Let&rsquo;s consider a few examples:</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="no">User</span><span class="p">.</span><span class="nf">connection</span><span class="p">.</span><span class="nf">select_all</span><span class="p">(</span><span class="s2">"SELECT updated_at FROM users WHERE users.id = 1"</span><span class="p">)</span>
+<span class="c1"># =&gt; [{"updated_at"=&gt;"2012-11-19 15:29:45.314649"}]</span>
+<span class="p">[</span><span class="no">Rails</span><span class="p">.</span><span class="nf">application</span><span class="p">.</span><span class="nf">config</span><span class="p">.</span><span class="nf">time_zone</span><span class="p">,</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="p">.</span><span class="nf">default_timezone</span><span class="p">]</span> <span class="c1"># =&gt; ["UTC", :utc]</span>
+<span class="no">User</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nf">updated_at</span> <span class="c1"># =&gt; Mon, 19 Nov 2012 15:29:45 UTC +00:00</span>
+<span class="p">[</span><span class="no">Rails</span><span class="p">.</span><span class="nf">application</span><span class="p">.</span><span class="nf">config</span><span class="p">.</span><span class="nf">time_zone</span><span class="p">,</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="p">.</span><span class="nf">default_timezone</span><span class="p">]</span> <span class="c1"># =&gt; ["Moscow", :utc]</span>
+<span class="no">User</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nf">updated_at</span> <span class="c1"># =&gt; Mon, 19 Nov 2012 19:29:45 MSK +04:00</span>
+<span class="p">[</span><span class="no">Rails</span><span class="p">.</span><span class="nf">application</span><span class="p">.</span><span class="nf">config</span><span class="p">.</span><span class="nf">time_zone</span><span class="p">,</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="p">.</span><span class="nf">default_timezone</span><span class="p">]</span> <span class="c1"># =&gt; ["UTC", :local]</span>
+<span class="no">User</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nf">updated_at</span> <span class="c1"># =&gt; Mon, 19 Nov 2012 11:29:45 UTC +00:00</span>
+<span class="p">[</span><span class="no">Rails</span><span class="p">.</span><span class="nf">application</span><span class="p">.</span><span class="nf">config</span><span class="p">.</span><span class="nf">time_zone</span><span class="p">,</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="p">.</span><span class="nf">default_timezone</span><span class="p">]</span> <span class="c1"># =&gt; ["Moscow", :local]</span>
+<span class="no">User</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nf">updated_at</span> <span class="c1"># =&gt; Mon, 19 Nov 2012 15:29:45 MSK +04:00</span>
+</code></pre></div>
+<p>The first query gives us the real value from the database without time zone
+offset. I show you the settings each time before I try to call <code>updated_at</code>.
+First result gives us the same value as in the database because
+time zones are the same. It retrieves value from the database and supposes that
+it&rsquo;s in UTC because of <code>config.default_timezone</code>, than checks
+<code>config.time_zone</code> setting and understands that they are the same.
+Second result adds 4 hours because <code>config.time_zone</code> is set to Moscow and it
+supposes that time from the database is in UTC.
+All next cases are with <code>config.default_timezone</code> is set to <code>:local</code>.
+In the third case ActiveRecord supposes that value in the database is
+in the local time zone, so <code>2012-11-19 15:29:45.314649</code> is by Moscow, but
+<code>config.time_zone</code> is set to UTC so we need deduct 4 hours. And last but not
+least case, it supposes value from the database by Moscow time and
+<code>config.time_zone</code> is set to the same timezone too, so it doesn&rsquo;t do anything.
+As you found out <code>config.default_timezone</code> setting works when you pull dates and
+times from the database. Now I think you got the main idea, didn&rsquo;t you?</p>
+
+<p>A little quiz for you, I suppose you&rsquo;re on my laptop and now you have these
+settings in your application.rb:</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="n">config</span><span class="p">.</span><span class="nf">time_zone</span> <span class="o">=</span> <span class="s1">'Central America'</span> <span class="c1"># It's (-6)</span>
+<span class="n">config</span><span class="p">.</span><span class="nf">active_record</span><span class="p">.</span><span class="nf">default_timezone</span> <span class="o">=</span> <span class="ss">:local</span>
+</code></pre></div>
+<p>Give me the answer what will return ActiveRecord for updated_at?</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="c1"># =&gt; [{"updated_at"=&gt;"2012-11-19 15:29:45.314649"}]</span>
+<span class="p">[</span><span class="no">Rails</span><span class="p">.</span><span class="nf">application</span><span class="p">.</span><span class="nf">config</span><span class="p">.</span><span class="nf">time_zone</span><span class="p">,</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="p">.</span><span class="nf">default_timezone</span><span class="p">]</span> <span class="c1"># =&gt; ["Central America", :local]</span>
+<span class="no">User</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nf">updated_at</span> <span class="c1"># =&gt; ???</span>
+</code></pre></div>
+<p>Ok if you said <code>Mon, 19 Nov 2012 05:29:45 CST -06:00</code> you were good boy.
+When ActiveRecord retrieves the value it supposes that it&rsquo;s in local time zone.
+Which zone is local for me? Yep, system time zone is local for me and it&rsquo;s
+Moscow! So in UTC it will be <code>2012-11-19 11:29:45</code> and minus six hours it will
+be exactly <code>2012-11-19 05:29:45</code>.</p>
+
+<p>Let&rsquo;s move on. By default, ActiveRecord keeps all the datetime columns time zone
+aware relying on: <code>config.active_record.time_zone_aware_attributes = true</code>.</p>
+
+<p>If your attributes are time zone aware and you desire to skip time zone
+conversion to the current Time.zone when reading certain attributes then you can
+do following:</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">Topic</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="nb">self</span><span class="p">.</span><span class="nf">skip_time_zone_conversion_for_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="ss">:written_on</span><span class="p">]</span>
+<span class="k">end</span>
+</code></pre></div></div>
+          <footer>
+            <a href="/about.html">Dmitry Vorotilin</a>
+            |
+            Copyright © 2012-<span class="infin">&infin;</span>
+          </footer>
+          <div class="yandex_metrika">
+  <!-- Yandex.Metrika informer -->
+  <a href="https://metrika.yandex.ru/stat/?id=25785359&amp;from=informer"
+  target="_blank" rel="nofollow"><img src="https://informer.yandex.ru/informer/25785359/1_0_FFFFFFFF_EFEFEFFF_0_pageviews"
+  style="width:80px; height:15px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры)" /></a>
+  <!-- /Yandex.Metrika informer -->
+
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript" >
+      (function (d, w, c) {
+          (w[c] = w[c] || []).push(function() {
+              try {
+                  w.yaCounter25785359 = new Ya.Metrika({
+                      id:25785359,
+                      clickmap:true,
+                      trackLinks:true,
+                      accurateTrackBounce:true,
+                      webvisor:true
+                  });
+              } catch(e) { }
+          });
+
+          var n = d.getElementsByTagName("script")[0],
+              s = d.createElement("script"),
+              f = function () { n.parentNode.insertBefore(s, n); };
+          s.type = "text/javascript";
+          s.async = true;
+          s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+          if (w.opera == "[object Opera]") {
+              d.addEventListener("DOMContentLoaded", f, false);
+          } else { f(); }
+      })(document, window, "yandex_metrika_callbacks");
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/25785359" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+</div>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

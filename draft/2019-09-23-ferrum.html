@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="/images/favicon.ico">
+    <meta name="yandex-verification" content="3bfdb691bc608cfc" />
+    <title>Modern headless testing in XXII century</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link href="/stylesheets/application.css" rel="stylesheet" /><link href="/stylesheets/highlighting.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <header>
+            <a href="/">NopeCode</a>
+          </header>
+          <div>
+  <h2>Intro</h2>
+
+<p>So you want to control a browser. How&rsquo;d you do it? Without help from browser&rsquo;s
+side it&rsquo;s barely possible, so first of all browser should support it and Chrome
+does. Pheeew, checked! Second, you should somehow communicate with the browser
+and it should understand what you are saying. Chrome uses <a href="https://en.wikipedia.org/wiki/WebSocket">Websocket</a>
+for this purpose, so you connect to it using WebSocket and start sending and
+receiving messages. Nice! Third, there must be some protocol over WebSocket that
+allows you to tell browser in some special form like: &ldquo;Hey, I want you to go to
+this website, oh and btw take a screenshot of that page and put it here.&rdquo; and
+there is one called <a href="https://chromedevtools.github.io/devtools-protocol/">CDP</a>.</p>
+
+<p>Here&rsquo;s an example of a command:</p>
+<div class="highlight"><pre class="highlight javascript"><code><span class="p">{</span><span class="dl">"</span><span class="s2">method</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">Page.navigate</span><span class="dl">"</span><span class="p">,</span><span class="dl">"</span><span class="s2">params</span><span class="dl">"</span><span class="p">:{</span><span class="dl">"</span><span class="s2">url</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">http://google.com</span><span class="dl">"</span><span class="p">},</span><span class="dl">"</span><span class="s2">id</span><span class="dl">"</span><span class="p">:</span><span class="mi">1</span><span class="p">}</span>
+</code></pre></div>
+<p>Command is just some JSON we send over WebSocket and a proper command should
+have <code>method</code> with command name, some various <code>params</code> and <code>id</code> which should be
+unique because when you get response it has the same id.</p>
+
+<p>So to revise, we run the browser in headless mode (no visible window or anything
+is shown), we connect to the given host:port by WebSocket and start sending
+commands and receiving responses! Yes, it&rsquo;s that simple!</p>
+
+<p>Okies, clear let&rsquo;s go further.</p>
+
+<h2>Chrome devtools protocol</h2>
+
+<p>Chrome supports a lot of commands and for simplicity they are split into domains.
+For example <code>Network</code> domain which you should use for cookies manipulation or
+request interception and so on.</p>
+
+<p>Let&rsquo;s try to create a page and tell it go to some website. In order to do that I have to let you know about some more domains.</p>
+
+<p>Chrome devtools protocol supports many domains, just take a few for example:</p>
+
+<ul>
+<li><a href="https://chromedevtools.github.io/devtools-protocol/tot/Target">Target</a></li>
+<li><a href="https://chromedevtools.github.io/devtools-protocol/tot/Page">Page</a>.</li>
+</ul>
+
+<p>Some like Target only supported by the main ws<em>url address, some like Page are supported by page only and each page has it&rsquo;s own ws</em>url. So when driver is initialized there are only 3 threads and we can send commands to main ws<em>url so that we can create page and connect to a different ws</em>url.</p>
+
+<p>In general there are 3 threads only: main thread in which we call methods like <code>find(:xpath, ...)</code> and interact with the driver, thread in <code>Client</code> and a thread in <code>WebSocket</code>. When driver is initialized we run external process (browser) and interact with it by WebSocket protocol. <code>WebSocket</code> has it&rsquo;s own thread to read and write from socket.</p>
+
+<p>Imagine we want to call <code>driver.visit</code> I&rsquo;ll skip some details but we eventually call visit on <code>Page</code> instance where it sends a command <code>Page.navigate</code> thru <code>Client</code> and <code>Websocket</code> to the browser. This is async we can now do whatever we want in main thread or just sleep and wait for a response. Thread in <code>WebSocket</code> still works and parses all responses from the browser putting it into a queue. Also there is other type of responses called events, they don&rsquo;t have ids and they also put into a queue. Another thread in <code>Client</code> also works popping responses and events and processes events in the background while putting responses into another queue. We could have called wait in main thread and it just waits until needed response show up. All commands are processed sequentially anyway while one thread reads/writes socket and another one handles events in the background and puts responses into sequential queue. We can disregard command response if we don&rsquo;t need it.</p>
+
+<p>When message is read it is put into a queue in <code>WebSocket</code>.</p>
+</div>
+          <footer>
+            <a href="/about.html">Dmitry Vorotilin</a>
+            |
+            Copyright © 2012-<span class="infin">&infin;</span>
+          </footer>
+          <div class="yandex_metrika">
+  <!-- Yandex.Metrika informer -->
+  <a href="https://metrika.yandex.ru/stat/?id=25785359&amp;from=informer"
+  target="_blank" rel="nofollow"><img src="https://informer.yandex.ru/informer/25785359/1_0_FFFFFFFF_EFEFEFFF_0_pageviews"
+  style="width:80px; height:15px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры)" /></a>
+  <!-- /Yandex.Metrika informer -->
+
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript" >
+      (function (d, w, c) {
+          (w[c] = w[c] || []).push(function() {
+              try {
+                  w.yaCounter25785359 = new Ya.Metrika({
+                      id:25785359,
+                      clickmap:true,
+                      trackLinks:true,
+                      accurateTrackBounce:true,
+                      webvisor:true
+                  });
+              } catch(e) { }
+          });
+
+          var n = d.getElementsByTagName("script")[0],
+              s = d.createElement("script"),
+              f = function () { n.parentNode.insertBefore(s, n); };
+          s.type = "text/javascript";
+          s.async = true;
+          s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+          if (w.opera == "[object Opera]") {
+              d.addEventListener("DOMContentLoaded", f, false);
+          } else { f(); }
+      })(document, window, "yandex_metrika_callbacks");
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/25785359" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+</div>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

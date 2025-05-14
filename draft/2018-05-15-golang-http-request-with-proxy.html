@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="/images/favicon.ico">
+    <meta name="yandex-verification" content="3bfdb691bc608cfc" />
+    <title>How to do a https request with proxy in Golang</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link href="/stylesheets/application.css" rel="stylesheet" /><link href="/stylesheets/highlighting.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <header>
+            <a href="/">NopeCode</a>
+          </header>
+          <div>
+  <p>https://github.com/golang/go/commit/b06c93e45b7b03a5d670250ff35e42d62aface82
+If you&rsquo;ve grown with Rails like me you know that everyone used and perhaps still
+use everywhere <code>first</code>. You type it without hesitation.</p>
+
+<p><img src="/images/irb.png" class="img-fluid" alt="irb"></p>
+
+<p>I know that it&rsquo;s so simple that maybe it even doesn&rsquo;t deserve a post but just
+stop doing that.</p>
+
+<p>There&rsquo;s a much better method <a href="https://github.com/rails/rails/commit/1379375f93c53d4c49fa8592b6117c3ade263f2e">take</a>
+added long ago Apr 27, 2012 and if you say right now:</p>
+
+<p>- I know all that!</p>
+
+<p>then things are getting more intersting with PostgreSQL v10 at least:</p>
+<div class="highlight"><pre class="highlight sql"><code><span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">"posts"</span> <span class="k">WHERE</span> <span class="nv">"posts"</span><span class="p">.</span><span class="nv">"deleted_at"</span> <span class="k">IS</span> <span class="k">NULL</span> <span class="k">AND</span> <span class="nv">"posts"</span><span class="p">.</span><span class="nv">"user_id"</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">order</span> <span class="k">by</span> <span class="n">id</span> <span class="k">ASC</span> <span class="k">limit</span> <span class="mi">1</span><span class="p">;</span>
+                                                                    <span class="n">QUERY</span> <span class="n">PLAN</span>                                                                    
+<span class="c1">--------------------------------------------------------------------------------------------------------------------------------------------------</span>
+ <span class="k">Limit</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">11</span><span class="p">..</span><span class="mi">26</span><span class="p">.</span><span class="mi">91</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1</span> <span class="n">width</span><span class="o">=</span><span class="mi">327</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="nb">time</span><span class="o">=</span><span class="mi">37557</span><span class="p">.</span><span class="mi">875</span><span class="p">..</span><span class="mi">37557</span><span class="p">.</span><span class="mi">875</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+   <span class="o">-&gt;</span>  <span class="k">Index</span> <span class="n">Scan</span> <span class="k">using</span> <span class="n">posts_pkey</span> <span class="k">on</span> <span class="n">posts</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">11</span><span class="p">..</span><span class="mi">2057670</span><span class="p">.</span><span class="mi">78</span> <span class="k">rows</span><span class="o">=</span><span class="mi">76800</span> <span class="n">width</span><span class="o">=</span><span class="mi">327</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="nb">time</span><span class="o">=</span><span class="mi">37557</span><span class="p">.</span><span class="mi">874</span><span class="p">..</span><span class="mi">37557</span><span class="p">.</span><span class="mi">874</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+         <span class="n">Filter</span><span class="p">:</span> <span class="p">((</span><span class="n">deleted_at</span> <span class="k">IS</span> <span class="k">NULL</span><span class="p">)</span> <span class="k">AND</span> <span class="p">(</span><span class="n">user_id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">))</span>
+         <span class="k">Rows</span> <span class="n">Removed</span> <span class="k">by</span> <span class="n">Filter</span><span class="p">:</span> <span class="mi">26826499</span>
+ <span class="n">Planning</span> <span class="nb">time</span><span class="p">:</span> <span class="mi">0</span><span class="p">.</span><span class="mi">202</span> <span class="n">ms</span>
+ <span class="n">Execution</span> <span class="nb">time</span><span class="p">:</span> <span class="mi">37557</span><span class="p">.</span><span class="mi">905</span> <span class="n">ms</span>
+<span class="p">(</span><span class="mi">6</span> <span class="k">rows</span><span class="p">)</span>
+</code></pre></div>
+<p>Doesn&rsquo;t it look creepy? According to <a href="https://stackoverflow.com/questions/21385555/postgresql-query-very-slow-with-limit-1">stackoverflow</a>
+it can be an issue in the planner and given that you have pretty large table not
+with 10 posts of course this query becomes drastically slower than planned. So a
+combination of two issues results in a waste of time for investigation. First of
+all it shouldn&rsquo;t have happened if we used <code>take</code>:</p>
+<div class="highlight"><pre class="highlight sql"><code><span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">"posts"</span> <span class="k">WHERE</span> <span class="nv">"posts"</span><span class="p">.</span><span class="nv">"deleted_at"</span> <span class="k">IS</span> <span class="k">NULL</span> <span class="k">AND</span> <span class="nv">"posts"</span><span class="p">.</span><span class="nv">"user_id"</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">limit</span> <span class="mi">1</span><span class="p">;</span>
+                                                     <span class="n">QUERY</span> <span class="n">PLAN</span>                                                     
+<span class="c1">--------------------------------------------------------------------------------------------------------------------</span>
+ <span class="k">Limit</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">13</span><span class="p">.</span><span class="mi">40</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1</span> <span class="n">width</span><span class="o">=</span><span class="mi">327</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="nb">time</span><span class="o">=</span><span class="mi">1</span><span class="p">.</span><span class="mi">979</span><span class="p">..</span><span class="mi">1</span><span class="p">.</span><span class="mi">979</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+   <span class="o">-&gt;</span>  <span class="n">Seq</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">posts</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">1029108</span><span class="p">.</span><span class="mi">93</span> <span class="k">rows</span><span class="o">=</span><span class="mi">76800</span> <span class="n">width</span><span class="o">=</span><span class="mi">327</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="nb">time</span><span class="o">=</span><span class="mi">1</span><span class="p">.</span><span class="mi">978</span><span class="p">..</span><span class="mi">1</span><span class="p">.</span><span class="mi">978</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+         <span class="n">Filter</span><span class="p">:</span> <span class="p">((</span><span class="n">deleted_at</span> <span class="k">IS</span> <span class="k">NULL</span><span class="p">)</span> <span class="k">AND</span> <span class="p">(</span><span class="n">user_id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">))</span>
+         <span class="k">Rows</span> <span class="n">Removed</span> <span class="k">by</span> <span class="n">Filter</span><span class="p">:</span> <span class="mi">3463</span>
+ <span class="n">Planning</span> <span class="nb">time</span><span class="p">:</span> <span class="mi">1</span><span class="p">.</span><span class="mi">606</span> <span class="n">ms</span>
+ <span class="n">Execution</span> <span class="nb">time</span><span class="p">:</span> <span class="mi">2</span><span class="p">.</span><span class="mi">047</span> <span class="n">ms</span>
+<span class="p">(</span><span class="mi">6</span> <span class="k">rows</span><span class="p">)</span>
+</code></pre></div>
+<p>Force yourself typing <code>take</code> instead of <code>first</code> if you don&rsquo;t care about the order
+which in most cases is the case.</p>
+</div>
+          <footer>
+            <a href="/about.html">Dmitry Vorotilin</a>
+            |
+            Copyright © 2012-<span class="infin">&infin;</span>
+          </footer>
+          <div class="yandex_metrika">
+  <!-- Yandex.Metrika informer -->
+  <a href="https://metrika.yandex.ru/stat/?id=25785359&amp;from=informer"
+  target="_blank" rel="nofollow"><img src="https://informer.yandex.ru/informer/25785359/1_0_FFFFFFFF_EFEFEFFF_0_pageviews"
+  style="width:80px; height:15px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры)" /></a>
+  <!-- /Yandex.Metrika informer -->
+
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript" >
+      (function (d, w, c) {
+          (w[c] = w[c] || []).push(function() {
+              try {
+                  w.yaCounter25785359 = new Ya.Metrika({
+                      id:25785359,
+                      clickmap:true,
+                      trackLinks:true,
+                      accurateTrackBounce:true,
+                      webvisor:true
+                  });
+              } catch(e) { }
+          });
+
+          var n = d.getElementsByTagName("script")[0],
+              s = d.createElement("script"),
+              f = function () { n.parentNode.insertBefore(s, n); };
+          s.type = "text/javascript";
+          s.async = true;
+          s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+          if (w.opera == "[object Opera]") {
+              d.addEventListener("DOMContentLoaded", f, false);
+          } else { f(); }
+      })(document, window, "yandex_metrika_callbacks");
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/25785359" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+</div>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="/images/favicon.ico">
+    <meta name="yandex-verification" content="3bfdb691bc608cfc" />
+    <title>ActionPack formats</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link href="/stylesheets/application.css" rel="stylesheet" /><link href="/stylesheets/highlighting.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <header>
+            <a href="/">NopeCode</a>
+          </header>
+          <div>
+  <p>Hi there, today I want to share with you info about how ActionPack works with
+formats. I faced this issue 2 month ago when I was trying jbuilder. Jbuilder is
+a nice gem, it can render json templates/partials and has additional cool stuff.
+I had to render html template with json pieces in my application.
+To implement this I&rsquo;ve just used usual render partial in my html template:</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="ss">:javascript</span>
+  <span class="c1">#{render partial: "json_partial", formats: :json}</span>
+</code></pre></div>
+<p>But there is a trouble here, if your json template contains
+<code>json.partial! &quot;file_name&quot;</code>, it won&rsquo;t find that template.
+As you know each request has its own headers, and Accept header is one of them.
+I won&rsquo;t explain <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">it</a>
+because you can read yourself. When you click link or change location, your
+browser sends <code>Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</code>
+to server. Rails parse headers and setup incoming formats:</p>
+<div class="highlight"><pre class="highlight ruby"><code><span class="c1"># actionpack/action_controller/metal/rendering.rb</span>
+<span class="c1"># Before processing, set the request formats in current controller formats.</span>
+<span class="k">def</span> <span class="nf">process_action</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="c1">#:nodoc:</span>
+  <span class="nb">self</span><span class="p">.</span><span class="nf">formats</span> <span class="o">=</span> <span class="n">request</span><span class="p">.</span><span class="nf">formats</span><span class="p">.</span><span class="nf">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="n">x</span><span class="p">.</span><span class="nf">ref</span> <span class="p">}</span>
+  <span class="k">super</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>Then it processed action in your controller, find template for your action
+recline against formats, and return response to browser. There&rsquo;s a little thing
+here, Rails use different renderers for templates and partials. TemplateRenderer
+overwrites formats each time you use it. It seems legit because in usual cases
+you render only</p>
+
+<p>For our case formats are set to <code>[:html]</code>. When your action processed, rails
+start lookup template for your action recline against formats. They found our
+html template, then see render partial, but we set formats as :json for
+case, and they found it too. Next</p>
+</div>
+          <footer>
+            <a href="/about.html">Dmitry Vorotilin</a>
+            |
+            Copyright © 2012-<span class="infin">&infin;</span>
+          </footer>
+          <div class="yandex_metrika">
+  <!-- Yandex.Metrika informer -->
+  <a href="https://metrika.yandex.ru/stat/?id=25785359&amp;from=informer"
+  target="_blank" rel="nofollow"><img src="https://informer.yandex.ru/informer/25785359/1_0_FFFFFFFF_EFEFEFFF_0_pageviews"
+  style="width:80px; height:15px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры)" /></a>
+  <!-- /Yandex.Metrika informer -->
+
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript" >
+      (function (d, w, c) {
+          (w[c] = w[c] || []).push(function() {
+              try {
+                  w.yaCounter25785359 = new Ya.Metrika({
+                      id:25785359,
+                      clickmap:true,
+                      trackLinks:true,
+                      accurateTrackBounce:true,
+                      webvisor:true
+                  });
+              } catch(e) { }
+          });
+
+          var n = d.getElementsByTagName("script")[0],
+              s = d.createElement("script"),
+              f = function () { n.parentNode.insertBefore(s, n); };
+          s.type = "text/javascript";
+          s.async = true;
+          s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+          if (w.opera == "[object Opera]") {
+              d.addEventListener("DOMContentLoaded", f, false);
+          } else { f(); }
+      })(document, window, "yandex_metrika_callbacks");
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/25785359" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+</div>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

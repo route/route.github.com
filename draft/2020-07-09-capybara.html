@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="/images/favicon.ico">
+    <meta name="yandex-verification" content="3bfdb691bc608cfc" />
+    <title>Modern headless testing in XXII century</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link href="/stylesheets/application.css" rel="stylesheet" /><link href="/stylesheets/highlighting.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <header>
+            <a href="/">NopeCode</a>
+          </header>
+          <div>
+  <p>починил ага</p>
+
+<p>2:07
+тесты проходят кстати))
+2:07
+люблю такое
+2:08
+чтобы написать очень хорошие тесты которые ловят все баги нужно очень сильно заморочиться
+2:09
+остальное написание тестов сводятся к тестированию логики и поведения которое ты предполагаешь
+2:09
+еще есть поведение которое ты не предполагаешь
+2:09
+еще есть плохо написанные тесты
+2:09
+тесты которые ничего не тестируют
+2:09
+дублированные тесты (edited)
+2:10
+тесты которые проходят потому что условия заведомо неверные
+2:10
+очень люблю тесты</p>
+
+<p>wait<em>for</em>reload</p>
+
+<p>def first(<em>args, *</em>options, &amp;optional<em>filter</em>block)
+  options = { minimum: 1 }.merge(options) unless options<em>include</em>minimum?(options)
+  all(*args, options, &amp;optional<em>filter</em>block).first
+end</p>
+
+<p>first vs real first</p>
+
+<p>@here before I came up with the whole post, please bear in mind that JS is
+different in nature from what we used to in Ruby world. JS is ASYNC (and it&rsquo;s
+awesome) and everything is done with callbacks (use any modern word for this
+asyc/await, promise, whatever) and thus our feature test shouldn&rsquo;t be as plain
+old ruby, we have to always keep in mind this async nature.</p>
+
+<p>Common stylish issue #0:</p>
+
+<p>Please divide your test logically into 3 sections with empty lines.
+First - section is preparation, where we set up variables or visit urls, etc.
+Second - action, it&rsquo;s place where you do something with the page and then
+Third - assertions, expectations, etc, where you verify data.
+If you have more than these 3 sections in the test it&rsquo;s most likely the test
+should be split. Same applies for unit tests.</p>
+
+<p>Common feature tests issue #1:</p>
+
+<p>If you want to use something like <code>wait_for_ajax</code> please think twice because at
+first it may seem like a good idea but a big hairy &ldquo;but&rdquo; is lurking around the
+corner. Imagine you&rsquo;ve clicked something and you are waiting for AJAX to finish:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>find(text: 'Link text').click
+wait_for_ajax
+expect(page).to have_text("Other text")
+</code></pre></div>
+<p>this works, but it will work even w/o <code>wait_for_ajax</code> because you use waiting
+matcher <code>have_content</code> right after click. These are called waiting matchers
+because they wait for content to appear/disappear. In fact it can be rewritten
+to just:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>find(text: 'Link text').click
+expect(page).to have_text('Other text')
+</code></pre></div>
+<p>But in other scenarios you may start to use it like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>expect {
+  find(text: 'Link text').click
+  wait_for_ajax
+}.to change { Lead.count }.by(1)
+</code></pre></div>
+<p>and now my friend you have a problem - you don&rsquo;t use waiting matchers at all!
+If AJAX request happens to be executed fast enough it doesn&rsquo;t mean that changes
+are landed in the database because there is such thing as transactions. There
+are many similar scenarios like this one, the only exit is to use waiting
+matchers always after some action on the page.</p>
+
+<p>It&rsquo;s so common and capybara gives so much freedom so that I propose a
+restriction like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>click { find(text: 'Link text') }.and_to have_text('Other text')
+</code></pre></div>
+<p>Stop using <code>.click</code> at all.</p>
+
+<p>Common feature tests issue #2:</p>
+
+<p>Write you JS carefully, think about end-user/tests and async nature. If you need
+to show a block after a click, do it but only when all content is loaded with
+AJAX, everything is prepared and then we can add class <code>.active</code>. It sounds
+simple but we forget about this. I saw a lot of mistakes in our JS codebase.
+Advanced filters is one of the examples. We show block and form and then start
+loading filters. At first it looks ok, because we load filters and then make
+elements available, but the whole block is already shown with all empty filters!</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$advancedFiltersToggle.on('click', (e) =&gt; {
+  e.preventDefault();
+  initForm($advancedFilters);
+  $advancedFiltersBody.addClass('active');
+});
+</code></pre></div>
+<p>As you can see we don&rsquo;t wait here for filters to be loaded, so with slow
+internet the user will see broken form as our tests if they are faster then
+rails server and they are believe me.</p>
+
+<p>Common feature tests issue #3:</p>
+
+<p><code>find(text: &#39;Link text&#39;).click</code> cannot work instantly and be reliable. To do a real click
+we have to find element, get its coordinates and if it&rsquo;s clickable and not
+overlapped by some other element we can send a click to this point. If you don&rsquo;t
+see here race condition it&rsquo;s between getting coordinates and clicking. It even
+happens to me on some heavy sites as a user, I want click something and suddenly
+the element is moved because some other content is pushed. I called it slippery click.
+Same can happen in tests, and thus it&rsquo;s important to think about end-user and
+show content after everything is loaded, before that we can show &ldquo;Loading&hellip;&rdquo;,
+but please also think about how you show &ldquo;Loading&hellip;&rdquo; because recently I also
+fixed some convultions of this element since we were removing and adding it
+again and again moving content up and down.</p>
+
+<p>Common feature tests issue #4:</p>
+
+<p>The amount of feature tests should be no more than 20-40% of the whole suit. In
+average we need ~1s per 1 feature test, sometimes ~3s. So if the whole suite is
+running for like 15m our feature tests should run for like 6m. We run unit tests
+for 6:25, then we should have like build up to 10m.</p>
+
+<p>Keep these subtle things in mind.</p>
+</div>
+          <footer>
+            <a href="/about.html">Dmitry Vorotilin</a>
+            |
+            Copyright © 2012-<span class="infin">&infin;</span>
+          </footer>
+          <div class="yandex_metrika">
+  <!-- Yandex.Metrika informer -->
+  <a href="https://metrika.yandex.ru/stat/?id=25785359&amp;from=informer"
+  target="_blank" rel="nofollow"><img src="https://informer.yandex.ru/informer/25785359/1_0_FFFFFFFF_EFEFEFFF_0_pageviews"
+  style="width:80px; height:15px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры)" /></a>
+  <!-- /Yandex.Metrika informer -->
+
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript" >
+      (function (d, w, c) {
+          (w[c] = w[c] || []).push(function() {
+              try {
+                  w.yaCounter25785359 = new Ya.Metrika({
+                      id:25785359,
+                      clickmap:true,
+                      trackLinks:true,
+                      accurateTrackBounce:true,
+                      webvisor:true
+                  });
+              } catch(e) { }
+          });
+
+          var n = d.getElementsByTagName("script")[0],
+              s = d.createElement("script"),
+              f = function () { n.parentNode.insertBefore(s, n); };
+          s.type = "text/javascript";
+          s.async = true;
+          s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+          if (w.opera == "[object Opera]") {
+              d.addEventListener("DOMContentLoaded", f, false);
+          } else { f(); }
+      })(document, window, "yandex_metrika_callbacks");
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/25785359" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+</div>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      body form * { display: block; margin: 10px 0; }
+      #hint, .step { display: none; }
+      .active { display: block; }
+    </style>
+  </head>
+  <body>
+    <form>
+      <div class="step active">
+        <input id="email" />
+        <div id="hint">Please add here your email</div>
+        <button class="btn">Next</button>
+      </div>
+      <div class="step">
+        <input id="first-name" type="text">
+        <input id="last-name" type="text">
+        <button class="btn">Finish</button>
+      </div>
+      <div class="step">
+        <p>Successfully sent</p>
+      </div>
+    </form>
+    <script type="text/javascript">
+      setTimeout(() => {
+        document.getElementById("hint").style.display = "block";
+      }, 55)
+
+      document.addEventListener("click", (event) => {
+        event.preventDefault();
+
+        parent = event.target.parentElement;
+        parent.classList.remove("active");
+        parent.nextElementSibling.classList.add("active");
+      });
+    </script>
+  </body>
+</html>

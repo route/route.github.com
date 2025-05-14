@@ -4,9 +4,12 @@ title: Resume
 
 ### Employment:
 
-#### <a href="https://sincera.io/" target="_blank">Sincera</a>, __Senior Software Engineer__ <span class="year float-right">2023 - current</span>
+#### <a href="https://sincera.io/" target="_blank">Sincera (acquired by TTD), The Trade Desk</a>, __Senior Software Engineer__ <span class="year float-right">2023 - current</span>
 
-To be specified...
+- Scaling software to keep up with highload.
+- Working on my own OSS that helps companies gathering data from internet:
+  - <a href="https://github.com/rubycdp/ferrum" target="_blank">Ferrum</a>
+  - <a href="https://github.com/rubycdp/vessel" target="_blank">Vessel</a>
 
 #### <a href="https://www.spaceti.com/" target="_blank">Spaceti</a>, __Senior Software Engineer__ <span class="year float-right">2022 - 2023</span>
 

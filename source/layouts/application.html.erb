@@ -2,32 +2,29 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
     <link rel="icon" type="image/png" href="/images/favicon.ico">
     <meta name="yandex-verification" content="3bfdb691bc608cfc" />
     <%- if current_page.data.description -%>
     <meta name="description" content="<%= current_page.data.description %>">
     <%- end -%>
     <title><%= current_page.data.title || "NopeCode" %></title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
     <%= stylesheet_link_tag "application", "highlighting" %>
+    <%= yield_content :head if content_for?(:head) %>
   </head>
   <body>
-    <div class="container">
-      <div class="row">
-        <div class="col">
-          <header>
-            <%= link_to "NopeCode", "/" %>
-          </header>
-          <%= yield -%>
-          <footer>
-            <%= link_to "Dmitry Vorotilin", "/about.html" %>
-            |
-            Copyright © 2012-<span class="infin">&infin;</span>
-          </footer>
-          <%= partial "yandex_metrika" %>
-        </div>
-      </div>
+    <div class="page">
+      <%= partial "header" %>
+      <main>
+        <%= yield -%>
+      </main>
+      <footer class="site-footer">
+        <%= link_to "Dmitry Vorotilin", "/about.html" %>
+        |
+        Copyright © 2012-<span class="infin">&infin;</span>
+      </footer>
+      <%= partial "yandex_metrika" %>
     </div>
   </body>
 </html>

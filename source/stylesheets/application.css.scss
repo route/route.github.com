@@ -1,205 +1,280 @@
 @charset "utf-8";
 
-@import url('https://fonts.googleapis.com/css?family=Raleway');
-
-@font-face {
-  font-family: 'Museo300';
-  font-style: normal;
-  font-weight: 300;
-  src: url('fonts/museo300-regular-webfont.eot') format('embedded-opentype'),
-       url('fonts/museo300-regular-webfont.woff') format('woff'),
-       url('fonts/museo300-regular-webfont.ttf')  format('truetype');
+@each $weight in 300, 500, 700 {
+  @font-face {
+    font-family: 'Museo';
+    font-style: normal;
+    font-weight: $weight;
+    font-display: swap;
+    src: url('fonts/museo#{$weight}-regular-webfont.woff2') format('woff2'),
+         url('fonts/museo#{$weight}-regular-webfont.woff')  format('woff');
+  }
 }
 
-$color-header: #000000;
-$color-footer: #aaaaaa;
-$color-text:   #3f3f3f;
-$color-title:  #74ab2e;
-$color-code:   lighten(#b58900, 8%);
+:root {
+  --color-bg:        #ffffff;
+  --color-text:      #555555;
+  --color-strong:    #444444;
+  --color-muted:     #7a7a7a;
+  --color-border:    #e6e6e6;
+  --color-title:     #74ab2e;
+  --color-link:      #5b8c22;
+  --color-underline: #d3e6bb;
+  --color-shadow:    rgba(0, 0, 0, 0.1);
+  --color-code:      #946f00;
+  --color-code-bg:   #f7f7f4;
+  --color-code-line: #efe7cc;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg:        #1c1e1b;
+    --color-text:      #bfc3ba;
+    --color-strong:    #d4d7cf;
+    --color-muted:     #8a8f85;
+    --color-border:    #30332d;
+    --color-title:     #8cc444;
+    --color-link:      #9fcf63;
+    --color-underline: #3e5527;
+    --color-shadow:    rgba(0, 0, 0, 0.5);
+    --color-code:      #dcb552;
+    --color-code-bg:   #242721;
+    --color-code-line: #3a3524;
+  }
+}
+
+$font-mono: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
 @mixin title {
-  color: $color-title;
-  font-family: 'Raleway', 'Museo300', serif;
-  font-weight: bold;
-  text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
+  color: var(--color-title);
+  font-family: 'Museo', sans-serif;
+  font-weight: 500;
+  text-shadow: 1px 1px var(--color-shadow);
 }
 
 @mixin time {
   display: block;
   line-height: 32px;
-  font-size: 11px;
-  color: $color-footer;
+  font-size: 14px;
+  color: var(--color-muted);
 }
 
-@mixin code-bg($width: 1px, $bg-color: #f8f8f8, $bg-transparency: 0.7, $br-color: #f8f8f8) {
-  background-color: transparentize($bg-color, $bg-transparency);
-  border: $width solid darken($br-color, 1%);
-  border-radius: 5px;
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 body {
-  background-color: #fff;
-  color: $color-text;
-  font-family: 'Museo300', 'Raleway', serif;
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Museo', sans-serif;
+  font-weight: 300;
   font-size: 20px;
+  line-height: 1.5;
 }
 
-.container {
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 0.5rem;
+  line-height: 1.2;
+}
+
+p, ul, ol, pre {
+  margin: 0 0 1rem;
+}
+
+strong, b {
+  font-weight: 500;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+code, pre {
+  font-family: $font-mono;
+}
+
+.page {
   max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px;
 
-  .row {
-    [class*="col"] {
-      a {
-        color: darken( $color-title, 5% );
-        text-decoration: none;
+  a {
+    color: var(--color-link);
+    text-decoration: none;
+    text-shadow: 1px 1px var(--color-shadow);
+    border-bottom: 1px solid var(--color-underline);
 
-        text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
-        border-bottom: 1px solid lighten( $color-title, 40% );
+    &:hover, &:focus {
+      color: var(--color-title);
+      border-bottom-color: var(--color-title);
+    }
+  }
 
-        &:hover, &:focus {
-          border-bottom: 0px;
-        }
-      }
+  h1, h2, h3 {
+    @include title;
+  }
+  h2 {
+    font-size: 29px;
+    line-height: 1.25;
+  }
+  h3 {
+    font-size: 24px;
+    line-height: 38px;
+  }
+  h4 {
+    color: var(--color-strong);
+    font-size: 21px;
+    line-height: 35px;
+    font-weight: 300;
+    padding-left: 5px;
+  }
+  h5 {
+    color: var(--color-strong);
+    font-size: 14px;
+    line-height: 25px;
+    font-weight: 300;
+    padding-left: 5px;
+  }
+  h6 {
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--color-muted);
+    text-align: right;
+    margin-bottom: 30px;
+  }
 
-      h1, h2, h3 {
-        @include title;
-      }
-      h2 {
-        font-size: 29px;
-        line-height: 28px;
-      }
-      h3 {
-        font-size: 24px;
-        line-height: 38px;
-      }
-      h4 {
-        font-size: 21px;
-        line-height: 35px;
-        font-weight: bold;
-        padding-left: 5px;
-      }
-      h5 {
-        font-size: 14px;
-        line-height: 25px;
-        font-weight: bold;
-        padding-left: 5px;
-      }
-      h6 {
-        font-size: 14px;
-        color: $color-footer;
-        text-align: right;
-        margin-bottom: 30px;
-      }
+  ol {
+    list-style-type: decimal;
+  }
+  ul {
+    list-style-type: disc;
+  }
+  ol li, ul li {
+    margin: 10px 10px 10px 30px;
+  }
+  img {
+    display: block;
+    margin: 20px auto;
+  }
 
-      ol {
-        list-style-type: decimal;
-      }
-      ul {
-        list-style-type: disc;
-      }
-      ol li, ul li {
-        margin: 10px 10px 10px 30px;
-      }
-      img {
-        // max-width: 600px;
-        display: block;
-        margin: 20px auto 20px auto;
-      }
+  div.highlight {
+    margin: 0 0 1rem;
+    pre {
+      padding: 8px 10px;
+      font-size: 14px;
+      overflow: auto;
+      background-color: var(--color-code-bg);
+      border-radius: 5px;
 
-      > header {
-        height: 64px;
-        border-bottom: 1px solid silver;
-        margin-bottom: 30px;
-        a {
-          color: $color-header;
-          line-height: 64px;
-          font-size: 18px;
-          border-bottom: 0px;
-        }
-      }
-
-      div.highlight {
-        margin: 0;
-        pre {
-          padding: 5px;
-          font-size: 14px;
-          @include code-bg(0px, $bg-transparency: 0.3);
-
-          &.json {
-            white-space: pre-wrap;
-            white-space: -moz-pre-wrap;
-            word-wrap: break-word;
-          }
-        }
+      code {
+        font-size: inherit;
+        color: inherit;
       }
 
-      p code {
-        padding: 2px;
-        color: $color-code;
-        @include code-bg($br-color: lighten($color-code, 54%));
-      }
-
-      // Main
-      > div {
-        article {
-          padding-bottom: 60px;
-          header {
-            a {
-              @include title;
-            }
-            time {
-              @include time;
-            }
-          }
-          footer {
-            a {
-              font-size: 14px;
-            }
-            line-height: 32px;
-          }
-        }
-
-        p.pagination {
-          width: 100%;
-          display: inline-block;
-          text-align: center;
-        }
-      }
-
-      // Post
-      > article {
-        .tags > a {
-          color: lighten( $color-title, 20% );
-          font-size: 14px;
-          border-bottom: 1px solid lighten( $color-title, 30% );
-        }
-        time {
-          @include time;
-        }
-        p {
-          line-height: 1.75em;
-          padding: 0 20px 10px 20px;
-        }
-      }
-
-      > footer {
-        color: $color-footer;
-        font-size: 11px;
-        line-height: 64px;
-        text-align: center;
-        span.infin {
-          font-family: sans-serif;
-        }
+      &.json {
+        white-space: pre-wrap;
+        word-wrap: break-word;
       }
     }
+  }
+
+  p code {
+    padding: 2px;
+    font-size: 87.5%;
+    color: var(--color-code);
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-code-line);
+    border-radius: 5px;
+  }
+}
+
+.site-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  height: 64px;
+  line-height: 64px;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 30px;
+
+  .page & a {
+    color: var(--color-strong);
+    border-bottom: 0;
+
+    &:hover, &:focus {
+      color: var(--color-title);
+    }
+  }
+
+  .logo {
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  nav a {
+    margin-left: 20px;
+    font-size: 16px;
+  }
+}
+
+main {
+  > div > article {
+    padding-bottom: 60px;
+
+    header {
+      a {
+        @include title;
+        .page & {
+          color: var(--color-title);
+          border-bottom: 0;
+        }
+      }
+      time {
+        @include time;
+      }
+    }
+
+    footer {
+      line-height: 32px;
+      a {
+        font-size: 16px;
+      }
+    }
+  }
+
+  p.pagination {
+    text-align: center;
+  }
+
+  > article {
+    .tags > a {
+      font-size: 14px;
+      margin-right: 6px;
+    }
+    time {
+      @include time;
+    }
+    p {
+      line-height: 1.75em;
+      padding-bottom: 10px;
+    }
+  }
+}
+
+.site-footer {
+  color: var(--color-muted);
+  font-size: 14px;
+  line-height: 64px;
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+
+  span.infin {
+    font-family: sans-serif;
   }
 }
 
 .yandex_metrika {
   display: none;
-  text-align: center;
-  a {
-    text-decoration: none;
-    border: 0;
-  }
 }

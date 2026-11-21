@@ -7,9 +7,11 @@ title: Resume
 #### <a href="https://sincera.io/" target="_blank">The Trade Desk*</a>, __Senior Software Engineer__ <span class="year">2023 - current</span>
 
 - Scaling software to keep up with highload.
-- Working on my own OSS that helps companies gathering data from internet:
+- Working on my own open-source Ruby projects:
   - <a href="https://github.com/rubycdp/ferrum" target="_blank">Ferrum</a>
+  - <a href="https://github.com/rubycdp/cuprite" target="_blank">Cuprite</a>
   - <a href="https://github.com/rubycdp/vessel" target="_blank">Vessel</a>
+  - <a href="https://github.com/bitsbeam/cosmonats" target="_blank">Cosmonats</a>
 
 \* Formerly Sincera, that was acquired by The Trade Desk
 

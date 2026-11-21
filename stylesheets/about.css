@@ -1,21 +1,40 @@
 body {
   font-size: 18px; }
 
-.container .row [class*="col"] strong {
-  font-weight: bold;
-  font-size: 17px;
-  color: #888; }
-
-.container .row [class*="col"] span.year {
-  font-size: 18px; }
-
-.container .row [class*="col"] ul {
-  padding: 0;
-  margin: 0; }
-  .container .row [class*="col"] ul li {
-    list-style: none;
-    margin-left: 10px;
-    font-size: 16px; }
-  .container .row [class*="col"] ul li:before {
-    content: "-";
-    padding-right: 5px; }
+.resume {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr 2fr;
+  grid-template-columns: 1fr 2fr;
+  gap: 30px;
+  padding-bottom: 30px; }
+  @media (max-width: 767px) {
+    .resume {
+      -ms-grid-columns: 1fr;
+      grid-template-columns: 1fr; } }
+  .resume .icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    vertical-align: -2px;
+    color: var(--color-strong); }
+  .resume .summary {
+    padding-top: 1rem;
+    line-height: 1.6; }
+  .resume strong {
+    font-size: 17px;
+    color: var(--color-muted); }
+  .resume span.year {
+    float: right;
+    font-size: 18px;
+    color: var(--color-muted); }
+  .resume ul {
+    padding: 0;
+    margin: 0 0 1rem; }
+    .resume ul li {
+      list-style: none;
+      margin-left: 10px;
+      font-size: 16px; }
+    .resume ul li:before {
+      content: "-";
+      padding-right: 5px; }
